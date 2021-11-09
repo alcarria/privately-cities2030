@@ -1,0 +1,15 @@
+.dead-drop-container {
+  border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.dead-drop-sidenav-content {
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+
+.dead-drop-sidenav {
+  width: 20%;
+  padding: 20px;
+}

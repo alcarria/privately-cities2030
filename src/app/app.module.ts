@@ -10,10 +10,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LoginComponent } from './login/login.component';
 import { AccountComponent } from './account/account.component';
 import { NavbarComponent } from './navbar/navbar.component';
+import { DeadDropComponent } from './dead-drop/dead-drop.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
-  { path: 'account', component: AccountComponent }
+  { path: 'account', component: AccountComponent },
+  { path: 'dead-drop', component: DeadDropComponent }
 ]
 
 @NgModule({
@@ -21,7 +23,8 @@ const routes: Routes = [
     AppComponent,
     LoginComponent,
     AccountComponent,
-    NavbarComponent
+    NavbarComponent,
+    DeadDropComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
