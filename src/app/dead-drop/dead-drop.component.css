@@ -4,7 +4,7 @@
 
 .dead-drop-sidenav-content {
   display: flex;
-  height: 100vh;
+  height: calc(100vh - 66px);
   align-items: center;
   justify-content: center;
 }
