@@ -11,6 +11,7 @@ import { LoginComponent } from './login/login.component';
 import { AccountComponent } from './account/account.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { DeadDropComponent } from './dead-drop/dead-drop.component';
+import { ChatSidenavComponent } from './chat-sidenav/chat-sidenav.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -24,7 +25,8 @@ const routes: Routes = [
     LoginComponent,
     AccountComponent,
     NavbarComponent,
-    DeadDropComponent
+    DeadDropComponent,
+    ChatSidenavComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
