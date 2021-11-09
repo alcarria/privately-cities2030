@@ -11,25 +11,35 @@ export class ChatComponent implements OnInit {
 
   public message_list = ['Here going your', 'messages'];
   public address = 'TITULO';
-  private first = true;
+  private parent = ''
 
   constructor(public observable: DataExchangeService) {
   }
 
   ngOnInit(): void {
+    this.observable.data$.subscribe(resul => {
+      if (resul.to === 'sidebar') {
+        this.parent = resul.parent;
+      }
+    })
+
     this.observable.data$.subscribe(res => {
       if (res.to === 'chat') {
         console.log('Refresco happen para chat');
         console.log(res);
-        this.address = res.title;
-        if (this.first) {
+
+        // Si se detecta un cambio de conversacion entonces se reinician las variables
+        if (this.address !== res.address) {
           this.message_list = res.message_list;
+          this.address = res.address;
         } else {
-          for (let message in res.message_list) {
-            this.message_list.push(message);
-          }
+          if (!Array.isArray(res.message_list))
+            this.message_list.push(res.message_list);
+          else
+            for (let message in res.message_list) {
+              this.message_list.push(message);
+            }
         }
-        console.log(this.message_list);
       }
     })
   }

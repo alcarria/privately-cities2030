@@ -8,16 +8,22 @@ import {DataExchangeService} from "../data-exchange.service";
 })
 export class ChatSidenavComponent implements OnInit {
 
-  addresses = ['PEDRO', 'SERGIO', 'PACO'];
+  public addresses = ['PEDRO', 'SERGIO', 'PACO'];
+  private parent = ''
 
   constructor(public observable: DataExchangeService) {
   }
 
   ngOnInit(): void {
+    this.observable.data$.subscribe(resul => {
+      if (resul.to === 'sidebar') {
+        this.parent = resul.parent;
+      }
+    })
   }
 
   public onClick(address: string) {
-    this.observable.notify({'to': 'dead', 'address': address});
+    this.observable.notify({'to': this.parent, 'address': address});
   }
 
 }

@@ -14,11 +14,14 @@ export class DeadDropComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.observable.notify({'to': 'chat', 'parent': 'dead'})
+    this.observable.notify({'to': 'sidebar', 'parent': 'dead'})
+
     this.observable.data$.subscribe(res => {
       if (res.to === 'dead') {
         console.log('Refresco happen y es para dead');
         console.log(res)
-        this.observable.notify({'to': 'chat', 'title': res.address, 'message_list': this.dummy.get(res.address)})
+        this.observable.notify({'to': 'chat', 'address': res.address, 'message_list': this.dummy.get(res.address)})
       }
     })
   }
