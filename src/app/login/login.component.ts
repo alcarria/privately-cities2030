@@ -30,8 +30,7 @@ export class LoginComponent implements OnInit {
         method: 'eth_requestAccounts'
       })
       .then((result: any) => {
-        // TODO
-        this.error = "Login completado con éxito"
+        this.router.navigate(['account'])
       })
       .catch((error: any) => {
         this.error = "No se ha podido conectar con MetaMask."
