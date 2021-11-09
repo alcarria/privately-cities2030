@@ -1,1 +1,3 @@
-<p>chat-sidenav works!</p>
+<mat-list>
+  <button class="button"mat-list-item *ngFor="let address of addresses" (click)="onClick(address)">{{address}}</button>
+</mat-list>

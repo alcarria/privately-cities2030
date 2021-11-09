@@ -1,10 +1,8 @@
-<mat-drawer-container class="dead-drop-container" autosize>
-  <mat-drawer #drawer class="dead-drop-sidenav" mode="side" opened="true">
-    <p>Dead Drop</p>
-  </mat-drawer>
-
-  <div class="dead-drop-sidenav-content">
-    <p> Ola </p>
+<div class="body">
+  <div class="sidebar">
+    <app-chat-sidenav></app-chat-sidenav>
   </div>
-
-</mat-drawer-container>
+  <div class="chat">
+    <app-chat></app-chat>
+  </div>
+</div>

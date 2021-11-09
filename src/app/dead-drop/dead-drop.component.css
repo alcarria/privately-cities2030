@@ -1,15 +1,20 @@
-.dead-drop-container {
-  border: 1px solid rgba(0, 0, 0, 0.5);
-}
-
-.dead-drop-sidenav-content {
+.body{
+  background: red;
   display: flex;
-  height: calc(100vh - 66px);
-  align-items: center;
-  justify-content: center;
+  height: 100%;
 }
 
-.dead-drop-sidenav {
-  width: 20%;
-  padding: 20px;
+.sidebar{
+  background: white;
+  flex: 1;
+  height: 100%;
+  width: 30%;
 }
+
+.chat{
+  background: grey;
+  flex: 3;
+  height: 100%;
+  width: 70%;
+}
+

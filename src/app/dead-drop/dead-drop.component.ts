@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {MatSidenav} from '@angular/material/sidenav';
+import {Component, OnInit} from '@angular/core';
+import {DataExchangeService} from "../data-exchange.service";
 
 @Component({
   selector: 'app-dead-drop',
@@ -8,10 +8,19 @@ import {MatSidenav} from '@angular/material/sidenav';
 })
 export class DeadDropComponent implements OnInit {
 
-  constructor() { }
+  private dummy = new Map([['PEDRO', ['HOLA PEDRO', 'que tal??']], ['SERGIO', ['HOLA SERGIO', 'que tal??']], ['PACO', ['HOLA PACO', 'que tal??']]])
+
+  constructor(public observable: DataExchangeService) {
+  }
 
   ngOnInit(): void {
-
+    this.observable.data$.subscribe(res => {
+      if (res.to === 'dead') {
+        console.log('Refresco happen y es para dead');
+        console.log(res)
+        this.observable.notify({'to': 'chat', 'title': res.address, 'message_list': this.dummy.get(res.address)})
+      }
+    })
   }
 
 }

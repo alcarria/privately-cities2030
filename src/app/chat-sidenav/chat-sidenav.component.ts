@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {DataExchangeService} from "../data-exchange.service";
 
 @Component({
   selector: 'app-chat-sidenav',
@@ -7,9 +8,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ChatSidenavComponent implements OnInit {
 
-  constructor() { }
+  addresses = ['PEDRO', 'SERGIO', 'PACO'];
+
+  constructor(public observable: DataExchangeService) {
+  }
 
   ngOnInit(): void {
+  }
+
+  public onClick(address: string) {
+    this.observable.notify({'to': 'dead', 'address': address});
   }
 
 }
