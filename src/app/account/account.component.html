@@ -1,0 +1,10 @@
+<h1>Account</h1>
+
+<h2>Address</h2>
+<p>{{account}}</p>
+
+
+<h2>Permissions</h2>
+<ul *ngFor="let permission of permissions">
+    <li>{{permission['parentCapability']}}</li>
+</ul>
