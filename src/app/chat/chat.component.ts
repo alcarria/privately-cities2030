@@ -30,15 +30,15 @@ export class ChatComponent implements OnInit {
 
         // Si se detecta un cambio de conversacion entonces se reinician las variables
         if (this.address !== res.address) {
-          this.message_list = res.message_list;
+          this.message_list = [...res.message_list];
           this.address = res.address;
         } else {
           if (!Array.isArray(res.message_list))
             this.message_list.push(res.message_list);
           else
-            for (let message in res.message_list) {
+            res.message_list.forEach((message: string) =>{
               this.message_list.push(message);
-            }
+            })
         }
       }
     })

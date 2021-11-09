@@ -21,6 +21,7 @@ export class DeadDropComponent implements OnInit {
       if (res.to === 'dead') {
         console.log('Refresco happen y es para dead');
         console.log(res)
+        console.log(this.dummy.get(res.address))
         this.observable.notify({'to': 'chat', 'address': res.address, 'message_list': this.dummy.get(res.address)})
       }
     })
