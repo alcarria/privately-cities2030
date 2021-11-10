@@ -1,6 +1,7 @@
 <div class="body">
   <div class="sidebar">
-    <app-chat-sidenav></app-chat-sidenav>
+    <button (click)="newChat()">New chat</button>
+    <app-chat-sidenav [addresses]="getAddresses()"></app-chat-sidenav>
   </div>
   <div class="chat">
     <app-chat></app-chat>

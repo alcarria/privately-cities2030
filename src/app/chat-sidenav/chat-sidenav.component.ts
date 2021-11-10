@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {DataExchangeService} from "../data-exchange.service";
 
 @Component({
@@ -8,7 +8,7 @@ import {DataExchangeService} from "../data-exchange.service";
 })
 export class ChatSidenavComponent implements OnInit {
 
-  addresses = ['PEDRO', 'SERGIO', 'PACO'];
+  @Input() addresses: string[] = [];
 
   constructor(public observable: DataExchangeService) {
   }

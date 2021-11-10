@@ -23,4 +23,12 @@ export class DeadDropComponent implements OnInit {
     })
   }
 
+  newChat(): void {
+    this.dummy.set('Chat ' + this.dummy.size, [])
+  }
+
+  getAddresses(): string[] {
+    return [...this.dummy.keys()];
+  }
+
 }
