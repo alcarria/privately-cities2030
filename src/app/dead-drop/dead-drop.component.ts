@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+declare const window: any;
 
 @Component({
   selector: 'app-dead-drop',
@@ -13,7 +14,9 @@ export class DeadDropComponent implements OnInit {
   constructor() {
   }
 
-  ngOnInit(): void { }
+  async ngOnInit(): Promise<void> { 
+    console.log('Esta Web3 cargado?: '+ window.web3);
+  }
 
   newChat(): void {
     this.dummy.set('Chat ' + this.dummy.size, [])
@@ -32,6 +35,8 @@ export class DeadDropComponent implements OnInit {
   }
 
   sendMessage(message: any): void {
-    console.log(message)
+    // todo
+    // Enviarlo a la red
+    console.log(window.web3)
   }
 }
