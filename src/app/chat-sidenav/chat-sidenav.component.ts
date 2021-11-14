@@ -1,5 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {DataExchangeService} from "../data-exchange.service";
+import {Component, Input, OnInit, Output, EventEmitter} from '@angular/core';
 
 @Component({
   selector: 'app-chat-sidenav',
@@ -9,21 +8,18 @@ import {DataExchangeService} from "../data-exchange.service";
 export class ChatSidenavComponent implements OnInit {
 
   @Input() addresses: string[] = [];
+
+  @Output() changeAddress = new EventEmitter<string>();
+
   private parent = ''
 
-  constructor(public observable: DataExchangeService) {
+  constructor() {
   }
 
-  ngOnInit(): void {
-    this.observable.data$.subscribe(resul => {
-      if (resul.to === 'sidebar') {
-        this.parent = resul.parent;
-      }
-    })
-  }
+  ngOnInit(): void { }
 
   public onClick(address: string) {
-    this.observable.notify({'to': this.parent, 'address': address});
+    this.changeAddress.emit(address)
   }
 
 }

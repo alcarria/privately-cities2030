@@ -6,4 +6,10 @@
   <mat-list>
     <p *ngFor="let message of message_list">{{message}}</p>
   </mat-list>
+  <div class="form">
+    <form>
+      <input type="text" #message>
+      <button (click)="sendMessage($event, message)">Send</button>
+    </form>
+  </div>
 </div>

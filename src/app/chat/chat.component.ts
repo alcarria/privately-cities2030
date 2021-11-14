@@ -1,5 +1,4 @@
-import {Component, OnInit} from '@angular/core';
-import {DataExchangeService} from "../data-exchange.service";
+import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 
 @Component({
   selector: 'app-chat',
@@ -9,39 +8,22 @@ import {DataExchangeService} from "../data-exchange.service";
 
 export class ChatComponent implements OnInit {
 
-  public message_list = ['Here going your', 'messages'];
+  @Input() public message_list = ['Here going your', 'messages'];
+
+  @Output() public onMessage = new EventEmitter<string>()
+
   public address = 'TITULO';
   private parent = ''
 
-  constructor(public observable: DataExchangeService) {
+  constructor() {
   }
 
-  ngOnInit(): void {
-    this.observable.data$.subscribe(resul => {
-      if (resul.to === 'sidebar') {
-        this.parent = resul.parent;
-      }
-    })
+  ngOnInit(): void { }
 
-    this.observable.data$.subscribe(res => {
-      if (res.to === 'chat') {
-        console.log('Refresco happen para chat');
-        console.log(res);
-
-        // Si se detecta un cambio de conversacion entonces se reinician las variables
-        if (this.address !== res.address) {
-          this.message_list = [...res.message_list];
-          this.address = res.address;
-        } else {
-          if (!Array.isArray(res.message_list))
-            this.message_list.push(res.message_list);
-          else
-            res.message_list.forEach((message: string) =>{
-              this.message_list.push(message);
-            })
-        }
-      }
-    })
+  sendMessage($event: any, message: any): void {
+    $event.preventDefault()
+    this.onMessage.emit(message.value)
+    message.value = ""
   }
 
 }

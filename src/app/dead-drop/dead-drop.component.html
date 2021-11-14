@@ -1,9 +1,9 @@
 <div class="body">
   <div class="sidebar">
     <button (click)="newChat()">New chat</button>
-    <app-chat-sidenav [addresses]="getAddresses()"></app-chat-sidenav>
+    <app-chat-sidenav [addresses]="getAddresses()" (changeAddress)="setSelectedAddress($event)"></app-chat-sidenav>
   </div>
   <div class="chat">
-    <app-chat></app-chat>
+    <app-chat [message_list]="getMessagesSelected()" (onMessage)="sendMessage($event)"></app-chat>
   </div>
 </div>
