@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import { environment } from '../../environments/environment';
 // @ts-ignore
 import DeadDrop from '../../assets/contracts/DeadDrop.json'
 declare const window: any;
@@ -15,7 +16,7 @@ export class DeadDropComponent implements OnInit {
 
   private contract = new window.web3.eth.Contract(
     DeadDrop.abi,
-    '0x489aDF7082939e60b407C8E75c472D7e3500832e'
+    environment.deaddrop_address
   )
 
   constructor() {
