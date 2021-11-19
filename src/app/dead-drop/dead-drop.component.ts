@@ -48,7 +48,9 @@ export class DeadDropComponent implements OnInit {
     // Check errors
     if (error !== null)
       throw error
-    console.log('Ha llegado un mensaje: ' + event)
+    console.log('Ha llegado un mensaje: ')
+    console.log(event)
+    console.log('Es para mi el mensaje: ' + this.isTheMessageForMe(event))
     // Check if the message is for me
     if (!this.isTheMessageForMe(event)) return
 
@@ -56,19 +58,20 @@ export class DeadDropComponent implements OnInit {
     let message = decrypt(event.returnValues.message, '', {})
 
     // Add message to the corresponding chat
-    let from = 'PEDRO'
+    let from = event.returnValues.from
 
     // @ts-ignore
     let messages: string[] = this.dummy.get(from) == undefined ? [] : this.dummy.get(from)
-    messages.push(event.returnValues.message)
+    messages.push(message)
     this.dummy.set(from, messages)
-    console.log('Mensaje recibido: ' + event.returnValues.message)
+    console.log(this.dummy)
+    console.log('Mensaje recibido: ' + message)
   }
 
   // Checks if the message is for me
   isTheMessageForMe(event: any): boolean {
     const from = String(event.returnValues.from)
-    console.log('El mensaje es para mi?')
+
     console.log('De quien es el mensaje: ' + from) //Funciona
     console.log('Tengo su semilla?: ' + this.contacts.get(from))
 
@@ -90,7 +93,7 @@ export class DeadDropComponent implements OnInit {
     // todo
     let encryptedMessage = encrypt(message, '', {})
     const timestamp = Date.now()
-    const token = getToken('ALFABETO', {
+    const token = getToken(<string>this.contacts.get(this.selectedAddress), {
       digits: 64,
       algorithm: 'SHA-512',
       period: 60,
@@ -110,30 +113,34 @@ export class DeadDropComponent implements OnInit {
     if (error !== null)
       throw error
 
-    console.log('Ha llegado una nueva semilla (evento): ' + event)
-    console.log(event)
     let addresses = await window.ethereum.request({method: 'eth_accounts'});
+
     // Check if the message is for me
-    console.log('Para quien (ShareSeed): ' + event.returnValues.to)
-    console.log('Quien soy (ShareSeed): ' + addresses[0])
     if (event.returnValues.to.toLowerCase() == addresses[0].toLowerCase()) {
       const from = String(event.returnValues.from)
-      console.log('De quien es la semilla: ' + from)
       const seed = String(event.returnValues.seed)
+
       this.contacts.set(from, seed)
-      console.log('Mapping: ' + this.dummy)
+      // this.dummy.set(from, ['Esperando mensajes'])
     }
   }
 
   // Create a new chat
   async newChat($event:any, address: any): Promise<void> {
     $event.preventDefault()
-    console.log('Direccion destino: ' + address.value)
-    const destinationAddress = address.value
-    let token_seed: String = 'ALFABETO' // todo hacer semilla aleatoria
-    //this.contract.methods.getPublicKey(destinationAddress).call().then((result: any); todo conseguir clave publica de destino
-    token_seed = encrypt(token_seed, '', {})
+
     let addresses = await window.ethereum.request({method: 'eth_accounts'});
+
+    const destinationAddress = address.value
+    let token_seed: string = 'ALFABETO' // todo hacer semilla aleatoria
+
+    // Add new contact to my contact list
+    this.contacts.set(destinationAddress, token_seed)
+
+    //this.contract.methods.getPublicKey(destinationAddress).call().then((result: any); todo conseguir clave publica de destino
+
+    token_seed = encrypt(token_seed, '', {})
+
     this.contract.methods.shareSeed(destinationAddress, token_seed).send({from: addresses[0]}).then(((receipt: any) => {
           console.log('Mensaje de envio de nueva semilla: ' + receipt)
         }

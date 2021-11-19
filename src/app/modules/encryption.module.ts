@@ -1,7 +1,7 @@
-export function encrypt(data: String, algorithm: String, params: {}): String {
+export function encrypt(data: string, algorithm: string, params: {}): string {
     return data
 }
 
-export function decrypt(data: String, algorithm: String, params: {}): String {
+export function decrypt(data: string, algorithm: string, params: {}): string {
     return data
 }
