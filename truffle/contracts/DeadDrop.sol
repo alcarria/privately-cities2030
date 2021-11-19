@@ -5,7 +5,7 @@ contract DeadDrop {
   // Start chat with someone
   event ShareSeed(address to, string seed);
   // Send a message
-  event SendMessage(string to, string message);
+  event SendMessage(string totp, uint256 timestamp, string message);
 
   mapping(address => string) public publicKeys;
 
@@ -14,9 +14,9 @@ contract DeadDrop {
     emit ShareSeed(to, seed);
   }
 
-  function sendMessage(string memory to, string memory message) public {
+  function sendMessage(string memory totp, uint256 timestamp, string memory message) public {
     // this function send the message to to
-    emit SendMessage(to, message);
+    emit SendMessage(totp, timestamp, message);
   }
 
   function setPublicKey(address my_address, string memory publicKey) public {

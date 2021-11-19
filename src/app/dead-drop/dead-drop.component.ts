@@ -1,10 +1,13 @@
 import {Component, OnInit} from '@angular/core';
-import { environment } from '../../environments/environment';
+import {environment} from '../../environments/environment';
 
-import { encrypt, decrypt } from '../modules/encryption.module'
+import {encrypt, decrypt} from '../modules/encryption.module';
+
+import getToken from 'totp-generator';
 
 // @ts-ignore
 import DeadDrop from '../../assets/contracts/DeadDrop.json'
+
 declare const window: any;
 
 @Component({
@@ -22,7 +25,8 @@ export class DeadDropComponent implements OnInit {
     environment.deaddrop_address
   )
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
     console.log('onInit: ' + this.dummy)
@@ -45,16 +49,23 @@ export class DeadDropComponent implements OnInit {
 
     // Add message to the corresponding chat
     let from = 'PEDRO'
-    
+
     // @ts-ignore
-    let messages: string[] = this.dummy.get(to) == undefined ? [] : this.dummy.get(to)
+    let messages: string[] = this.dummy.get(from) == undefined ? [] : this.dummy.get(from)
     messages.push(event.returnValues.message)
     this.dummy.set(from, messages)
     console.log(event.returnValues.message)
   }
 
   isTheMessageForMe(event: any): boolean {
-    return false
+    const token = getToken('ALFABETO', {
+      digits: 64,
+      algorithm: 'SHA-512',
+      period: 60,
+      // @ts-ignore
+      timestamp: Number(event.returnValues.timestamp)
+    })
+    return event.returnValues.totp == token
   }
 
   newChat(): void {
@@ -77,9 +88,17 @@ export class DeadDropComponent implements OnInit {
   async sendMessage(message: any): Promise<void> {
     // todo
     let encryptedMessage = encrypt(message, '', {})
+    const timestamp = Date.now()
+    const token = getToken('ALFABETO', {
+      digits: 64,
+      algorithm: 'SHA-512',
+      period: 60,
+      // @ts-ignore
+      timestamp: Number(timestamp)
+    })
     // Enviarlo a la red
-    let addresses = await window.ethereum.request({ method: 'eth_accounts' });
-    this.contract.methods.sendMessage(this.selectedAddress, encryptedMessage).send({from: addresses[0]})
+    let addresses = await window.ethereum.request({method: 'eth_accounts'});
+    this.contract.methods.sendMessage(token, timestamp, encryptedMessage).send({from: addresses[0]})
       .then((receipt: any) => {
         console.log(receipt)
       })
