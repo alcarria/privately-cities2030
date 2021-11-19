@@ -18,7 +18,9 @@ declare const window: any;
 export class DeadDropComponent implements OnInit {
 
   private selectedAddress = 'PEDRO'
-  private dummy: Map<string, string[]> = new Map([['PEDRO', ['HOLA PEDRO', 'que tal??']], ['SERGIO', ['HOLA SERGIO', 'que tal??']], ['PACO', ['HOLA PACO', 'que tal??']]])
+  private dummy: Map<string, string[]> = new Map([['PEDRO', ['HOLA PEDRO', 'que tal??']], ['SERGIO', ['HOLA SERGIO', 'que tal??']], [environment.dummy_address, ['HOLA PACO', 'que tal??']]])
+
+  private contacts: Map<string, string> = new Map();
 
   private contract = new window.web3.eth.Contract(
     DeadDrop.abi,
@@ -29,18 +31,24 @@ export class DeadDropComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('onInit: ' + this.dummy)
-    console.log('Holaaaa')
+    console.log('onInit (dummy): ' + this.dummy)
+
+    //Registramos los eventos para escuchar si te llegan mensajes y si te llegan semillas
     this.contract.events.SendMessage({
       fromBlock: 0
     }, (error: any, event: any) => this.onMessageEvent(error, event))
+
+    this.contract.events.ShareSeed({
+      fromBlock: 0
+    }, (error: any, event: any) => this.onShareSeed(error, event))
   }
 
+  // Cuando llega un mensaje se añade a la lista de mensajes
   onMessageEvent(error: any, event: any): void {
     // Check errors
     if (error !== null)
       throw error
-
+    console.log('Ha llegado un mensaje: ' + event)
     // Check if the message is for me
     if (!this.isTheMessageForMe(event)) return
 
@@ -54,35 +62,28 @@ export class DeadDropComponent implements OnInit {
     let messages: string[] = this.dummy.get(from) == undefined ? [] : this.dummy.get(from)
     messages.push(event.returnValues.message)
     this.dummy.set(from, messages)
-    console.log(event.returnValues.message)
+    console.log('Mensaje recibido: ' + event.returnValues.message)
   }
 
+  // Checks if the message is for me
   isTheMessageForMe(event: any): boolean {
-    const token = getToken('ALFABETO', {
-      digits: 64,
-      algorithm: 'SHA-512',
-      period: 60,
+    const from = String(event.returnValues.from)
+    console.log('El mensaje es para mi?')
+    console.log('De quien es el mensaje: ' + from) //Funciona
+    console.log('Tengo su semilla?: ' + this.contacts.get(from))
+
+    if (this.contacts.get(from) !== undefined) {
       // @ts-ignore
-      timestamp: Number(event.returnValues.timestamp)
-    })
-    return event.returnValues.totp == token
-  }
-
-  newChat(): void {
-    console.log(this.dummy)
-    this.dummy.set('Chat ' + this.dummy.size, [])
-  }
-
-  getAddresses(): string[] {
-    return [...this.dummy.keys()];
-  }
-
-  setSelectedAddress(address: string): void {
-    this.selectedAddress = address
-  }
-
-  getMessagesSelected(): any {
-    return this.dummy.get(this.selectedAddress)
+      const token = getToken(this.contacts.get(from), {
+        digits: 64,
+        algorithm: 'SHA-512',
+        period: 60,
+        // @ts-ignore
+        timestamp: Number(event.returnValues.timestamp)
+      })
+      return event.returnValues.totp == token
+    }
+    return false;
   }
 
   async sendMessage(message: any): Promise<void> {
@@ -100,7 +101,53 @@ export class DeadDropComponent implements OnInit {
     let addresses = await window.ethereum.request({method: 'eth_accounts'});
     this.contract.methods.sendMessage(token, timestamp, encryptedMessage).send({from: addresses[0]})
       .then((receipt: any) => {
-        console.log(receipt)
+        console.log('Recibo de envio de mensaje satisfactorio: ' + receipt)
       })
+  }
+
+  // Cuando llega una semilla la añadimos a la lista de semillas
+  async onShareSeed(error: any, event: any): Promise<void> {
+    if (error !== null)
+      throw error
+
+    console.log('Ha llegado una nueva semilla (evento): ' + event)
+    console.log(event)
+    let addresses = await window.ethereum.request({method: 'eth_accounts'});
+    // Check if the message is for me
+    console.log('Para quien (ShareSeed): ' + event.returnValues.to)
+    console.log('Quien soy (ShareSeed): ' + addresses[0])
+    if (event.returnValues.to.toLowerCase() == addresses[0].toLowerCase()) {
+      const from = String(event.returnValues.from)
+      console.log('De quien es la semilla: ' + from)
+      const seed = String(event.returnValues.seed)
+      this.contacts.set(from, seed)
+      console.log('Mapping: ' + this.dummy)
+    }
+  }
+
+  // Create a new chat
+  async newChat(): Promise<void> {
+    const destinationAddress = environment.dummy_address
+    let token_seed: String = 'ALFABETO' // todo hacer semilla aleatoria
+    //this.contract.methods.getPublicKey(destinationAddress).call().then((result: any); todo conseguir clave publica de destino
+    token_seed = encrypt(token_seed, '', {})
+    let addresses = await window.ethereum.request({method: 'eth_accounts'});
+    this.contract.methods.shareSeed(destinationAddress, token_seed).send({from: addresses[0]}).then(((receipt: any) => {
+          console.log('Mensaje de envio de nueva semilla: ' + receipt)
+        }
+      )
+    )
+  }
+
+  getAddresses(): string[] {
+    return [...this.dummy.keys()];
+  }
+
+  setSelectedAddress(address: string): void {
+    this.selectedAddress = address
+  }
+
+  getMessagesSelected(): any {
+    return this.dummy.get(this.selectedAddress)
   }
 }
