@@ -33,17 +33,28 @@ export class DeadDropComponent implements OnInit {
   }
 
   onMessageEvent(error: any, event: any): void {
-    let to = String(event.returnValues.to)
+    // Check errors
+    if (error !== null)
+      throw error
+
+    // Check if the message is for me
+    if (!this.isTheMessageForMe(event)) return
+
+    // Decrypt message
+    let message = decrypt(event.returnValues.message, '', {})
+
+    // Add message to the corresponding chat
+    let from = 'PEDRO'
     
     // @ts-ignore
     let messages: string[] = this.dummy.get(to) == undefined ? [] : this.dummy.get(to)
-
-    if (messages == undefined) messages = []
-
     messages.push(event.returnValues.message)
-
-    this.dummy.set(to, messages)
+    this.dummy.set(from, messages)
     console.log(event.returnValues.message)
+  }
+
+  isTheMessageForMe(event: any): boolean {
+    return false
   }
 
   newChat(): void {
