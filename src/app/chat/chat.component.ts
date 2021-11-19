@@ -9,10 +9,10 @@ import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 export class ChatComponent implements OnInit {
 
   @Input() public message_list = ['Here going your', 'messages'];
+  @Input() public address = 'Destination'
 
   @Output() public onMessage = new EventEmitter<string>()
 
-  public address = 'TITULO';
   private parent = ''
 
   constructor() {

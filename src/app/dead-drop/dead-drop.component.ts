@@ -147,6 +147,10 @@ export class DeadDropComponent implements OnInit {
     this.selectedAddress = address
   }
 
+  getSelectedAddress(): any {
+    return this.selectedAddress
+  }
+
   getMessagesSelected(): any {
     return this.dummy.get(this.selectedAddress)
   }

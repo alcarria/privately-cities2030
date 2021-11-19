@@ -4,6 +4,6 @@
     <app-chat-sidenav [addresses]="getAddresses()" (changeAddress)="setSelectedAddress($event)"></app-chat-sidenav>
   </div>
   <div class="chat">
-    <app-chat [message_list]="getMessagesSelected()" (onMessage)="sendMessage($event)"></app-chat>
+    <app-chat [message_list]="getMessagesSelected()" [address]="getSelectedAddress()" (onMessage)="sendMessage($event)"></app-chat>
   </div>
 </div>
