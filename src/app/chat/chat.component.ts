@@ -13,8 +13,6 @@ export class ChatComponent implements OnInit {
 
   @Output() public onMessage = new EventEmitter<string>()
 
-  private parent = ''
-
   constructor() {
   }
 

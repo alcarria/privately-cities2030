@@ -11,8 +11,6 @@ export class ChatSidenavComponent implements OnInit {
 
   @Output() changeAddress = new EventEmitter<string>();
 
-  private parent = ''
-
   constructor() {
   }
 

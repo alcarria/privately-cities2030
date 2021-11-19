@@ -126,8 +126,10 @@ export class DeadDropComponent implements OnInit {
   }
 
   // Create a new chat
-  async newChat(): Promise<void> {
-    const destinationAddress = environment.dummy_address
+  async newChat($event:any, address: any): Promise<void> {
+    $event.preventDefault()
+    console.log('Direccion destino: ' + address.value)
+    const destinationAddress = address.value
     let token_seed: String = 'ALFABETO' // todo hacer semilla aleatoria
     //this.contract.methods.getPublicKey(destinationAddress).call().then((result: any); todo conseguir clave publica de destino
     token_seed = encrypt(token_seed, '', {})
