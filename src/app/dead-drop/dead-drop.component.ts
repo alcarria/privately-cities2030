@@ -33,10 +33,7 @@ export class DeadDropComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    console.log('onInit (dummy): ' + this.messages)
-
     //Registramos los eventos para escuchar si te llegan mensajes y si te llegan semillas
-
     let addresses = await window.ethereum.request({method: 'eth_accounts'});
     this.contract.getPastEvents('ShareSeed', {
       filter: {'to': addresses[0]},
@@ -54,9 +51,7 @@ export class DeadDropComponent implements OnInit {
     // Check errors
     if (error !== null)
       throw error
-    console.log('Ha llegado un mensaje: ')
-    console.log(event)
-    console.log('Es para mi el mensaje: ' + this.isTheMessageForMe(event))
+
     // Check if the message is for me
     if (!this.isTheMessageForMe(event)) return
 
@@ -70,16 +65,11 @@ export class DeadDropComponent implements OnInit {
     let messages: string[] = this.messages.get(from) == undefined ? [] : this.messages.get(from)
     messages.push(message)
     this.messages.set(from, messages)
-    console.log(this.messages)
-    console.log('Mensaje recibido: ' + message)
   }
 
   // Checks if the message is for me
   isTheMessageForMe(event: any): boolean {
     const from = String(event.returnValues.from)
-
-    console.log('De quien es el mensaje: ' + from)
-    console.log('Tengo su semilla?: ' + this.contacts.get(from))
 
     if (this.contacts.get(from) !== undefined) {
       // @ts-ignore
@@ -106,7 +96,6 @@ export class DeadDropComponent implements OnInit {
       // @ts-ignore
       timestamp: Number(timestamp)
     })
-    console.log(token)
     // Enviarlo a la red
     let addresses = await window.ethereum.request({method: 'eth_accounts'});
     this.contract.methods.sendMessage(token, timestamp, encryptedMessage).send({from: addresses[0]})
@@ -124,21 +113,17 @@ export class DeadDropComponent implements OnInit {
     let addresses = await window.ethereum.request({method: 'eth_accounts'});
 
     for (let event of events) {
-      console.log(event)
       // Check if the message is for me
       if (event.returnValues.to.toLowerCase() == addresses[0].toLowerCase()) {
-        console.log('to equal')
         const from = String(event.returnValues.from)
         const seed = String(event.returnValues.seed)
         this.contacts.set(from, seed)
       } else if (event.returnValues.from.toLowerCase() == addresses[0].toLowerCase()) {
-        console.log('from equal')
         const to = String(event.returnValues.to)
         const seed = String(event.returnValues.seed)
         this.contacts.set(to, seed)
       }
     }
-    console.log(this.contacts)
   }
 
   // Create a new chat
