@@ -17,9 +17,7 @@ declare const window: any;
 })
 export class DeadDropComponent implements OnInit {
 
-  private selectedAddress = 'PEDRO'
-  // private dummy: Map<string, string[]> = new Map([['Dummy', ['Mensajes']]])//[['PEDRO', ['HOLA PEDRO', 'que tal??']], ['SERGIO', ['HOLA SERGIO', 'que tal??']], [environment.dummy_address, ['HOLA PACO', 'que tal??']]]
-  // private dummy: Map<string, string[]> = new Map([['PEDRO', ['HOLA PEDRO', 'que tal??']], ['SERGIO', ['HOLA SERGIO', 'que tal??']], [environment.dummy_address, ['HOLA PACO', 'que tal??']]])
+  private selectedAddress = ''
 
   private contacts: Map<string, string> = new Map();
   private messages: Map<string, string[]> = new Map();
