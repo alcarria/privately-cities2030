@@ -35,15 +35,24 @@ export class DeadDropComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     //Registramos los eventos para escuchar si te llegan mensajes y si te llegan semillas
     let addresses = await window.ethereum.request({method: 'eth_accounts'});
-    this.contract.getPastEvents('ShareSeed', {
+
+    // Obtenemos los contactos
+    let shareSeedPastEvents = await this.contract.getPastEvents('ShareSeed', {
       filter: {'to': addresses[0]},
       fromBlock: 0
-    }, (error: any, events: any) => this.onShareSeed(error, events))
-      .then(() => {
-        this.contract.events.SendMessage({
-          fromBlock: 0
-        }, (error: any, event: any) => this.onMessageEvent(error, event))
-      })
+    })
+
+    for (let event of shareSeedPastEvents) {
+      await this.onShareSeed(null, event)
+    }
+
+    // Creamos los eventos para leer nuevos contactos y mensajes en tiempo real
+    this.contract.events.ShareSeed({},
+      (error: any, event: any) => this.onShareSeed(error, event))
+
+    this.contract.events.SendMessage({
+      fromBlock: 0
+    }, (error: any, event: any) => this.onMessageEvent(error, event))
   }
 
   // Cuando llega un mensaje se añade a la lista de mensajes
@@ -106,23 +115,21 @@ export class DeadDropComponent implements OnInit {
   }
 
   // Cuando llega una semilla la añadimos a la lista de semillas
-  async onShareSeed(error: any, events: any): Promise<void> {
+  async onShareSeed(error: any, event: any): Promise<void> {
     if (error !== null)
       throw error
 
     let addresses = await window.ethereum.request({method: 'eth_accounts'});
 
-    for (let event of events) {
-      // Check if the message is for me
-      if (event.returnValues.to.toLowerCase() == addresses[0].toLowerCase()) {
-        const from = String(event.returnValues.from)
-        const seed = String(event.returnValues.seed)
-        this.contacts.set(from, seed)
-      } else if (event.returnValues.from.toLowerCase() == addresses[0].toLowerCase()) {
-        const to = String(event.returnValues.to)
-        const seed = String(event.returnValues.seed)
-        this.contacts.set(to, seed)
-      }
+    // Check if the message is for me
+    if (event.returnValues.to.toLowerCase() == addresses[0].toLowerCase()) {
+      const from = String(event.returnValues.from)
+      const seed = String(event.returnValues.seed)
+      this.contacts.set(from, seed)
+    } else if (event.returnValues.from.toLowerCase() == addresses[0].toLowerCase()) {
+      const to = String(event.returnValues.to)
+      const seed = String(event.returnValues.seed)
+      this.contacts.set(to, seed)
     }
   }
 
