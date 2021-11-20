@@ -18,10 +18,11 @@ declare const window: any;
 export class DeadDropComponent implements OnInit {
 
   private selectedAddress = 'PEDRO'
-  private dummy: Map<string, string[]> = new Map([['Dummy', ['Mensajes']]])//[['PEDRO', ['HOLA PEDRO', 'que tal??']], ['SERGIO', ['HOLA SERGIO', 'que tal??']], [environment.dummy_address, ['HOLA PACO', 'que tal??']]]
+  // private dummy: Map<string, string[]> = new Map([['Dummy', ['Mensajes']]])//[['PEDRO', ['HOLA PEDRO', 'que tal??']], ['SERGIO', ['HOLA SERGIO', 'que tal??']], [environment.dummy_address, ['HOLA PACO', 'que tal??']]]
   // private dummy: Map<string, string[]> = new Map([['PEDRO', ['HOLA PEDRO', 'que tal??']], ['SERGIO', ['HOLA SERGIO', 'que tal??']], [environment.dummy_address, ['HOLA PACO', 'que tal??']]])
 
   private contacts: Map<string, string> = new Map();
+  private messages: Map<string, string[]> = new Map();
 
   private contract = new window.web3.eth.Contract(
     DeadDrop.abi,
@@ -32,7 +33,7 @@ export class DeadDropComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    console.log('onInit (dummy): ' + this.dummy)
+    console.log('onInit (dummy): ' + this.messages)
 
     //Registramos los eventos para escuchar si te llegan mensajes y si te llegan semillas
 
@@ -66,10 +67,10 @@ export class DeadDropComponent implements OnInit {
     let from = event.returnValues.from
 
     // @ts-ignore
-    let messages: string[] = this.dummy.get(from) == undefined ? [] : this.dummy.get(from)
+    let messages: string[] = this.messages.get(from) == undefined ? [] : this.messages.get(from)
     messages.push(message)
-    this.dummy.set(from, messages)
-    console.log(this.dummy)
+    this.messages.set(from, messages)
+    console.log(this.messages)
     console.log('Mensaje recibido: ' + message)
   }
 
@@ -123,13 +124,21 @@ export class DeadDropComponent implements OnInit {
     let addresses = await window.ethereum.request({method: 'eth_accounts'});
 
     for (let event of events) {
+      console.log(event)
       // Check if the message is for me
       if (event.returnValues.to.toLowerCase() == addresses[0].toLowerCase()) {
+        console.log('to equal')
         const from = String(event.returnValues.from)
         const seed = String(event.returnValues.seed)
         this.contacts.set(from, seed)
+      } else if (event.returnValues.from.toLowerCase() == addresses[0].toLowerCase()) {
+        console.log('from equal')
+        const to = String(event.returnValues.to)
+        const seed = String(event.returnValues.seed)
+        this.contacts.set(to, seed)
       }
     }
+    console.log(this.contacts)
   }
 
   // Create a new chat
@@ -155,8 +164,8 @@ export class DeadDropComponent implements OnInit {
     )
   }
 
-  getAddresses(): string[] {
-    return [...this.dummy.keys()];
+  get getAddresses(): string[] {
+    return [...this.contacts.keys()];
   }
 
   setSelectedAddress(address: string): void {
@@ -168,6 +177,6 @@ export class DeadDropComponent implements OnInit {
   }
 
   getMessagesSelected(): any {
-    return this.dummy.get(this.selectedAddress)
+    return this.messages.get(this.selectedAddress)
   }
 }
