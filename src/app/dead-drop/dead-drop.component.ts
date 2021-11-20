@@ -18,7 +18,8 @@ declare const window: any;
 export class DeadDropComponent implements OnInit {
 
   private selectedAddress = 'PEDRO'
-  private dummy: Map<string, string[]> = new Map([['PEDRO', ['HOLA PEDRO', 'que tal??']], ['SERGIO', ['HOLA SERGIO', 'que tal??']], [environment.dummy_address, ['HOLA PACO', 'que tal??']]])
+  private dummy: Map<string, string[]> = new Map([['Dummy', ['Mensajes']]])//[['PEDRO', ['HOLA PEDRO', 'que tal??']], ['SERGIO', ['HOLA SERGIO', 'que tal??']], [environment.dummy_address, ['HOLA PACO', 'que tal??']]]
+  // private dummy: Map<string, string[]> = new Map([['PEDRO', ['HOLA PEDRO', 'que tal??']], ['SERGIO', ['HOLA SERGIO', 'que tal??']], [environment.dummy_address, ['HOLA PACO', 'que tal??']]])
 
   private contacts: Map<string, string> = new Map();
 
@@ -30,17 +31,21 @@ export class DeadDropComponent implements OnInit {
   constructor() {
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     console.log('onInit (dummy): ' + this.dummy)
 
     //Registramos los eventos para escuchar si te llegan mensajes y si te llegan semillas
-    this.contract.events.SendMessage({
-      fromBlock: 0
-    }, (error: any, event: any) => this.onMessageEvent(error, event))
 
-    this.contract.events.ShareSeed({
+    let addresses = await window.ethereum.request({method: 'eth_accounts'});
+    this.contract.getPastEvents('ShareSeed', {
+      filter: {'to': addresses[0]},
       fromBlock: 0
-    }, (error: any, event: any) => this.onShareSeed(error, event))
+    }, (error: any, events: any) => this.onShareSeed(error, events))
+      .then(() => {
+        this.contract.events.SendMessage({
+          fromBlock: 0
+        }, (error: any, event: any) => this.onMessageEvent(error, event))
+      })
   }
 
   // Cuando llega un mensaje se añade a la lista de mensajes
@@ -72,7 +77,7 @@ export class DeadDropComponent implements OnInit {
   isTheMessageForMe(event: any): boolean {
     const from = String(event.returnValues.from)
 
-    console.log('De quien es el mensaje: ' + from) //Funciona
+    console.log('De quien es el mensaje: ' + from)
     console.log('Tengo su semilla?: ' + this.contacts.get(from))
 
     if (this.contacts.get(from) !== undefined) {
@@ -94,39 +99,41 @@ export class DeadDropComponent implements OnInit {
     let encryptedMessage = encrypt(message, '', {})
     const timestamp = Date.now()
     const token = getToken(<string>this.contacts.get(this.selectedAddress), {
-      digits: 64,
+      digits: 128,
       algorithm: 'SHA-512',
       period: 60,
       // @ts-ignore
       timestamp: Number(timestamp)
     })
+    console.log(token)
     // Enviarlo a la red
     let addresses = await window.ethereum.request({method: 'eth_accounts'});
     this.contract.methods.sendMessage(token, timestamp, encryptedMessage).send({from: addresses[0]})
       .then((receipt: any) => {
-        console.log('Recibo de envio de mensaje satisfactorio: ' + receipt)
+        console.log('Recibo de envio de mensaje satisfactorio: ')
+        console.log(receipt)
       })
   }
 
   // Cuando llega una semilla la añadimos a la lista de semillas
-  async onShareSeed(error: any, event: any): Promise<void> {
+  async onShareSeed(error: any, events: any): Promise<void> {
     if (error !== null)
       throw error
 
     let addresses = await window.ethereum.request({method: 'eth_accounts'});
 
-    // Check if the message is for me
-    if (event.returnValues.to.toLowerCase() == addresses[0].toLowerCase()) {
-      const from = String(event.returnValues.from)
-      const seed = String(event.returnValues.seed)
-
-      this.contacts.set(from, seed)
-      // this.dummy.set(from, ['Esperando mensajes'])
+    for (let event of events) {
+      // Check if the message is for me
+      if (event.returnValues.to.toLowerCase() == addresses[0].toLowerCase()) {
+        const from = String(event.returnValues.from)
+        const seed = String(event.returnValues.seed)
+        this.contacts.set(from, seed)
+      }
     }
   }
 
   // Create a new chat
-  async newChat($event:any, address: any): Promise<void> {
+  async newChat($event: any, address: any): Promise<void> {
     $event.preventDefault()
 
     let addresses = await window.ethereum.request({method: 'eth_accounts'});

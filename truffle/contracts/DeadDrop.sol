@@ -3,7 +3,7 @@ pragma solidity 0.8.9;
 
 contract DeadDrop {
   // Start chat with someone
-  event ShareSeed(address from, address to, string seed);
+  event ShareSeed(address indexed from, address indexed to, string seed);
   // Send a message
   event SendMessage(address from, string totp, uint256 timestamp, string message);
 
