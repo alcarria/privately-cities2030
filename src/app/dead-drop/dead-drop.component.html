@@ -1,8 +1,8 @@
 <div class="body">
   <div class="sidebar">
     <form>
-      <input type="text" #address>
-      <button (click)="newChat($event, address)">New chat</button>
+      <!-- <input type="text" #address>
+      <button (click)="newChat($event, address)">New chat</button> -->
     </form>
     <app-chat-sidenav [addresses]="getAddresses" (changeAddress)="setSelectedAddress($event)"></app-chat-sidenav>
   </div>

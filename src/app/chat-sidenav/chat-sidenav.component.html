@@ -1,3 +1,11 @@
-<mat-list>
-  <button class="button"mat-list-item *ngFor="let address of addresses" (click)="onClick(address)">{{address}}</button>
+<mat-list class="mat-typography app-frame mat-app-background">
+  <div *ngFor="let address of addresses">
+    <mat-list>
+    <mat-list-item mat-button class="list-item" (click)="onClick(address)">
+      {{address}}
+    </mat-list-item>
+    <mat-divider></mat-divider>
+  </mat-list>
+  </div>
+  <!-- <button class="button"mat-list-item *ngFor="let address of addresses" (click)="onClick(address)">{{address}}</button> -->
 </mat-list>
