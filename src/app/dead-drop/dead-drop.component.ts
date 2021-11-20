@@ -17,6 +17,8 @@ declare const window: any;
 })
 export class DeadDropComponent implements OnInit {
 
+  private creatingChat: boolean = false;
+
   private selectedAddress = ''
 
   private contacts: Map<string, string> = new Map();
@@ -168,6 +170,7 @@ export class DeadDropComponent implements OnInit {
 
   setSelectedAddress(address: string): void {
     this.selectedAddress = address
+    this.creatingChat = false
   }
 
   getSelectedAddress(): any {
@@ -176,5 +179,13 @@ export class DeadDropComponent implements OnInit {
 
   getMessagesSelected(): any {
     return this.messages.get(this.selectedAddress)
+  }
+
+  onNewChat(): void {
+    this.creatingChat = true
+  }
+
+  get isCreatingChat(): boolean {
+    return this.creatingChat
   }
 }

@@ -10,6 +10,7 @@ export class ChatSidenavComponent implements OnInit {
   @Input() addresses: string[] = [];
 
   @Output() changeAddress = new EventEmitter<string>();
+  @Output() newChat = new EventEmitter<string>();
 
   constructor() {
   }
@@ -20,4 +21,7 @@ export class ChatSidenavComponent implements OnInit {
     this.changeAddress.emit(address)
   }
 
+  onNewChat(): void {
+    this.newChat.emit()
+  }
 }
