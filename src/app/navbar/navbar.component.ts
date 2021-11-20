@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+declare const window: any
 
 @Component({
   selector: 'app-navbar',
@@ -7,9 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NavbarComponent implements OnInit {
 
+  public account: string = ''
+
   constructor() { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    let accounts = await window.ethereum.request({ method: 'eth_accounts' })
+    this.account = accounts[0]
   }
-
 }

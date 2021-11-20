@@ -4,7 +4,10 @@
         <span class="menu-spacer"></span>
         <div>
         <a mat-button [routerLink]="'/dead-drop'"> Dead Drop </a>
-
+        </div>
+        <span class="spacer"></span>
+        <div>
+            <p *ngIf="account != ''">{{ account }}</p>
         </div>
     </mat-toolbar-row>
 </mat-toolbar>
