@@ -142,9 +142,6 @@ export class DeadDropComponent implements OnInit {
     const destinationAddress = address.value
     let token_seed: string = 'ALFABETO' // todo hacer semilla aleatoria
 
-    // Add new contact to my contact list
-    this.contacts.set(destinationAddress, token_seed)
-
     //this.contract.methods.getPublicKey(destinationAddress).call().then((result: any); todo conseguir clave publica de destino
 
     token_seed = encrypt(token_seed, '', {})
