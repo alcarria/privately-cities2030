@@ -66,7 +66,7 @@ export class DeadDropComponent implements OnInit {
   }
 
   // Cuando llega un mensaje se añade a la lista de mensajes
-  onMessageEvent(error: any, event: any): void {
+  async onMessageEvent(error: any, event: any): Promise<void> {
     // Check errors
     if (error !== null)
       throw error
@@ -75,7 +75,7 @@ export class DeadDropComponent implements OnInit {
     if (!this.isTheMessageForMe(event)) return
 
     // Decrypt message
-    let message = decrypt(event.returnValues.message, '', {})
+    let message = await decrypt(event.returnValues.message, 'x25519-xsalsa20-poly1305')
 
     // Add message to the corresponding chat
     let from = event.returnValues.from
@@ -105,8 +105,7 @@ export class DeadDropComponent implements OnInit {
   }
 
   async sendMessage(message: any): Promise<void> {
-    // todo
-    let encryptedMessage = encrypt(message, '', {})
+    let encryptedMessage = message
     const timestamp = Date.now()
     const token = getToken(<string>this.contacts.get(this.selectedAddress), {
       digits: 128,
@@ -119,8 +118,7 @@ export class DeadDropComponent implements OnInit {
     let addresses = await window.ethereum.request({method: 'eth_accounts'});
     this.contract.methods.sendMessage(token, timestamp, encryptedMessage).send({from: addresses[0]})
       .then((receipt: any) => {
-        console.log('Recibo de envio de mensaje satisfactorio: ')
-        console.log(receipt)
+
       })
   }
 
@@ -133,12 +131,13 @@ export class DeadDropComponent implements OnInit {
 
     // Check if the message is for me
     if (event.returnValues.to.toLowerCase() == addresses[0].toLowerCase()) {
+
       const from = String(event.returnValues.from)
-      const seed = String(event.returnValues.seed)
+      const seed = await decrypt(event.returnValues.seed, 'x25519-xsalsa20-poly1305')
       this.contacts.set(from, seed)
     } else if (event.returnValues.from.toLowerCase() == addresses[0].toLowerCase()) {
       const to = String(event.returnValues.to)
-      const seed = String(event.returnValues.seed)
+      const seed = await decrypt(event.returnValues.seed, 'x25519-xsalsa20-poly1305')
       this.contacts.set(to, seed)
     }
   }
@@ -152,15 +151,15 @@ export class DeadDropComponent implements OnInit {
     const destinationAddress = address.value
     let token_seed: string = 'ALFABETO' // todo hacer semilla aleatoria
 
-    //this.contract.methods.getPublicKey(destinationAddress).call().then((result: any); todo conseguir clave publica de destino
+    let publicKey = await this.contract.methods.getPublicKey(destinationAddress).call()
 
-    token_seed = encrypt(token_seed, '', {})
+    token_seed = encrypt(token_seed, publicKey, 'x25519-xsalsa20-poly1305')
 
-    this.contract.methods.shareSeed(destinationAddress, token_seed).send({from: addresses[0]}).then(((receipt: any) => {
-          console.log('Mensaje de envio de nueva semilla: ' + receipt)
-        }
+    this.contract.methods.shareSeed(destinationAddress, token_seed).send({from: addresses[0]})
+      .then(((receipt: any) => {
+          }
+        )
       )
-    )
   }
 
   get getAddresses(): string[] {
