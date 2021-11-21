@@ -46,6 +46,16 @@ export class DeadDropComponent implements OnInit {
       await this.onShareSeed(null, event)
     }
 
+    // Obtenemos los contactos
+    shareSeedPastEvents = await this.contract.getPastEvents('ShareSeed', {
+      filter: {'from': addresses[0]},
+      fromBlock: 0
+    })
+
+    for (let event of shareSeedPastEvents) {
+      await this.onShareSeed(null, event)
+    }
+
     // Creamos los eventos para leer nuevos contactos y mensajes en tiempo real
     this.contract.events.ShareSeed({},
       (error: any, event: any) => this.onShareSeed(error, event))
