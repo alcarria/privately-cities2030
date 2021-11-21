@@ -3,6 +3,7 @@ import {environment} from '../../environments/environment';
 
 import {encrypt, decrypt} from '../modules/encryption.module';
 
+// @ts-ignore
 import getToken from 'totp-generator';
 
 // @ts-ignore
@@ -10,6 +11,7 @@ import DeadDrop from '../../assets/contracts/DeadDrop.json'
 
 declare const window: any;
 
+// @ts-ignore
 @Component({
   selector: 'app-dead-drop',
   templateUrl: './dead-drop.component.html',
@@ -131,13 +133,12 @@ export class DeadDropComponent implements OnInit {
 
     // Check if the message is for me
     if (event.returnValues.to.toLowerCase() == addresses[0].toLowerCase()) {
-
       const from = String(event.returnValues.from)
-      const seed = await decrypt(event.returnValues.seed, 'x25519-xsalsa20-poly1305')
+      const seed = await decrypt(event.returnValues.to_seed, 'x25519-xsalsa20-poly1305')
       this.contacts.set(from, seed)
     } else if (event.returnValues.from.toLowerCase() == addresses[0].toLowerCase()) {
       const to = String(event.returnValues.to)
-      const seed = await decrypt(event.returnValues.seed, 'x25519-xsalsa20-poly1305')
+      const seed = await decrypt(event.returnValues.from_seed, 'x25519-xsalsa20-poly1305')
       this.contacts.set(to, seed)
     }
   }
@@ -149,13 +150,15 @@ export class DeadDropComponent implements OnInit {
     let addresses = await window.ethereum.request({method: 'eth_accounts'});
 
     const destinationAddress = address.value
-    let token_seed: string = 'ALFABETO' // todo hacer semilla aleatoria
+    const token_seed: string = 'ALFABETO' // todo hacer semilla aleatoria
 
-    let publicKey = await this.contract.methods.getPublicKey(destinationAddress).call()
+    let myPublicKey = await this.contract.methods.getPublicKey(addresses[0]).call()
+    let contactPublicKey = await this.contract.methods.getPublicKey(destinationAddress).call()
 
-    token_seed = encrypt(token_seed, publicKey, 'x25519-xsalsa20-poly1305')
+    const from_seed = encrypt(token_seed, myPublicKey, 'x25519-xsalsa20-poly1305')
+    const to_seed = encrypt(token_seed, contactPublicKey, 'x25519-xsalsa20-poly1305')
 
-    this.contract.methods.shareSeed(destinationAddress, token_seed).send({from: addresses[0]})
+    this.contract.methods.shareSeed(destinationAddress, from_seed, to_seed).send({from: addresses[0]})
       .then(((receipt: any) => {
           }
         )

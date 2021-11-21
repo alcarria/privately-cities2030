@@ -55,6 +55,7 @@ export class LoginComponent implements OnInit {
             publicKey = result;
             //Comprobamos si la clave publica esta en el contrato
             this.contract.methods.getPublicKey(this.metamask_accounts[0]).call().then((result: any) => {
+              console.log(result)
               if (result !== publicKey) {
                 //Si no esta, la añadimos
                 this.contract.methods.setPublicKey(this.metamask_accounts[0], publicKey).send({from: this.metamask_accounts[0]})
