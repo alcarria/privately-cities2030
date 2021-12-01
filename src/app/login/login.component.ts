@@ -1,8 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
+import {environment} from "../../environments/environment";
 // @ts-ignore
 import DeadDrop from "../../assets/contracts/DeadDrop.json";
-import {environment} from "../../environments/environment";
+// @ts-ignore
+import Groups from "../../assets/contracts/Groups.json";
 
 declare let window: any
 
@@ -13,11 +15,15 @@ declare let window: any
 })
 export class LoginComponent implements OnInit {
 
-  private contract = new window.web3.eth.Contract(
+  private deadDropContract = new window.web3.eth.Contract(
     DeadDrop.abi,
     environment.deaddrop_address
   )
 
+  private groupContract = new window.web3.eth.Contract(
+    Groups.abi,
+    environment.group_address
+  )
   metamask_accounts = ""
   loading = false
   error = ""
@@ -44,7 +50,7 @@ export class LoginComponent implements OnInit {
       .request({
         method: 'eth_requestAccounts'
       })
-      .then((result: any) => {
+      .then(() => {
         let publicKey = ""
         // Cuando ha iniciado sesion le pedimos permiso para añadir la publica al contrato
         window.ethereum.request({
@@ -53,13 +59,12 @@ export class LoginComponent implements OnInit {
         })
           .then((result: any) => {
             publicKey = result;
-            //Comprobamos si la clave publica esta en el contrato
-            this.contract.methods.getPublicKey(this.metamask_accounts[0]).call().then((result: any) => {
-              console.log(result)
+            // Comprobamos si la clave publica esta en el contrato deadDrop
+            this.deadDropContract.methods.getPublicKey(this.metamask_accounts[0]).call().then((result: any) => {
               if (result !== publicKey) {
                 //Si no esta, la añadimos
-                this.contract.methods.setPublicKey(this.metamask_accounts[0], publicKey).send({from: this.metamask_accounts[0]})
-                  .then((result: any) => {
+                this.deadDropContract.methods.setPublicKey(this.metamask_accounts[0], publicKey).send({from: this.metamask_accounts[0]})
+                  .then(() => {
                     //Cuando se ha añadido su clave publica al contrato se sigue adelante en el proceso de login
                     this.router.navigate(['dead-drop'])
                   })
@@ -69,6 +74,20 @@ export class LoginComponent implements OnInit {
               }
             })
 
+            // Comprobamos si la clave publica esta en el contrato group
+            this.groupContract.methods.getPublicKey(this.metamask_accounts[0]).call().then((result: any) => {
+              if (result !== publicKey) {
+                //Si no esta, la añadimos
+                this.groupContract.methods.setPublicKey(this.metamask_accounts[0], publicKey).send({from: this.metamask_accounts[0]})
+                  .then(() => {
+                    //Cuando se ha añadido su clave publica al contrato se sigue adelante en el proceso de login
+                    this.router.navigate(['dead-drop'])
+                  })
+              } else {
+                //Si esta, no la añadimos
+                this.router.navigate(['dead-drop'])
+              }
+            })
           })
       })
       .catch((error: any) => {

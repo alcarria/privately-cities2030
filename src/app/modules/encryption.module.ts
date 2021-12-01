@@ -1,5 +1,6 @@
 import * as nacl from 'tweetnacl';
 import * as naclUtil from 'tweetnacl-util';
+import {decodeUTF8, encodeUTF8} from "tweetnacl-util";
 
 declare let window: any
 
@@ -51,14 +52,43 @@ export function encrypt(data: string, publicKey: string, version: string): strin
       // return encrypted msg data
       return JSON.stringify(output);
     }
+    case 'xsalsa20-poly1305': {
+      const nonce = nacl.randomBytes(nacl.box.nonceLength);
+      const msgParamsUInt8Array = naclUtil.decodeUTF8(data);
+      const pubKeyUInt8Array = naclUtil.decodeBase64(publicKey);
+      const encryptedMessage = nacl.secretbox(msgParamsUInt8Array, nonce, pubKeyUInt8Array)
+
+      const output = {
+        version: 'xsalsa20-poly1305',
+        nonce: naclUtil.encodeBase64(nonce),
+        ciphertext: naclUtil.encodeBase64(encryptedMessage),
+      };
+
+      return JSON.stringify(output);
+    }
     default:
       throw new Error('Encryption type/version not supported');
   }
 }
 
-export async function decrypt(data: string, version: string): Promise<string> {
-  const my_data = data
-  let accounts = await window.ethereum.request({method: 'eth_accounts'});
-  return await window.ethereum.request({method: 'eth_decrypt', params: [my_data, accounts[0]]})
-}
+export async function decrypt(data: string, publicKey: string, version: string): Promise<string> {
+  switch (version) {
+    case 'x25519-xsalsa20-poly1305': {
+      let accounts = await window.ethereum.request({method: 'eth_accounts'});
+      return await window.ethereum.request({method: 'eth_decrypt', params: [data, accounts[0]]})
+    }
+    case 'xsalsa20-poly1305': {
+      const my_data = JSON.parse(data)
+      const pubKeyUInt8Array = naclUtil.decodeBase64(publicKey);
+      const result = nacl.secretbox.open(naclUtil.decodeBase64(my_data.ciphertext),
+        naclUtil.decodeBase64(my_data.nonce),
+        pubKeyUInt8Array)
 
+      if (result == false) throw 'Cant decrypt'
+      else
+        return encodeUTF8(result)
+    }
+    default:
+      throw new Error('Encryption type/version not supported');
+  }
+}

@@ -1,0 +1,20 @@
+.body{
+  background: red;
+  display: flex;
+  height: 100%;
+}
+
+.sidebar{
+  background: white;
+  flex: 1;
+  height: 100%;
+  width: 30%;
+}
+
+.chat{
+  background: grey;
+  flex: 3;
+  height: 100%;
+  width: 70%;
+}
+

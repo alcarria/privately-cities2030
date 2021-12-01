@@ -13,11 +13,13 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { DeadDropComponent } from './dead-drop/dead-drop.component';
 import { ChatSidenavComponent } from './chat-sidenav/chat-sidenav.component';
 import { ChatComponent } from './chat/chat.component';
+import { GroupsComponent } from './groups/groups.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'account', component: AccountComponent },
-  { path: 'dead-drop', component: DeadDropComponent }
+  { path: 'dead-drop', component: DeadDropComponent },
+  { path: 'groups', component: GroupsComponent }
 ]
 
 @NgModule({
@@ -28,7 +30,8 @@ const routes: Routes = [
     NavbarComponent,
     DeadDropComponent,
     ChatSidenavComponent,
-    ChatComponent
+    ChatComponent,
+    GroupsComponent
   ],
   imports: [
     RouterModule.forRoot(routes),

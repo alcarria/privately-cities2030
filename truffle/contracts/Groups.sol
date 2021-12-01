@@ -10,10 +10,11 @@ struct GroupInfo {
   string name;
 
   // Permissions:
-  // 0 - read
-  // 1 - write
-  // 2 - invite
-  // 3 - admin
+  // 0 - forbidden
+  // 1 - read
+  // 2 - write
+  // 3 - invite
+  // 4 - admin
   mapping(address => uint) permissions;
 }
 
@@ -23,21 +24,22 @@ contract Groups {
 
   // K: userAddress
   mapping(address => GroupKey[]) public groupKeys;
-  
+
   // K: groupAddress
   mapping(address => GroupInfo) public groupsInfo;
 
   event onInvite(address indexed to, address group, string groupKey);
-
-  event onMessage(address from, address group, string message);
+  event onMessage(address indexed group, address from, string message);
 
   function createGroup(address group, string memory groupName, string memory groupKey) public {
     require(group != address(0));
-    require(keccak256(abi.encodePacked(groupsInfo[group].name)) == keccak256(abi.encodePacked(""))); // Group does not exist yet
-    require(keccak256(abi.encodePacked(groupName)) != keccak256(abi.encodePacked(""))); // Group has valid name
+    bytes memory existingGroupName = bytes(groupsInfo[group].name);
+    require(existingGroupName.length == 0); // Group does not exist yet
+    bytes memory bGroupname = bytes(groupName);
+    require(bGroupname.length > 0); // Group has valid name
 
     GroupKey memory gKey = GroupKey({
-      groupAddress: group, 
+      groupAddress: group,
       groupKey: groupKey
     });
 
@@ -46,18 +48,41 @@ contract Groups {
     GroupInfo storage gInfo = groupsInfo[group];
     gInfo.name = groupName;
     gInfo.permissions[msg.sender] = 99;
+
+    emit onInvite(msg.sender, group, groupKey);
   }
+  function invite(address to, address group, string memory groupKey) public {
+    require(groupsInfo[group].permissions[msg.sender] >= 3); //The sender has permissions
+    require(groupsInfo[group].permissions[to] == 0); //He is not in the group
 
-  function invite(address to, address group, string memory groupKey) public { }
+    GroupKey memory gKey = GroupKey({
+    groupAddress: group,
+    groupKey: groupKey
+    });
 
-  function sendMessage(address group, string memory message) public { }
+    groupKeys[to].push(gKey);
 
-  function changePermissions(address to, address group, uint permissions) public { }
+    GroupInfo storage gInfo = groupsInfo[group];
+    gInfo.permissions[to] = 1;
 
+    emit onInvite(to, group, groupKey);
+  }
+  function sendMessage(address group, string memory message) public {
+    require(groupsInfo[group].permissions[msg.sender] >= 2); //The sender has permissions
+
+    emit onMessage(msg.sender, group, message);
+  }
+  function changePermissions(address to, address group, uint permissions) public {
+    require(groupsInfo[group].permissions[msg.sender] >= 4); //The sender has permissions
+    require(groupsInfo[group].permissions[to] > 0);
+    require(groupsInfo[group].permissions[msg.sender] > permissions);
+    require(groupsInfo[group].permissions[to] < groupsInfo[group].permissions[msg.sender]);
+
+    groupsInfo[group].permissions[to] = permissions;
+  }
   function setPublicKey(address my_address, string memory publicKey) public {
     publicKeys[my_address] = publicKey;
   }
-
   function getPublicKey(address dest_address) public view returns(string memory publicKey) {
     publicKey = publicKeys[dest_address];
   }
