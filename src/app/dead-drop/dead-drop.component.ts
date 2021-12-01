@@ -41,13 +41,6 @@ export class DeadDropComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    new Promise(async resolve => {
-      while(true) {
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        this.contacts.push(new DeadDropContact('Pepe', 'seed'))
-      }
-    })
-
     //Registramos los eventos para escuchar si te llegan mensajes y si te llegan semillas
     let addresses = await window.ethereum.request({method: 'eth_accounts'});
 
