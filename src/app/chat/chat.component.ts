@@ -21,12 +21,7 @@ export class ChatComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('Init')
     this.subscribeToMessages();
-  }
-
-  ngOnChange(): void {
-    console.log('Change')
   }
 
   subscribeToMessages() {

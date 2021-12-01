@@ -44,7 +44,7 @@ export class DeadDropContact {
     }
 
     public unsubscribe(): void {
-        console.warn('Method unsubscribe is not correctly implemented');
+        this.subscription.unsubscribe()
         this.subscription = undefined
     }
 }

@@ -56,10 +56,6 @@ export class DeadDropComponent implements OnInit {
     // Creamos los eventos para leer nuevos contactos y mensajes en tiempo real
     this.contract.events.ShareSeed({},
       (error: any, event: any) => this.onShareSeed(error, event))
-
-    // this.contract.events.SendMessage({
-    //   fromBlock: 0
-    // }, (error: any, event: any) => this.onMessageEvent(error, event))
   }
 
   // Cuando llega un mensaje se añade a la lista de mensajes
@@ -184,15 +180,12 @@ export class DeadDropComponent implements OnInit {
     if (this.selectedContact == undefined)
       throw 'Contact is undefined for address: ' + address
     
-    console.log('Holaa')
-    console.log(this.selectedContact.isSubscribed())
     if (this.selectedContact.isSubscribed() == false) {
       const subcription = this.contract.events.ShareSeed({
         filter: {'from': address},
         fromBlock: 0
-      },
-        (error: any, event: any) => this.onMessageEvent(error, event))
-        this.selectedContact.subscribe(subcription)
+      }, (error: any, event: any) => this.onMessageEvent(error, event))
+      this.selectedContact.subscribe(subcription)
     }
   }
 
