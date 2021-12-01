@@ -2,11 +2,13 @@ import {Component, OnInit} from '@angular/core';
 import {environment} from '../../environments/environment';
 
 import {encrypt, decrypt} from '../modules/encryption.module';
+import {DeadDropContact, Message} from '../modules/chat.entities';
 
 import getToken from 'totp-generator';
 
 // @ts-ignore
 import DeadDrop from '../../assets/contracts/DeadDrop.json'
+import { BehaviorSubject, Observable } from 'rxjs';
 
 declare const window: any;
 
@@ -18,12 +20,11 @@ declare const window: any;
 })
 export class DeadDropComponent implements OnInit {
 
-  private creatingChat: boolean = false;
+  private creatingChat: boolean = true;
 
-  private selectedAddress = ''
+  private selectedContact: DeadDropContact|undefined = undefined
 
-  private contacts: Map<string, {encrypted_seed: string, decrypted_seed: string|undefined}> = new Map();
-  private messages: Map<string, string[]> = new Map();
+  private contacts: DeadDropContact[] = [];
 
   private contract = new window.web3.eth.Contract(
     DeadDrop.abi,
@@ -33,7 +34,20 @@ export class DeadDropComponent implements OnInit {
   constructor() {
   }
 
+  ngOnDestroy(): void {
+    for (const contact of this.contacts) {
+      contact.unsubscribe();
+    }
+  }
+
   async ngOnInit(): Promise<void> {
+    new Promise(async resolve => {
+      while(true) {
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        this.contacts.push(new DeadDropContact('Pepe', 'seed'))
+      }
+    })
+
     //Registramos los eventos para escuchar si te llegan mensajes y si te llegan semillas
     let addresses = await window.ethereum.request({method: 'eth_accounts'});
 
@@ -71,19 +85,19 @@ export class DeadDropComponent implements OnInit {
     // Add message to the corresponding chat
     let from = event.returnValues.from
 
-    // @ts-ignore
-    let messages: string[] = this.messages.get(from) == undefined ? [] : this.messages.get(from)
-    messages.push(message)
-    this.messages.set(from, messages)
+    const contact = this.getContact(from)
 
-    console.log(message)
+    if (contact == undefined)
+      throw 'contact is undefined'
+
+    contact.addMessage(new Message(from, new Date(Number(event.returnValues.timestamp)), message))
   }
 
   // Checks if the message is for me
   isTheMessageForMe(event: any): boolean {
     const from = String(event.returnValues.from)
 
-    if (this.contacts.get(from) == undefined) return false;
+    if (this.getContact(from) == undefined) return false;
 
       // @ts-ignore
     const token = getToken(this.contacts.get(from)?.decrypted_seed, {
@@ -98,10 +112,15 @@ export class DeadDropComponent implements OnInit {
   }
 
   async sendMessage(message: any): Promise<void> {
-    let contactPublicKey = await this.contract.methods.getPublicKey(this.selectedAddress).call()
+    let contactPublicKey = await this.contract.methods.getPublicKey(this.selectedContact?.getAddress()).call()
     let encryptedMessage = encrypt(message, contactPublicKey, 'x25519-xsalsa20-poly1305')
     const timestamp = Date.now()
-    const token = getToken(<string>this.contacts.get(this.selectedAddress)?.decrypted_seed, {
+
+    if (this.selectedContact == undefined)
+      throw 'Contact is undefined'
+
+    const decrypted_seed: string = await this.selectedContact.getDecryptedSeed()
+    const token = getToken(decrypted_seed, {
       digits: 128,
       algorithm: 'SHA-512',
       period: 60,
@@ -127,17 +146,11 @@ export class DeadDropComponent implements OnInit {
     if (event.returnValues.to.toLowerCase() == addresses[0].toLowerCase()) {
       const from = String(event.returnValues.from)
       const encrypted_seed = event.returnValues.to_seed
-      this.contacts.set(from, {
-        encrypted_seed: encrypted_seed,
-        decrypted_seed: undefined
-      })
+      this.contacts.push(new DeadDropContact(from, encrypted_seed))
     } else if (event.returnValues.from.toLowerCase() == addresses[0].toLowerCase()) {
       const to = String(event.returnValues.to)
       const encrypted_seed = event.returnValues.from_seed
-      this.contacts.set(to, {
-        encrypted_seed: encrypted_seed,
-        decrypted_seed: undefined
-      })
+      this.contacts.push(new DeadDropContact(to, encrypted_seed))
     }
   }
 
@@ -163,42 +176,42 @@ export class DeadDropComponent implements OnInit {
       )
   }
 
-  get getAddresses(): string[] {
-    return [...this.contacts.keys()];
+  getAddresses(): string[] {
+    let addresses: string[] = []
+    for (let contact of this.contacts) {
+      addresses.push(contact.getAddress())
+    }
+    return addresses
   }
 
-  async setSelectedAddress(address: string): Promise<void> {
-    this.selectedAddress = address
+  async setSelectedContact(address: string): Promise<void> {
+    this.selectedContact = this.getContact(address)
     this.creatingChat = false
 
-    if (this.contacts.get(address)?.decrypted_seed == undefined) {
-      const encrypted_seed = this.contacts.get(address)?.encrypted_seed
-
-      if (encrypted_seed == undefined)
-        throw 'encrypted_seed is not defined'
-
-      this.contacts.set(address, {
-        encrypted_seed: encrypted_seed,
-        decrypted_seed: await decrypt(encrypted_seed, 'x25519-xsalsa20-poly1305')
-      })
+    if (this.selectedContact == undefined)
+      throw 'Contact is undefined for address: ' + address
+    
+    console.log('Holaa')
+    console.log(this.selectedContact.isSubscribed())
+    if (this.selectedContact.isSubscribed() == false) {
+      const subcription = this.contract.events.ShareSeed({
+        filter: {'from': address},
+        fromBlock: 0
+      },
+        (error: any, event: any) => this.onMessageEvent(error, event))
+        this.selectedContact.subscribe(subcription)
     }
-
-    this.contract.getPastEvents('SendMessage', {
-      filter: {'from': address},
-      fromBlock: 0
-    }, (error: any, events: any) => {
-      console.log(events)
-      for (let event of events)
-        this.onMessageEvent(error, event)
-    })
   }
 
-  getSelectedAddress(): any {
-    return this.selectedAddress
+  getSelectedAddress(): string {
+    return this.selectedContact?.getAddress() ?? ''
   }
 
-  getMessagesSelected(): any {
-    return this.messages.get(this.selectedAddress)
+  getMessagesSelected(): Observable<Message[]> {
+    if (this.selectedContact == undefined)
+      throw 'Cannot get messages: contact is undefined'
+
+    return this.selectedContact.getMessages()
   }
 
   onNewChat(): void {
@@ -207,5 +220,13 @@ export class DeadDropComponent implements OnInit {
 
   get isCreatingChat(): boolean {
     return this.creatingChat
+  }
+
+  private getContact(address: string): DeadDropContact|undefined {
+    for (let contact of this.contacts) {
+      if (contact.getAddress() == address)
+        return contact
+    }
+    return undefined
   }
 }

@@ -4,7 +4,7 @@
 
 <div *ngIf="address != ''; else noAddress" class="body">
   <mat-list>
-    <p *ngFor="let message of message_list">{{message}}</p>
+    <p *ngFor="let message of messages">{{message.getMessage()}}</p>
   </mat-list>
   <div class="form">
     <form>
