@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  deaddrop_address: ''
+  deaddrop_address: '',
+  group_address: ''
 };
 
 /*
