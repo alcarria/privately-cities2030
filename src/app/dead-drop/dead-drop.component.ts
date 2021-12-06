@@ -202,7 +202,7 @@ export class DeadDropComponent implements OnInit {
       throw 'Contact is undefined for address: ' + address
     
     if (this.selectedContact.isSubscribed() == false) {
-      const subcription = this.contract.events.ShareSeed({
+      const subcription = this.contract.events.SendMessage({
         filter: {'from': address},
         fromBlock: 0
       }, (error: any, event: any) => this.onMessageEvent(error, event))
