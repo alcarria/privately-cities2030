@@ -44,8 +44,10 @@ export class DeadDropContact {
     }
 
     public unsubscribe(): void {
-        this.subscription.unsubscribe()
-        this.subscription = undefined
+        if (this.isSubscribed()) {
+            this.subscription.unsubscribe()
+            this.subscription = undefined
+        }
     }
 }
 

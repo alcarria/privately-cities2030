@@ -31,13 +31,19 @@ export class DeadDropComponent implements OnInit {
     environment.deaddrop_address
   )
 
-  constructor() {
-  }
+  private newContactSubscriber: any|undefined;
+
+  constructor() {}
 
   ngOnDestroy(): void {
+    // Unsubscribe contact messages
     for (const contact of this.contacts) {
       contact.unsubscribe();
     }
+
+    // Unsubscribe
+    if (this.newContactSubscriber != undefined)
+      this.newContactSubscriber.unsubscribe()
   }
 
   async ngOnInit(): Promise<void> {
@@ -54,8 +60,23 @@ export class DeadDropComponent implements OnInit {
     }
 
     // Creamos los eventos para leer nuevos contactos y mensajes en tiempo real
-    this.contract.events.ShareSeed({},
+    this.newContactSubscriber = this.contract.events.ShareSeed({},
       (error: any, event: any) => this.onShareSeed(error, event))
+  }
+
+  // Cargar lista de contactos
+  async loadContacts(): Promise<void> {
+    // Clear contacts
+    this.contacts = [];
+
+    // Obtenemos los contactos
+    let shareSeedPastEvents = await this.contract.getPastEvents('ShareSeed', {
+      fromBlock: 0
+    })
+
+    for (let event of shareSeedPastEvents) {
+      await this.onShareSeed(null, event)
+    }
   }
 
   // Cuando llega un mensaje se añade a la lista de mensajes
