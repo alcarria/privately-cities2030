@@ -11,6 +11,10 @@ export class Store {
         return this.currentAccountAddress.asObservable()
     }
 
+    getCurrentAccountAddressValue(): string {
+        return this.currentAccountAddress.getValue() ?? ''
+    }
+
     setCurrentAccountAddress(address: string|undefined): void {
         this.currentAccountAddress.next(address)
     }

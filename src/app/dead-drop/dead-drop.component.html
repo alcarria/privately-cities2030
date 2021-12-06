@@ -4,7 +4,7 @@
     <app-chat-sidenav [addresses]="getAddresses()" (changeAddress)="setSelectedContact($event)" (newChat)="onNewChat()"></app-chat-sidenav>
   </div>
   <div class="chat">
-    <app-chat *ngIf="!isCreatingChat; else createChat" [messagesObservable]="getMessagesSelected()" (onMessage)="sendMessage($event)"></app-chat>
+    <app-chat *ngIf="!isCreatingChat(); else createChat" [messagesObservable]="getMessagesSelected()" (onMessage)="sendMessage($event)"></app-chat>
   </div>
 </div>
 
