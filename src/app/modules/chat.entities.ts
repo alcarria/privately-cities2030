@@ -1,4 +1,4 @@
-import {encrypt, decrypt} from '../modules/encryption.module';
+import {encrypt, decrypt} from './encryption.module';
 import {BehaviorSubject, Observable} from "rxjs";
 
 export class DeadDropContact {
@@ -17,7 +17,7 @@ export class DeadDropContact {
     public async getDecryptedSeed(): Promise<string> {
         if (this.decrypted_seed != undefined)
             return this.decrypted_seed
-        this.decrypted_seed =  await decrypt(this.encrypted_seed, '')
+        this.decrypted_seed =  await decrypt(this.encrypted_seed, '','x25519-xsalsa20-poly1305' )
         return this.decrypted_seed
     }
 
@@ -51,10 +51,10 @@ export class DeadDropContact {
     }
 }
 
-export class Message {    
+export class Message {
     constructor(private sender: string, private timestamp: Date, private message: string) { }
 
-    public getString(): string {
+    public getSender(): string {
         return this.sender
     }
 

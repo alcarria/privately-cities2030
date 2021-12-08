@@ -18,13 +18,13 @@ export class DeadDropController {
     private shareSeedSubscriber: any;
 
     private sendMessageSubscriptions: Map<string, any> = new Map<string, any>()
-    
+
     constructor(private currentAddress: string, private cdr: ChangeDetectorRef) {
         this.contract = new window.web3.eth.Contract(
             DeadDropContract.abi,
             environment.deaddrop_address
         )
-        
+
         // Get list  of all contacts
         this.shareSeedSubscriber = this.contract.events.ShareSeed({
             fromBlock: 0
@@ -65,7 +65,7 @@ export class DeadDropController {
         let contactPublicKey = await this.contract.methods.getPublicKey(selectedContact.getAddress()).call()
         let encryptedMessage = encrypt(message, contactPublicKey, 'x25519-xsalsa20-poly1305')
         const timestamp = Date.now()
-    
+
         const decrypted_seed: string = await selectedContact.getDecryptedSeed()
         const token = getToken(decrypted_seed, {
           digits: 128,
@@ -77,14 +77,14 @@ export class DeadDropController {
         // Enviarlo a la red
         this.contract.methods.sendMessage(token, timestamp, encryptedMessage).send({from: this.currentAddress})
           .then((receipt: any) => {
-    
+
         })
     }
 
     subscribeToSendMessage(address: string): void {
         if (this.sendMessageSubscriptions.has(address))
             this.sendMessageSubscriptions.get(address).unsubscribe();
-        
+
         this.sendMessageSubscriptions.set(
             address,
             this.contract.events.SendMessage({
@@ -98,30 +98,30 @@ export class DeadDropController {
         // Check errors
         if (error !== null)
           throw error
-    
+
         // Check if the message is for me
         if (!this.isTheMessageForMe(event)) return
-    
+
         // Decrypt message
         console.log(event.returnValues.message)
-        let message = await decrypt(event.returnValues.message, 'x25519-xsalsa20-poly1305')
-    
+        let message = await decrypt(event.returnValues.message, '', 'x25519-xsalsa20-poly1305')
+
         // Add message to the corresponding chat
         let from = event.returnValues.from
-    
+
         const contact = this.getContact(from)
-    
+
         if (contact == undefined)
           throw 'contact is undefined'
-    
+
         contact.addMessage(new Message(from, new Date(Number(event.returnValues.timestamp)), message))
     }
 
     private isTheMessageForMe(event: any): boolean {
         const from = String(event.returnValues.from)
-    
+
         if (this.getContact(from) == undefined) return false;
-    
+
           // @ts-ignore
         const token = getToken(this.contacts.get(from)?.decrypted_seed, {
           digits: 64,
@@ -130,7 +130,7 @@ export class DeadDropController {
           // @ts-ignore
           timestamp: Number(event.returnValues.timestamp)
         })
-    
+
         return event.returnValues.totp == token
     }
 
@@ -151,7 +151,7 @@ export class DeadDropController {
 
         this.contract.methods.shareSeed(destinationAddress, from_seed, to_seed).send({from: this.currentAddress})
         .then(((receipt: any) => {
-            
+
         }))
     }
 
