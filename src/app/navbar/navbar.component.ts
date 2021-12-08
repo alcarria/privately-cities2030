@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Store } from '../modules/store';
 declare const window: any
 
 @Component({
@@ -8,12 +9,17 @@ declare const window: any
 })
 export class NavbarComponent implements OnInit {
 
-  public account: string = ''
+  public address: string|undefined = ''
 
-  constructor() { }
+  constructor(private store: Store, private cdr: ChangeDetectorRef) { }
 
   async ngOnInit(): Promise<void> {
-    let accounts = await window.ethereum.request({ method: 'eth_accounts' })
-    this.account = accounts[0]
+    this.store.getCurrentAccountAddress().subscribe(address => {
+      console.log('Address changed to ' + address)
+      this.address = address
+      this.cdr.detectChanges()
+    })
+    // let accounts = await window.ethereum.request({ method: 'eth_accounts' })
+    // this.account = accounts[0]
   }
 }

@@ -15,6 +15,8 @@ import { ChatSidenavComponent } from './chat-sidenav/chat-sidenav.component';
 import { ChatComponent } from './chat/chat.component';
 import { GroupsComponent } from './groups/groups.component';
 
+import { Store } from './modules/store';
+
 const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'account', component: AccountComponent },
@@ -44,4 +46,4 @@ const routes: Routes = [
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

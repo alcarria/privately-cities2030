@@ -1,12 +1,12 @@
-import {Component, OnInit} from '@angular/core';
-import {environment} from '../../environments/environment';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 
-import {encrypt, decrypt} from '../modules/encryption.module';
-
-import getToken from 'totp-generator';
+import {DeadDropContact, Message} from '../modules/chat.entities';
 
 // @ts-ignore
-import DeadDrop from '../../assets/contracts/DeadDrop.json'
+import { Observable } from 'rxjs';
+import { Store } from '../modules/store';
+import { Router } from '@angular/router';
+import { DeadDropController } from '../modules/dead-drop.module';
 
 declare const window: any;
 
@@ -18,194 +18,78 @@ declare const window: any;
 })
 export class DeadDropComponent implements OnInit {
 
-  private creatingChat: boolean = false;
+  public selectedContact: DeadDropContact|undefined = undefined
 
-  private selectedAddress = ''
+  private deadDropController: DeadDropController;
 
-  private contacts: Map<string, {encrypted_seed: string, decrypted_seed: string|undefined}> = new Map();
-  private messages: Map<string, string[]> = new Map();
-
-  private contract = new window.web3.eth.Contract(
-    DeadDrop.abi,
-    environment.deaddrop_address
-  )
-
-  constructor() {
+  constructor(private store: Store, private cdr: ChangeDetectorRef, private router: Router) {
+    this.deadDropController = new DeadDropController(this.store.getCurrentAccountAddressValue(), cdr)
   }
 
   async ngOnInit(): Promise<void> {
-    //Registramos los eventos para escuchar si te llegan mensajes y si te llegan semillas
-    let addresses = await window.ethereum.request({method: 'eth_accounts'});
-
-    // Obtenemos los contactos
-    let shareSeedPastEvents = await this.contract.getPastEvents('ShareSeed', {
-      fromBlock: 0
+    // this.loadContacts()
+    this.store.getCurrentAccountAddress().subscribe(_ => {
+      this.selectedContact = undefined
+      this.deadDropController.destroy()
+      this.deadDropController = new DeadDropController(this.store.getCurrentAccountAddressValue(), this.cdr)
     })
-
-    for (let event of shareSeedPastEvents) {
-      await this.onShareSeed(null, event)
-    }
-
-    // Creamos los eventos para leer nuevos contactos y mensajes en tiempo real
-    this.contract.events.ShareSeed({},
-      (error: any, event: any) => this.onShareSeed(error, event))
-
-    // this.contract.events.SendMessage({
-    //   fromBlock: 0
-    // }, (error: any, event: any) => this.onMessageEvent(error, event))
   }
 
-  // Cuando llega un mensaje se añade a la lista de mensajes
-  async onMessageEvent(error: any, event: any): Promise<void> {
-    // Check errors
-    if (error !== null)
-      throw error
-
-    // Check if the message is for me
-    if (!this.isTheMessageForMe(event)) return
-
-    // Decrypt message
-    console.log(event.returnValues.message)
-    let message = await decrypt(event.returnValues.message, 'x25519-xsalsa20-poly1305')
-
-    // Add message to the corresponding chat
-    let from = event.returnValues.from
-
-    // @ts-ignore
-    let messages: string[] = this.messages.get(from) == undefined ? [] : this.messages.get(from)
-    messages.push(message)
-    this.messages.set(from, messages)
-
-    console.log(message)
+  ngOnDestroy(): void {
+    this.deadDropController.destroy();
   }
 
-  // Checks if the message is for me
-  isTheMessageForMe(event: any): boolean {
-    const from = String(event.returnValues.from)
+  sendMessage(message: any): void {
+    if (this.selectedContact == undefined)
+      throw 'Cannot send message to undefined. You need to pick a contact first.'
 
-    if (this.contacts.get(from) == undefined) return false;
-
-      // @ts-ignore
-    const token = getToken(this.contacts.get(from)?.decrypted_seed, {
-      digits: 64,
-      algorithm: 'SHA-512',
-      period: 60,
-      // @ts-ignore
-      timestamp: Number(event.returnValues.timestamp)
-    })
-
-    return event.returnValues.totp == token
-  }
-
-  async sendMessage(message: any): Promise<void> {
-    let contactPublicKey = await this.contract.methods.getPublicKey(this.selectedAddress).call()
-    let encryptedMessage = encrypt(message, contactPublicKey, 'x25519-xsalsa20-poly1305')
-    const timestamp = Date.now()
-    const token = getToken(<string>this.contacts.get(this.selectedAddress)?.decrypted_seed, {
-      digits: 128,
-      algorithm: 'SHA-512',
-      period: 60,
-      // @ts-ignore
-      timestamp: Number(timestamp)
-    })
-    // Enviarlo a la red
-    let addresses = await window.ethereum.request({method: 'eth_accounts'});
-    this.contract.methods.sendMessage(token, timestamp, encryptedMessage).send({from: addresses[0]})
-      .then((receipt: any) => {
-
-      })
-  }
-
-  // Cuando llega una semilla la añadimos a la lista de semillas
-  async onShareSeed(error: any, event: any): Promise<void> {
-    if (error !== null)
-      throw error
-
-    let addresses = await window.ethereum.request({method: 'eth_accounts'});
-
-    // Check if the message is for me
-    if (event.returnValues.to.toLowerCase() == addresses[0].toLowerCase()) {
-      const from = String(event.returnValues.from)
-      const encrypted_seed = event.returnValues.to_seed
-      this.contacts.set(from, {
-        encrypted_seed: encrypted_seed,
-        decrypted_seed: undefined
-      })
-    } else if (event.returnValues.from.toLowerCase() == addresses[0].toLowerCase()) {
-      const to = String(event.returnValues.to)
-      const encrypted_seed = event.returnValues.from_seed
-      this.contacts.set(to, {
-        encrypted_seed: encrypted_seed,
-        decrypted_seed: undefined
-      })
-    }
+    this.deadDropController.sendMessage(this.selectedContact, message);
   }
 
   // Create a new chat
   async newChat($event: any, address: any): Promise<void> {
     $event.preventDefault()
-
-    let addresses = await window.ethereum.request({method: 'eth_accounts'});
-
-    const destinationAddress = address.value
-    const token_seed: string = 'ALFABETO' // todo hacer semilla aleatoria
-
-    let myPublicKey = await this.contract.methods.getPublicKey(addresses[0]).call()
-    let contactPublicKey = await this.contract.methods.getPublicKey(destinationAddress).call()
-
-    const from_seed = encrypt(token_seed, myPublicKey, 'x25519-xsalsa20-poly1305')
-    const to_seed = encrypt(token_seed, contactPublicKey, 'x25519-xsalsa20-poly1305')
-
-    this.contract.methods.shareSeed(destinationAddress, from_seed, to_seed).send({from: addresses[0]})
-      .then(((receipt: any) => {
-          }
-        )
-      )
+    this.deadDropController.newChat(address)
   }
 
-  get getAddresses(): string[] {
-    return [...this.contacts.keys()];
-  }
-
-  async setSelectedAddress(address: string): Promise<void> {
-    this.selectedAddress = address
-    this.creatingChat = false
-
-    if (this.contacts.get(address)?.decrypted_seed == undefined) {
-      const encrypted_seed = this.contacts.get(address)?.encrypted_seed
-
-      if (encrypted_seed == undefined)
-        throw 'encrypted_seed is not defined'
-
-      this.contacts.set(address, {
-        encrypted_seed: encrypted_seed,
-        decrypted_seed: await decrypt(encrypted_seed, 'x25519-xsalsa20-poly1305')
-      })
+  getAddresses(): string[] {
+    let addresses: string[] = []
+    for (let contact of this.deadDropController.getContacts()) {
+      addresses.push(contact.getAddress())
     }
-
-    this.contract.getPastEvents('SendMessage', {
-      filter: {'from': address},
-      fromBlock: 0
-    }, (error: any, events: any) => {
-      console.log(events)
-      for (let event of events)
-        this.onMessageEvent(error, event)
-    })
+    return addresses
   }
 
-  getSelectedAddress(): any {
-    return this.selectedAddress
+  async setSelectedContact(address: string): Promise<void> {
+    this.selectedContact = this.getContact(address)
+    this.deadDropController.subscribeToSendMessage(address)
+    this.cdr.detectChanges();
   }
 
-  getMessagesSelected(): any {
-    return this.messages.get(this.selectedAddress)
+  getSelectedAddress(): string {
+    return this.selectedContact?.getAddress() ?? ''
+  }
+
+  getMessagesSelected(): Observable<Message[]> {
+    if (this.selectedContact == undefined)
+      throw 'Cannot get messages: contact is undefined'
+
+    return this.selectedContact.getMessages()
   }
 
   onNewChat(): void {
-    this.creatingChat = true
+    this.selectedContact = undefined
   }
 
-  get isCreatingChat(): boolean {
-    return this.creatingChat
+  isCreatingChat(): boolean {
+    return this.selectedContact == undefined
+  }
+
+  private getContact(address: string): DeadDropContact|undefined {
+    for (let contact of this.deadDropController.getContacts()) {
+      if (contact.getAddress() == address)
+        return contact
+    }
+    return undefined
   }
 }
