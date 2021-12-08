@@ -4,6 +4,8 @@ import { BehaviorSubject, Observable } from "rxjs";
 @Injectable({
     providedIn: 'root'
 })
+
+// Store de address of the current user
 export class Store {
     private currentAccountAddress: BehaviorSubject<string|undefined> = new BehaviorSubject<string|undefined>(undefined);
 

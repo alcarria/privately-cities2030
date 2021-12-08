@@ -51,6 +51,56 @@ export class DeadDropContact {
     }
 }
 
+export class GroupContact {
+
+  private decrypted_pass: string|undefined
+
+  private subscription: any|undefined;
+  private messages: BehaviorSubject<Message[]> = new BehaviorSubject<Message[]>([]);
+
+  constructor(private group_address: string, private encrypted_pass: string) { }
+
+  public getAddress(): string {
+    return this.group_address
+  }
+
+  public async getDecryptedKey(): Promise<string> {
+    if (this.decrypted_pass != undefined)
+      return this.decrypted_pass
+    this.decrypted_pass =  await decrypt(this.encrypted_pass, '','x25519-xsalsa20-poly1305' )
+    return this.decrypted_pass
+  }
+
+  public getMessages(): Observable<Message[]> {
+    return this.messages.asObservable();
+  }
+
+  public addMessage(message: Message): void {
+    this.messages.next(
+      [...this.messages.getValue(), message]
+    )
+  }
+
+  public isSubscribed(): boolean {
+    return this.subscription != undefined
+  }
+
+  public subscribe(eventEmitter: any): void {
+    if (!this.isSubscribed()) {
+      this.subscription = eventEmitter
+    } else {
+      throw 'A subcription already exists. Use isSubscribed() before attemping to subscribe'
+    }
+  }
+
+  public unsubscribe(): void {
+    if (this.isSubscribed()) {
+      this.subscription.unsubscribe()
+      this.subscription = undefined
+    }
+  }
+}
+
 export class Message {
     constructor(private sender: string, private timestamp: Date, private message: string) { }
 

@@ -70,7 +70,7 @@ contract Groups {
   function sendMessage(address group, string memory message) public {
     require(groupsInfo[group].permissions[msg.sender] >= 2); //The sender has permissions
 
-    emit onMessage(msg.sender, group, message);
+    emit onMessage(group, msg.sender, message);
   }
   function changePermissions(address to, address group, uint permissions) public {
     require(groupsInfo[group].permissions[msg.sender] >= 4); //The sender has permissions

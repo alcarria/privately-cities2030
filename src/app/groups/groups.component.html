@@ -1,9 +1,14 @@
 <div class="body">
   <div class="sidebar">
-    <app-chat-sidenav [addresses]="getAddresses" (changeAddress)="setSelectedAddress($event)" (newChat)="onNewChat()"></app-chat-sidenav>
+    <app-chat-sidenav [addresses]="getAddresses" (changeAddress)="setSelectedAddress($event)" (newChat)="onNewChat()">
+      <mat-list-item mat-button class="list-item" (click)="onNewChat()">
+        <mat-icon aria-hidden="false" aria-label="Example home icon">add_circle</mat-icon>
+        New Group
+      </mat-list-item>
+    </app-chat-sidenav>
   </div>
   <div class="chat">
-    <app-chat *ngIf="!isCreatingChat; else createChat" [message_list]="getMessagesSelected()" [address]="getSelectedAddress()" (onMessage)="sendMessage($event)"></app-chat>
+    <app-chat *ngIf="!isCreatingChat; else createChat" [messagesObservable]="getMessagesSelected()" [address]="getSelectedAddress()" (onMessage)="sendMessage($event)"></app-chat>
   </div>
 </div>
 

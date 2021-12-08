@@ -3,23 +3,22 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {DeadDropContact, Message} from '../modules/chat.entities';
 
 // @ts-ignore
-import { Observable } from 'rxjs';
-import { Store } from '../modules/store';
-import { Router } from '@angular/router';
-import { DeadDropController } from '../modules/dead-drop.module';
+import {Observable} from 'rxjs';
+import {Store} from '../modules/store';
+import {Router} from '@angular/router';
+import {DeadDropController} from '../modules/dead-drop.module';
 
 declare const window: any;
 
-// @ts-ignore
 @Component({
   selector: 'app-dead-drop',
   templateUrl: './dead-drop.component.html',
   styleUrls: ['./dead-drop.component.css']
 })
+
 export class DeadDropComponent implements OnInit {
 
-  public selectedContact: DeadDropContact|undefined = undefined
-
+  public selectedContact: DeadDropContact | undefined = undefined
   private deadDropController: DeadDropController;
 
   constructor(private store: Store, private cdr: ChangeDetectorRef, private router: Router) {
@@ -85,7 +84,7 @@ export class DeadDropComponent implements OnInit {
     return this.selectedContact == undefined
   }
 
-  private getContact(address: string): DeadDropContact|undefined {
+  private getContact(address: string): DeadDropContact | undefined {
     for (let contact of this.deadDropController.getContacts()) {
       if (contact.getAddress() == address)
         return contact

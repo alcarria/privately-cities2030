@@ -1,8 +1,5 @@
 <mat-list class="mat-typography app-frame mat-app-background">
-  <mat-list-item mat-button class="list-item" (click)="onNewChat()">
-    <mat-icon aria-hidden="false" aria-label="Example home icon">add_circle</mat-icon>
-    New Chat
-  </mat-list-item>
+  <ng-content></ng-content>
   <mat-divider></mat-divider>
   <div *ngFor="let address of addresses">
     <mat-list-item mat-button class="list-item" (click)="onClick(address)">
