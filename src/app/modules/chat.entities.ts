@@ -54,7 +54,7 @@ export class DeadDropContact {
 export class Message {    
     constructor(private sender: string, private timestamp: Date, private message: string) { }
 
-    public getString(): string {
+    public getSender(): string {
         return this.sender
     }
 

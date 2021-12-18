@@ -4,11 +4,23 @@
     New Chat
   </mat-list-item>
   <mat-divider></mat-divider>
-  <div *ngFor="let address of addresses">
-    <mat-list-item mat-button class="list-item" (click)="onClick(address)">
-      {{address}}
-    </mat-list-item>
-    <mat-divider></mat-divider>
+  <div *ngFor="let address of addresses"
+    [ngTemplateOutlet]="this.selected == address ? Selected : NoSelected" 
+    [ngTemplateOutletContext]="{address:address}">
   </div>
   <!-- <button class="button"mat-list-item *ngFor="let address of addresses" (click)="onClick(address)">{{address}}</button> -->
 </mat-list>
+
+<ng-template #Selected let-address='address'>
+  <mat-list-item mat-button class="list-item selected-address" (click)="onClick(address)">
+    {{address}}
+  </mat-list-item>
+  <mat-divider></mat-divider>
+</ng-template>
+
+<ng-template #NoSelected let-address='address'>
+  <mat-list-item mat-button class="list-item" (click)="onClick(address)">
+    {{address}}
+  </mat-list-item>
+  <mat-divider></mat-divider>
+</ng-template>

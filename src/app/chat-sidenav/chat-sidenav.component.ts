@@ -1,4 +1,5 @@
 import {Component, Input, OnInit, Output, EventEmitter} from '@angular/core';
+import { Store } from '../modules/store';
 
 @Component({
   selector: 'app-chat-sidenav',
@@ -8,11 +9,12 @@ import {Component, Input, OnInit, Output, EventEmitter} from '@angular/core';
 export class ChatSidenavComponent implements OnInit {
 
   @Input() addresses: string[] = [];
+  @Input() selected: String|undefined = undefined;
 
   @Output() changeAddress = new EventEmitter<string>();
   @Output() newChat = new EventEmitter<string>();
 
-  constructor() {
+  constructor(public store: Store) {
   }
 
   ngOnInit(): void { }

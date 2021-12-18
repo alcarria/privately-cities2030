@@ -1,10 +1,12 @@
-<div class="titulo">
-  <h3>{{address}}</h3>
-</div>
 
-<div *ngIf="address != ''; else noAddress" class="body">
+<div *ngIf="address != ''; else noAddress" class="chat-div">
   <mat-list>
-    <p *ngFor="let message of messages">{{message.getMessage()}}</p>
+    <p *ngFor="let message of messages">
+      <ng-container 
+        [ngTemplateOutlet]="message.getSender() == this.store.getCurrentAccountAddressValue() ? SentByMe : SentByOther" 
+        [ngTemplateOutletContext]="{message:message}">
+      </ng-container>
+    </p>
   </mat-list>
   <div class="form">
     <form>
@@ -20,3 +22,24 @@
   </div>
 </ng-template>
 
+<ng-template #SentByOther let-message='message'>
+  <mat-card class="chat-card-other">
+    <mat-card-title class="chat-ts">
+      {{message.getTimestamp()}}
+    </mat-card-title>
+    <mat-card-content>
+      {{message.getMessage()}}
+    </mat-card-content>
+  </mat-card>
+</ng-template>
+
+<ng-template #SentByMe let-message='message'>
+  <mat-card class="chat-card-me">
+    <mat-card-title class="chat-ts">
+      {{message.getTimestamp()}}
+    </mat-card-title>
+    <mat-card-content>
+      {{message.getMessage()}}
+    </mat-card-content>
+  </mat-card>
+</ng-template>
