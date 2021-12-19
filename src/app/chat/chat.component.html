@@ -1,17 +1,25 @@
 
-<div *ngIf="address != ''; else noAddress" class="chat-div">
-  <mat-list>
-    <p *ngFor="let message of messages">
-      <ng-container 
-        [ngTemplateOutlet]="message.getSender() == this.store.getCurrentAccountAddressValue() ? SentByMe : SentByOther" 
-        [ngTemplateOutletContext]="{message:message}">
-      </ng-container>
-    </p>
-  </mat-list>
+<div class="body">
+  <div *ngIf="address != ''; else noAddress" class="chat-div">
+    <mat-list>
+      <p *ngFor="let message of messages">
+        <ng-container 
+          [ngTemplateOutlet]="message.getSender() == this.store.getCurrentAccountAddressValue() ? SentByMe : SentByOther" 
+          [ngTemplateOutletContext]="{message:message}">
+        </ng-container>
+      </p>
+    </mat-list>
+  </div>
+
   <div class="form">
     <form>
-      <input type="text" #message>
-      <button (click)="sendMessage($event, message)">Send</button>
+      <mat-form-field style="width: 100%;" appearance="fill">
+        <mat-label>Message</mat-label>
+        <input matInput type="text" #message>
+        <button matSuffix mat-icon-button aria-label="Clear">
+          <mat-icon>send</mat-icon>
+        </button>
+      </mat-form-field>
     </form>
   </div>
 </div>

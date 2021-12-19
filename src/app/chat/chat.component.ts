@@ -2,6 +2,7 @@ import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import { Observable } from 'rxjs';
 import { Message } from '../modules/chat.entities';
 import { Store } from '../modules/store';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-chat',
