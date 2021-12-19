@@ -1,15 +1,25 @@
-<div class="titulo">
-  <h3>{{address}}</h3>
-</div>
 
-<div *ngIf="address != ''; else noAddress" class="body">
-  <mat-list>
-    <p *ngFor="let message of messages">{{message.getMessage()}}</p>
-  </mat-list>
+<div class="body">
+  <div *ngIf="address != ''; else noAddress" class="chat-div">
+    <mat-list>
+      <p *ngFor="let message of messages">
+        <ng-container 
+          [ngTemplateOutlet]="message.isEncrypted() ? EncryptedMessage : DecryptedMessage" 
+          [ngTemplateOutletContext]="{message:message}">
+        </ng-container>
+      </p>
+    </mat-list>
+  </div>
+
   <div class="form">
     <form>
-      <input type="text" #message>
-      <button (click)="sendMessage($event, message)">Send</button>
+      <mat-form-field style="width: 100%;" appearance="fill">
+        <mat-label>Message</mat-label>
+        <input matInput type="text" #message>
+        <button matSuffix mat-icon-button aria-label="Clear" (click)="sendMessage($event, message)">
+          <mat-icon>send</mat-icon>
+        </button>
+      </mat-form-field>
     </form>
   </div>
 </div>
@@ -20,3 +30,24 @@
   </div>
 </ng-template>
 
+<ng-template #EncryptedMessage let-message='message'>
+  <mat-card class="chat-card-encrypted" (click)="message.decryptMessage()">
+    <mat-card-title class="chat-ts">
+      {{message.getTimestamp()}}
+    </mat-card-title>
+    <mat-card-content>
+      {{message.getMessage()}}
+    </mat-card-content>
+  </mat-card>
+</ng-template>
+
+<ng-template #DecryptedMessage let-message='message'>
+  <mat-card class="chat-card-decrypted">
+    <mat-card-title class="chat-ts">
+      {{message.getTimestamp()}}
+    </mat-card-title>
+    <mat-card-content>
+      {{message.getMessage()}}
+    </mat-card-content>
+  </mat-card>
+</ng-template>

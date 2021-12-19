@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 
-import {DeadDropContact, Message} from '../modules/chat.entities';
+import {DeadDropContact, MessageDeadDrop} from '../modules/chat.entities';
 
 // @ts-ignore
 import {Observable} from 'rxjs';
@@ -61,7 +61,8 @@ export class DeadDropComponent implements OnInit {
 
   async setSelectedContact(address: string): Promise<void> {
     this.selectedContact = this.getContact(address)
-    this.deadDropController.subscribeToSendMessage(address)
+    if (!this.deadDropController.isSubscribed(address))
+      this.deadDropController.subscribeToSendMessage(address)
     this.cdr.detectChanges();
   }
 
@@ -69,7 +70,7 @@ export class DeadDropComponent implements OnInit {
     return this.selectedContact?.getAddress() ?? ''
   }
 
-  getMessagesSelected(): Observable<Message[]> {
+  getMessagesSelected(): Observable<MessageDeadDrop[]> {
     if (this.selectedContact == undefined)
       throw 'Cannot get messages: contact is undefined'
 

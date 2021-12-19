@@ -1,12 +1,13 @@
 import {encrypt, decrypt} from './encryption.module';
 import {BehaviorSubject, Observable} from "rxjs";
+import { ChangeDetectorRef } from '@angular/core';
 
 export class DeadDropContact {
 
     private decrypted_seed: string|undefined
 
     private subscription: any|undefined;
-    private messages: BehaviorSubject<Message[]> = new BehaviorSubject<Message[]>([]);
+    private messages: BehaviorSubject<MessageDeadDrop[]> = new BehaviorSubject<MessageDeadDrop[]>([]);
 
     constructor(private address: string, private encrypted_seed: string) { }
 
@@ -21,11 +22,11 @@ export class DeadDropContact {
         return this.decrypted_seed
     }
 
-    public getMessages(): Observable<Message[]> {
+    public getMessages(): Observable<MessageDeadDrop[]> {
         return this.messages.asObservable();
     }
 
-    public addMessage(message: Message): void {
+    public addMessage(message: MessageDeadDrop): void {
         this.messages.next(
             [...this.messages.getValue(), message]
         )
@@ -102,17 +103,46 @@ export class GroupContact {
 }
 
 export class Message {
-    constructor(private sender: string, private timestamp: Date, private message: string) { }
 
-    public getSender(): string {
-        return this.sender
-    }
+  constructor(protected sender: string, protected timestamp: Date, protected message: string) { }
 
-    public getTimestamp(): Date {
-        return this.timestamp
+  public getSender(): string {
+      return this.sender
+  }
+
+  public getTimestamp(): Date {
+      return this.timestamp
+  }
+
+  public getMessage(): string {
+      return this.message
+  }
+
+  public isEncrypted(): boolean {
+    return false
+}
+}
+
+export class MessageDeadDrop extends Message {
+
+    private decryptedMessage: string|undefined = undefined
+
+    constructor(sender: string, timestamp: Date, message: string, private cdr: ChangeDetectorRef) {
+      super(sender, timestamp, message);
     }
 
     public getMessage(): string {
-        return this.message
+        return this.decryptedMessage ?? "Encrypted message (click)"
+    }
+
+    public async decryptMessage(): Promise<void> {
+        if (this.decryptedMessage != undefined) return
+
+        this.decryptedMessage = await decrypt(this.message, "", "x25519-xsalsa20-poly1305")
+        this.cdr.detectChanges();
+    }
+
+    public isEncrypted(): boolean {
+        return this.decryptedMessage == undefined
     }
 }

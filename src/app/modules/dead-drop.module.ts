@@ -1,4 +1,4 @@
-import {DeadDropContact, Message} from "./chat.entities";
+import {DeadDropContact, MessageDeadDrop} from "./chat.entities";
 
 // @ts-ignore
 import DeadDropContract from '../../assets/contracts/DeadDrop.json'
@@ -41,6 +41,43 @@ export class DeadDropController {
     if (this.shareSeedSubscriber != undefined) {
       this.shareSeedSubscriber.unsubscribe()
     }
+  }  
+
+  private async onMessageEvent(error: any, event: any): Promise<void> {
+    // Check errors
+    if (error !== null)
+      throw error
+
+    // Check if the message is for me
+    if (!await this.isTheMessageForMe(event)) return
+
+    // Add message to the corresponding chat
+    let from = event.returnValues.from
+
+    const contact = this.getContact(from)
+
+    if (contact == undefined)
+      throw 'contact is undefined'
+
+    contact.addMessage(new MessageDeadDrop(from, new Date(Number(event.returnValues.timestamp)), event.returnValues.message, this.cdr))
+    this.cdr.detectChanges();
+  }
+
+  private async isTheMessageForMe(event: any): Promise<boolean> {
+      const from = String(event.returnValues.from)
+  
+      if (this.getContact(from) == undefined) return false;
+      
+      // @ts-ignore
+      const token = getToken(await this.getContact(from)?.getDecryptedSeed(), {
+        digits: 64,
+        algorithm: 'SHA-512',
+        period: 60,
+        // @ts-ignore
+        timestamp: Number(event.returnValues.timestamp)
+      })
+  
+      return event.returnValues.totp == token
   }
 
   // Cuando llega una semilla la añadimos a la lista de semillas
@@ -94,46 +131,6 @@ export class DeadDropController {
     )
   }
 
-  private async onMessageEvent(error: any, event: any): Promise<void> {
-    // Check errors
-    if (error !== null)
-      throw error
-
-    // Check if the message is for me
-    if (!this.isTheMessageForMe(event)) return
-
-    // Decrypt message
-    console.log(event.returnValues.message)
-    let message = await decrypt(event.returnValues.message, '', 'x25519-xsalsa20-poly1305')
-
-    // Add message to the corresponding chat
-    let from = event.returnValues.from
-
-    const contact = this.getContact(from)
-
-    if (contact == undefined)
-      throw 'contact is undefined'
-
-    contact.addMessage(new Message(from, new Date(Number(event.returnValues.timestamp)), message))
-  }
-
-  private isTheMessageForMe(event: any): boolean {
-    const from = String(event.returnValues.from)
-
-    if (this.getContact(from) == undefined) return false;
-
-    // @ts-ignore
-    const token = getToken(this.contacts.get(from)?.decrypted_seed, {
-      digits: 64,
-      algorithm: 'SHA-512',
-      period: 60,
-      // @ts-ignore
-      timestamp: Number(event.returnValues.timestamp)
-    })
-
-    return event.returnValues.totp == token
-  }
-
   getContacts(): DeadDropContact[] {
     return this.contacts
   }
@@ -155,11 +152,15 @@ export class DeadDropController {
       }))
   }
 
-  getContact(address: string): DeadDropContact | undefined {
+  getContact(address: string): DeadDropContact|undefined {
     for (let contact of this.contacts) {
       if (contact.getAddress() == address)
         return contact
     }
     return undefined
+  }
+  
+  isSubscribed(address: string): boolean {
+    return this.sendMessageSubscriptions.has(address)
   }
 }

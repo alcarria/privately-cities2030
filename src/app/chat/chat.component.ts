@@ -1,6 +1,7 @@
-import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef} from '@angular/core';
 import { Observable } from 'rxjs';
 import { Message } from '../modules/chat.entities';
+import { Store } from '../modules/store';
 
 @Component({
   selector: 'app-chat',
@@ -17,7 +18,7 @@ export class ChatComponent implements OnInit {
 
   public messages: Message[] = []
 
-  constructor() {
+  constructor(public store: Store, private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
