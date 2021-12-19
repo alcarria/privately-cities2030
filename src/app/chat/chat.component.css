@@ -24,14 +24,17 @@
   font-size: 75%;
 }
 
-.chat-card-other {
+.chat-card-encrypted {
   width: fit-content;
   margin-left: 1%;
   margin-right: auto;
+  cursor: pointer;
+  font-style: italic;
+  font-weight: bold;
 }
 
-.chat-card-me {
+.chat-card-decrypted {
   width: fit-content;
-  margin-left: auto;
-  margin-right: 1%;
+  margin-left: 1%;
+  margin-right: auto;
 }

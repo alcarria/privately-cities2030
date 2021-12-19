@@ -4,7 +4,7 @@
     <mat-list>
       <p *ngFor="let message of messages">
         <ng-container 
-          [ngTemplateOutlet]="message.getSender() == this.store.getCurrentAccountAddressValue() ? SentByMe : SentByOther" 
+          [ngTemplateOutlet]="message.isEncrypted() ? EncryptedMessage : DecryptedMessage" 
           [ngTemplateOutletContext]="{message:message}">
         </ng-container>
       </p>
@@ -16,7 +16,7 @@
       <mat-form-field style="width: 100%;" appearance="fill">
         <mat-label>Message</mat-label>
         <input matInput type="text" #message>
-        <button matSuffix mat-icon-button aria-label="Clear">
+        <button matSuffix mat-icon-button aria-label="Clear" (click)="sendMessage($event, message)">
           <mat-icon>send</mat-icon>
         </button>
       </mat-form-field>
@@ -30,8 +30,8 @@
   </div>
 </ng-template>
 
-<ng-template #SentByOther let-message='message'>
-  <mat-card class="chat-card-other">
+<ng-template #EncryptedMessage let-message='message'>
+  <mat-card class="chat-card-encrypted" (click)="message.decryptMessage()">
     <mat-card-title class="chat-ts">
       {{message.getTimestamp()}}
     </mat-card-title>
@@ -41,8 +41,8 @@
   </mat-card>
 </ng-template>
 
-<ng-template #SentByMe let-message='message'>
-  <mat-card class="chat-card-me">
+<ng-template #DecryptedMessage let-message='message'>
+  <mat-card class="chat-card-decrypted">
     <mat-card-title class="chat-ts">
       {{message.getTimestamp()}}
     </mat-card-title>

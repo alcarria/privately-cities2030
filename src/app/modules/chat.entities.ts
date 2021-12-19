@@ -1,5 +1,6 @@
 import {encrypt, decrypt} from '../modules/encryption.module';
 import {BehaviorSubject, Observable} from "rxjs";
+import { ChangeDetectorRef } from '@angular/core';
 
 export class DeadDropContact {
 
@@ -51,8 +52,11 @@ export class DeadDropContact {
     }
 }
 
-export class Message {    
-    constructor(private sender: string, private timestamp: Date, private message: string) { }
+export class Message {
+
+    private decryptedMessage: string|undefined = undefined
+
+    constructor(private sender: string, private timestamp: Date, private message: string, private cdr: ChangeDetectorRef) { }
 
     public getSender(): string {
         return this.sender
@@ -63,6 +67,17 @@ export class Message {
     }
 
     public getMessage(): string {
-        return this.message
+        return this.decryptedMessage ?? "Encrypted message (click)"
+    }
+
+    public async decryptMessage(): Promise<void> {
+        if (this.decryptedMessage != undefined) return
+
+        this.decryptedMessage = await decrypt(this.message, "x25519-xsalsa20-poly1305")
+        this.cdr.detectChanges();
+    }
+
+    public isEncrypted(): boolean {
+        return this.decryptedMessage == undefined
     }
 }

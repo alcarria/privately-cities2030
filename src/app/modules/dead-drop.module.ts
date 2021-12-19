@@ -82,7 +82,7 @@ export class DeadDropController {
     }
 
     subscribeToSendMessage(address: string): void {
-        if (this.sendMessageSubscriptions.has(address))
+        if (this.isSubscribed(address))
             this.sendMessageSubscriptions.get(address).unsubscribe();
         
         this.sendMessageSubscriptions.set(
@@ -100,11 +100,7 @@ export class DeadDropController {
           throw error
     
         // Check if the message is for me
-        if (!this.isTheMessageForMe(event)) return
-    
-        // Decrypt message
-        console.log(event.returnValues.message)
-        let message = await decrypt(event.returnValues.message, 'x25519-xsalsa20-poly1305')
+        if (!await this.isTheMessageForMe(event)) return
     
         // Add message to the corresponding chat
         let from = event.returnValues.from
@@ -114,16 +110,17 @@ export class DeadDropController {
         if (contact == undefined)
           throw 'contact is undefined'
     
-        contact.addMessage(new Message(from, new Date(Number(event.returnValues.timestamp)), message))
+        contact.addMessage(new Message(from, new Date(Number(event.returnValues.timestamp)), event.returnValues.message, this.cdr))
+        this.cdr.detectChanges();
     }
 
-    private isTheMessageForMe(event: any): boolean {
+    private async isTheMessageForMe(event: any): Promise<boolean> {
         const from = String(event.returnValues.from)
     
         if (this.getContact(from) == undefined) return false;
-    
-          // @ts-ignore
-        const token = getToken(this.contacts.get(from)?.decrypted_seed, {
+        
+        // @ts-ignore
+        const token = getToken(await this.getContact(from)?.getDecryptedSeed(), {
           digits: 64,
           algorithm: 'SHA-512',
           period: 60,
@@ -156,10 +153,14 @@ export class DeadDropController {
     }
 
     getContact(address: string): DeadDropContact|undefined {
-        for (let contact of this.contacts) {
-          if (contact.getAddress() == address)
-            return contact
-        }
-        return undefined
+      for (let contact of this.contacts) {
+        if (contact.getAddress() == address)
+          return contact
       }
+      return undefined
+    }
+    
+    isSubscribed(address: string): boolean {
+      return this.sendMessageSubscriptions.has(address)
+    }
 }

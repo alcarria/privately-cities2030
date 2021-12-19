@@ -33,28 +33,10 @@ export class DeadDropComponent implements OnInit {
       this.deadDropController.destroy()
       this.deadDropController = new DeadDropController(this.store.getCurrentAccountAddressValue(), this.cdr)
     })
-
-    this.testMessages()
   }
 
   ngOnDestroy(): void {
     this.deadDropController.destroy();
-  }
-
-  async testMessages(): Promise<void> {
-    while (true) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      if (this.selectedContact != undefined) {
-        this.selectedContact.addMessage(new Message(this.selectedContact.getAddress(), new Date(), "Mensaje de prueba"))
-        console.log('From Other')
-
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        this.selectedContact.addMessage(new Message(this.store.getCurrentAccountAddressValue(), new Date(), "Contestación de prueba"))
-        console.log('From Me')
-      }
-    }
   }
 
   sendMessage(message: any): void {
@@ -80,7 +62,8 @@ export class DeadDropComponent implements OnInit {
 
   async setSelectedContact(address: string): Promise<void> {
     this.selectedContact = this.getContact(address)
-    this.deadDropController.subscribeToSendMessage(address)
+    if (!this.deadDropController.isSubscribed(address))
+      this.deadDropController.subscribeToSendMessage(address)
     this.cdr.detectChanges();
   }
 
