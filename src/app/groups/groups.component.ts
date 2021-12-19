@@ -20,6 +20,13 @@ export class GroupsComponent implements OnInit {
   private GroupController: GroupController;
   public messagesObservable: Observable<Message[]> = new Observable<Message[]>()
 
+  /*
+  0: uso normal
+  1: creando chat
+  2: invitando al chat
+   */
+  private userActions = 1
+
   constructor(private store: Store, private cdr: ChangeDetectorRef, private router: Router) {
     this.GroupController = new GroupController(this.store.getCurrentAccountAddressValue(), cdr)
   }
@@ -45,13 +52,6 @@ export class GroupsComponent implements OnInit {
     await this.GroupController.sendMessage(this.selectedGroup, message);
   }
 
-  // Create a new chat
-  async newChat($event: any, name: any): Promise<void> {
-    $event.preventDefault()
-    console.log(name)
-    await this.GroupController.newChat(name)
-  }
-
   get getAddresses(): string[] {
     let addresses: string[] = []
     for (let contact of this.GroupController.getContacts()) {
@@ -64,6 +64,7 @@ export class GroupsComponent implements OnInit {
     this.selectedGroup = this.getContact(groupAddress);
     await this.GroupController.subscribeToSendMessage(groupAddress);
     this.cdr.detectChanges();
+    this.userActions = 0
   }
 
   private getContact(address: string): GroupContact | undefined {
@@ -87,10 +88,30 @@ export class GroupsComponent implements OnInit {
   }
 
   onNewChat(): void {
-    this.selectedGroup = undefined
+    this.userActions = 1
   }
 
-  get isCreatingChat(): boolean {
-    return this.selectedGroup == undefined
+  async newChat($event: any, name: any): Promise<void> {
+    $event.preventDefault()
+    console.log(name)
+    await this.GroupController.newChat(name)
+    this.userActions = 1
+  }
+
+  get userActionStatus(): number {
+    return this.userActions;
+  }
+
+  onNewInvite(): void {
+    this.userActions = 2
+  }
+
+  async newInvite($event: any, address: any) {
+    $event.preventDefault()
+    console.log(address.value)
+    if (this.selectedGroup == undefined)
+      throw 'Must select group first'
+    await this.GroupController.newInvite(address.value, this.selectedGroup)
+    this.userActions = 0
   }
 }

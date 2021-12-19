@@ -140,4 +140,15 @@ export class GroupController {
     }
     return undefined
   }
+
+  async newInvite(destAddress: any, selectedGroup: GroupContact) {
+    const groupAddress = selectedGroup.getAddress()
+    const groupKey = await selectedGroup.getDecryptedKey()
+
+    const publicKey = await this.contract.methods.getPublicKey(destAddress).call()
+
+    const encryptedGroupKey = encrypt(groupKey, publicKey, 'x25519-xsalsa20-poly1305')
+
+    this.contract.methods.invite(destAddress, groupAddress, encryptedGroupKey).send({from:this.currentAddress})
+  }
 }
