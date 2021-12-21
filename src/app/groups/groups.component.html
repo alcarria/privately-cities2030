@@ -5,17 +5,12 @@
         <mat-icon aria-hidden="false" aria-label="Example home icon">add_circle</mat-icon>
         Nuevo grupo
       </mat-list-item>
-      <mat-list-item mat-button class="list-item" (click)="onNewInvite()">
-        <mat-icon aria-hidden="false" aria-label="Example home icon">add_circle</mat-icon>
-        Invitar al grupo
-      </mat-list-item>
     </app-chat-sidenav>
   </div>
 
   <div class="chat">
     <ng-container [ngSwitch]="userActionStatus">
       <ng-container *ngSwitchCase="1" [ngTemplateOutlet]="createChat"></ng-container>
-      <ng-container *ngSwitchCase="2" [ngTemplateOutlet]="invite"></ng-container>
       <ng-container *ngSwitchDefault [ngTemplateOutlet]="chat"></ng-container>
     </ng-container>
   </div>
@@ -35,20 +30,6 @@
   </mat-card>
 </ng-template>
 
-<ng-template #invite>
-  <mat-card>
-    <mat-card-title>
-      Direccion a invitar
-    </mat-card-title>
-    <mat-card-content>
-      <form>
-        <input type="text" #address>
-        <button (click)="newInvite($event, address)">Enviar invitacion</button>
-      </form>
-    </mat-card-content>
-  </mat-card>
-</ng-template>
-
 <ng-template #chat>
   <app-chat [messagesObservable]="getMessagesSelected()" [address]="getSelectedAddress()"
             (onMessage)="sendMessage($event)" >
@@ -58,7 +39,7 @@
           <h3>{{getSelectedAddress()}}</h3>
         </div>
         <span class="spacer"></span>
-        <button mat-icon-button class="boton" (click)="onNewInvite()">
+        <button mat-icon-button class="boton" (click)="openInviteDialog()">
           <mat-icon aria-hidden="false" aria-label="Invitar participantes">group_add</mat-icon>
         </button>
         <button mat-icon-button class="boton">

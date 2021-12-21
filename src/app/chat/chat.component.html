@@ -33,7 +33,7 @@
 <ng-template #EncryptedMessage let-message='message'>
   <mat-card class="chat-card-encrypted" (click)="message.decryptMessage()">
     <mat-card-title class="chat-ts">
-      {{message.getTimestamp()}}
+      {{message.getTitle()}}
     </mat-card-title>
     <mat-card-content>
       {{message.getMessage()}}
@@ -41,13 +41,28 @@
   </mat-card>
 </ng-template>
 
-<ng-template #DecryptedMessage let-message='message'>
-  <mat-card class="chat-card-decrypted">
+<ng-template #OtherMessage let-message='message'>
+  <mat-card class="chat-card-other">
     <mat-card-title class="chat-ts">
-      {{message.getTimestamp()}}
+      {{message.getTitle()}}
     </mat-card-title>
     <mat-card-content>
       {{message.getMessage()}}
     </mat-card-content>
   </mat-card>
+</ng-template>
+
+<ng-template #MyMessage let-message='message'>
+  <mat-card class="chat-card-my">
+    <mat-card-content>
+      {{message.getMessage()}}
+    </mat-card-content>
+  </mat-card>
+</ng-template>
+
+<ng-template #DecryptedMessage let-message='message'>
+  <ng-container
+    [ngTemplateOutlet]="message.getSender().toLowerCase() == store.getCurrentAccountAddressValue() ? MyMessage : OtherMessage"
+    [ngTemplateOutletContext]="{message:message}">
+  </ng-container>
 </ng-template>

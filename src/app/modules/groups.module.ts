@@ -59,54 +59,45 @@ export class GroupController {
 
   async sendMessage(selectedGroup: GroupContact, message: any): Promise<void> {
     const groupKey: string = await selectedGroup.getDecryptedKey()
-    console.log('Ya tengo la clave del grupo')
     let encryptedMessage = encrypt(message, groupKey, 'xsalsa20-poly1305')
-    console.log('A punto de enviar el mensaje')
-    console.log('Grupo al que se envia el mensaje: ' + selectedGroup.getAddress())
     this.contract.methods.sendMessage(selectedGroup.getAddress(), encryptedMessage).send({from: this.currentAddress})
   }
 
-  async subscribeToSendMessage(group_address: string): Promise<void> {
-    console.log('Subscricion en marcha')
-    if (this.isSubscribed(group_address))
-      this.sendMessageSubscriptions.get(group_address).unsubscribe();
+  async subscribeToSendMessage(groupAddress: string): Promise<void> {
+    if (this.isSubscribed(groupAddress))
+      this.sendMessageSubscriptions.get(groupAddress).unsubscribe();
 
-    console.log('Group address: ' + group_address)
+    await this.getGroup(groupAddress)?.getDecryptedKey()
     await this.sendMessageSubscriptions.set(
-      group_address,
+      groupAddress,
       this.contract.events.onMessage({
-        filter: {'group': group_address},
+        filter: {'group': groupAddress},
         fromBlock: 0
       }, (error: any, event: any) => this.onMessageEvent(error, event))
     )
   }
 
   private async onMessageEvent(error: any, event: any): Promise<void> {
-    console.log('He recibido un mensaje')
     if (error !== null)
       throw error
 
-    if (!this.isTheMessageForMe(event)) return
-    console.log('Es para mi')
+    if (!this.isTheMessageForMe(event))
+      return
 
-    console.log(event.returnValues.message)
     const groupKey = await this.getGroup(event.returnValues.group)?.getDecryptedKey()
 
     if (groupKey == undefined)
       throw "Public key is undefined. Cant decrypt the message"
 
     let message = await decrypt(event.returnValues.message, groupKey, 'xsalsa20-poly1305')
-    console.log(message)
-    // Add message to the corresponding chat
-    let from = event.returnValues.group
+    let from = event.returnValues.from
 
-    console.log('Grupo despues de descifrar: ' + from)
-
-    const group = this.getGroup(from)
+    const group = this.getGroup(event.returnValues.group)
 
     if (group == undefined)
       throw 'contact is undefined'
 
+    console.log(event.returnValues)
     group.addMessage(new Message(from, new Date(Number(event.returnValues.timestamp)), message))
     this.cdr.detectChanges();
   }

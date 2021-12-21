@@ -61,7 +61,12 @@ export class GroupsComponent implements OnInit {
   }
 
   async setSelectedAddress(groupAddress: string): Promise<void> {
+
+    if (this.selectedGroup?.getAddress() == groupAddress)
+      return
+
     this.selectedGroup = this.GroupController.getGroup(groupAddress);
+
     if (!this.GroupController.isSubscribed(groupAddress))
       await this.GroupController.subscribeToSendMessage(groupAddress);
     this.userActions = 0
@@ -75,7 +80,6 @@ export class GroupsComponent implements OnInit {
   getMessagesSelected(): any {
     if (this.selectedGroup == undefined)
       throw 'Cannot get messages: contact is undefined'
-    console.log('getMessagesSelected: ' + this.selectedGroup.getAddress())
     return this.selectedGroup.getMessages()
   }
 
@@ -94,29 +98,17 @@ export class GroupsComponent implements OnInit {
     return this.userActions;
   }
 
-  onNewInvite(): void {
-    this.userActions = 2
-    this.openDialog()
-  }
-
-  async newInvite($event: any, address: any) {
-    $event.preventDefault()
-    console.log(address.value)
-    if (this.selectedGroup == undefined)
-      throw 'Must select group first'
-    await this.GroupController.newInvite(address.value, this.selectedGroup)
-    this.userActions = 0
-  }
-
-  openDialog() {
+  openInviteDialog() {
     const dialogConf = new MatDialogConfig()
 
-    dialogConf.disableClose = true;
+    dialogConf.disableClose = false;
 
     const dialogRef = this.dialog.open(InvitedialogComponent, dialogConf);
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
+    dialogRef.afterClosed().subscribe(async address => {
+      if (this.selectedGroup == undefined)
+        throw 'Must select group first'
+      await this.GroupController.newInvite(address, this.selectedGroup)
     });
   }
 }
