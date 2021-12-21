@@ -62,9 +62,10 @@ export class GroupsComponent implements OnInit {
 
   async setSelectedAddress(groupAddress: string): Promise<void> {
     this.selectedGroup = this.getContact(groupAddress);
-    await this.GroupController.subscribeToSendMessage(groupAddress);
-    this.cdr.detectChanges();
+    if (!this.GroupController.isSubscribed(groupAddress))
+      await this.GroupController.subscribeToSendMessage(groupAddress);
     this.userActions = 0
+    this.cdr.detectChanges();
   }
 
   private getContact(address: string): GroupContact | undefined {
@@ -88,6 +89,7 @@ export class GroupsComponent implements OnInit {
 
   onNewChat(): void {
     this.userActions = 1
+    this.selectedGroup = undefined
   }
 
   async newChat($event: any, name: any): Promise<void> {

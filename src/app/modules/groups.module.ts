@@ -68,7 +68,7 @@ export class GroupController {
 
   async subscribeToSendMessage(group_address: string): Promise<void> {
     console.log('Subscricion en marcha')
-    if (this.sendMessageSubscriptions.has(group_address))
+    if (this.isSubscribed(group_address))
       this.sendMessageSubscriptions.get(group_address).unsubscribe();
 
     console.log('Group address: ' + group_address)
@@ -109,6 +109,7 @@ export class GroupController {
       throw 'contact is undefined'
 
     group.addMessage(new Message(from, new Date(Number(event.returnValues.timestamp)), message))
+    this.cdr.detectChanges();
   }
 
   private isTheMessageForMe(event: any): boolean {
@@ -150,5 +151,9 @@ export class GroupController {
     const encryptedGroupKey = encrypt(groupKey, publicKey, 'x25519-xsalsa20-poly1305')
 
     this.contract.methods.invite(destAddress, groupAddress, encryptedGroupKey).send({from:this.currentAddress})
+  }
+
+  isSubscribed(group_address: string): boolean {
+    return this.sendMessageSubscriptions.has(group_address)
   }
 }
