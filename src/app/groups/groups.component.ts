@@ -8,6 +8,7 @@ import {Router} from "@angular/router";
 import {Observable} from "rxjs";
 import {InvitedialogComponent} from "../invitedialog/invitedialog.component";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
+import {PermdialogComponent} from "../permdialog/permdialog.component";
 
 @Component({
   selector: 'app-groups',
@@ -109,6 +110,20 @@ export class GroupsComponent implements OnInit {
       if (this.selectedGroup == undefined)
         throw 'Must select group first'
       await this.GroupController.newInvite(address, this.selectedGroup)
+    });
+  }
+
+  openPermDialog() {
+    const dialogConf = new MatDialogConfig()
+
+    dialogConf.disableClose = false;
+
+    const dialogRef = this.dialog.open(PermdialogComponent, dialogConf);
+
+    dialogRef.afterClosed().subscribe(async data => {
+      if (this.selectedGroup == undefined)
+        throw 'Must select group first'
+      await this.GroupController.givePerms(data.address, this.selectedGroup, data.permissions)
     });
   }
 }

@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
-import { MatIconRegistry } from "@angular/material/icon";
-import { DomSanitizer } from '@angular/platform-browser';
-import { Store } from './modules/store';
+import {Component} from '@angular/core';
+import {MatIconRegistry} from "@angular/material/icon";
+import {DomSanitizer} from '@angular/platform-browser';
+import {Store} from './modules/store';
+
 declare const window: any;
 
 @Component({
@@ -22,7 +23,7 @@ export class AppComponent {
 
 
     // Load account
-    window.ethereum.request({ method: 'eth_accounts' }).then((accounts: any) => store.setCurrentAccountAddress(accounts[0]))
+    window.ethereum.request({method: 'eth_accounts'}).then((accounts: any) => store.setCurrentAccountAddress(accounts[0]))
     window.ethereum.on('accountsChanged', (accounts: Array<string>) => {
       console.log('Accounts changed')
       console.log(accounts[0])

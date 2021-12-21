@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>Enviar invitación</h2>
+<mat-dialog-content>
+  <h2 matDialogTitle>Dirección de destino</h2>
+  <input matInput type="text" name="destAddress" [(ngModel)]="address">
+  <h2 matDialogTitle>Permisos</h2>
+  <input matInput type="text" name="destAddress" [(ngModel)]="permissions">
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button type="submit" mat-button (click)="onsubmit()">Submit</button>
+</mat-dialog-actions>

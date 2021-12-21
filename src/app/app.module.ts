@@ -19,6 +19,7 @@ import {InvitedialogComponent} from './invitedialog/invitedialog.component'
 import { Store } from './modules/store';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatDialog} from "@angular/material/dialog";
+import { PermdialogComponent } from './permdialog/permdialog.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -37,7 +38,8 @@ const routes: Routes = [
     ChatSidenavComponent,
     ChatComponent,
     GroupsComponent,
-    InvitedialogComponent
+    InvitedialogComponent,
+    PermdialogComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
