@@ -50,5 +50,22 @@
 </ng-template>
 
 <ng-template #chat>
-  <app-chat  [messagesObservable]="getMessagesSelected()" [address]="getSelectedAddress()" (onMessage)="sendMessage($event)"></app-chat>
+  <app-chat [messagesObservable]="getMessagesSelected()" [address]="getSelectedAddress()"
+            (onMessage)="sendMessage($event)" >
+    <mat-toolbar>
+      <mat-toolbar-row>
+        <div class="titulo">
+          <h3>{{getSelectedAddress()}}</h3>
+        </div>
+        <span class="spacer"></span>
+        <button mat-icon-button class="boton" (click)="onNewInvite()">
+          <mat-icon aria-hidden="false" aria-label="Invitar participantes">group_add</mat-icon>
+        </button>
+        <button mat-icon-button class="boton">
+          <mat-icon aria-hidden="false" aria-label="Añadir permisos">view_headline</mat-icon>
+        </button>
+      </mat-toolbar-row>
+    </mat-toolbar>
+
+  </app-chat>
 </ng-template>

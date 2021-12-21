@@ -1,10 +1,10 @@
-
+<ng-content *ngIf="address != ''"></ng-content>
 <div class="body">
   <div *ngIf="address != ''; else noAddress" class="chat-div">
     <mat-list>
       <p *ngFor="let message of messages">
-        <ng-container 
-          [ngTemplateOutlet]="message.isEncrypted() ? EncryptedMessage : DecryptedMessage" 
+        <ng-container
+          [ngTemplateOutlet]="message.isEncrypted() ? EncryptedMessage : DecryptedMessage"
           [ngTemplateOutletContext]="{message:message}">
         </ng-container>
       </p>

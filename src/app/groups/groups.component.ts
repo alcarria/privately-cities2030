@@ -1,5 +1,4 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-
 // @ts-ignore
 import Groups from '../../assets/contracts/Groups.json'
 import {GroupContact, Message} from "../modules/chat.entities";
@@ -7,11 +6,13 @@ import {GroupController} from "../modules/groups.module";
 import {Store} from "../modules/store";
 import {Router} from "@angular/router";
 import {Observable} from "rxjs";
+import {InvitedialogComponent} from "../invitedialog/invitedialog.component";
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-groups',
   templateUrl: './groups.component.html',
-  styleUrls: ['./groups.component.css']
+  styleUrls: ['./groups.component.css'],
 })
 
 export class GroupsComponent implements OnInit {
@@ -27,7 +28,7 @@ export class GroupsComponent implements OnInit {
    */
   private userActions = 1
 
-  constructor(private store: Store, private cdr: ChangeDetectorRef, private router: Router) {
+  constructor(private store: Store, private cdr: ChangeDetectorRef, private router: Router, public dialog: MatDialog) {
     this.GroupController = new GroupController(this.store.getCurrentAccountAddressValue(), cdr)
   }
 
@@ -44,7 +45,6 @@ export class GroupsComponent implements OnInit {
   }
 
   async sendMessage(message: any): Promise<void> {
-    console.log('group.component send message')
     console.log(message)
     if (this.selectedGroup == undefined)
       throw 'Cannot send message to undefined. You need to pick a contact first.'
@@ -80,7 +80,6 @@ export class GroupsComponent implements OnInit {
   }
 
   getMessagesSelected(): any {
-    console.log('get messages selected')
     if (this.selectedGroup == undefined)
       throw 'Cannot get messages: contact is undefined'
 
@@ -93,7 +92,6 @@ export class GroupsComponent implements OnInit {
 
   async newChat($event: any, name: any): Promise<void> {
     $event.preventDefault()
-    console.log(name)
     await this.GroupController.newChat(name)
     this.userActions = 1
   }
@@ -104,6 +102,7 @@ export class GroupsComponent implements OnInit {
 
   onNewInvite(): void {
     this.userActions = 2
+    this.openDialog()
   }
 
   async newInvite($event: any, address: any) {
@@ -113,5 +112,17 @@ export class GroupsComponent implements OnInit {
       throw 'Must select group first'
     await this.GroupController.newInvite(address.value, this.selectedGroup)
     this.userActions = 0
+  }
+
+  openDialog() {
+    const dialogConf = new MatDialogConfig()
+
+    dialogConf.disableClose = true;
+
+    const dialogRef = this.dialog.open(InvitedialogComponent, dialogConf);
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(`Dialog result: ${result}`);
+    });
   }
 }

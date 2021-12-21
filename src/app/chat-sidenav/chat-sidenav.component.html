@@ -5,7 +5,6 @@
     [ngTemplateOutlet]="this.selected == address ? Selected : NoSelected" 
     [ngTemplateOutletContext]="{address:address}">
   </div>
-  <!-- <button class="button"mat-list-item *ngFor="let address of addresses" (click)="onClick(address)">{{address}}</button> -->
 </mat-list>
 
 <ng-template #Selected let-address='address'>

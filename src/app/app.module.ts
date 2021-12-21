@@ -14,8 +14,11 @@ import { DeadDropComponent } from './dead-drop/dead-drop.component';
 import { ChatSidenavComponent } from './chat-sidenav/chat-sidenav.component';
 import { ChatComponent } from './chat/chat.component';
 import { GroupsComponent } from './groups/groups.component';
+import {InvitedialogComponent} from './invitedialog/invitedialog.component'
 
 import { Store } from './modules/store';
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {MatDialog} from "@angular/material/dialog";
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -33,7 +36,8 @@ const routes: Routes = [
     DeadDropComponent,
     ChatSidenavComponent,
     ChatComponent,
-    GroupsComponent
+    GroupsComponent,
+    InvitedialogComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
@@ -41,7 +45,9 @@ const routes: Routes = [
     RouterModule,
     HttpClientModule,
     MaterialModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
