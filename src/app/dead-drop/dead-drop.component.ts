@@ -73,6 +73,7 @@ export class DeadDropComponent implements OnInit {
   getMessagesSelected(): Observable<MessageDeadDrop[]> {
     if (this.selectedContact == undefined)
       throw 'Cannot get messages: contact is undefined'
+    console.log('getMessagesSelected: ' + this.selectedContact.getAddress())
 
     return this.selectedContact.getMessages()
   }

@@ -1,7 +1,7 @@
 import {Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef} from '@angular/core';
-import { Observable } from 'rxjs';
-import { Message } from '../modules/chat.entities';
-import { Store } from '../modules/store';
+import {Observable} from 'rxjs';
+import {Message} from '../modules/chat.entities';
+import {Store} from '../modules/store';
 
 @Component({
   selector: 'app-chat',
@@ -17,16 +17,23 @@ export class ChatComponent implements OnInit {
   @Output() public onMessage = new EventEmitter<string>()
 
   public messages: Message[] = []
+  private subscription: any;
 
   constructor(public store: Store, private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
-    this.subscribeToMessages();
+    this.subscription = this.subscribeToMessages();
+  }
+
+  ngOnChanges(): void {
+    if (this.subscription != undefined)
+      this.subscription.unsubscribe()
+    this.subscription = this.subscribeToMessages();
   }
 
   subscribeToMessages() {
-    this.messagesObservable.subscribe(value => {
+    return this.messagesObservable.subscribe(value => {
       this.messages = value
     })
   }

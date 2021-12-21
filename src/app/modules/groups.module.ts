@@ -83,15 +83,14 @@ export class GroupController {
 
   private async onMessageEvent(error: any, event: any): Promise<void> {
     console.log('He recibido un mensaje')
-    // Check errors
     if (error !== null)
       throw error
-    // Check if the message is for me
+
     if (!this.isTheMessageForMe(event)) return
     console.log('Es para mi')
-    // Decrypt message
+
     console.log(event.returnValues.message)
-    const groupKey = await this.getContact(event.returnValues.group)?.getDecryptedKey()
+    const groupKey = await this.getGroup(event.returnValues.group)?.getDecryptedKey()
 
     if (groupKey == undefined)
       throw "Public key is undefined. Cant decrypt the message"
@@ -103,7 +102,7 @@ export class GroupController {
 
     console.log('Grupo despues de descifrar: ' + from)
 
-    const group = this.getContact(from)
+    const group = this.getGroup(from)
 
     if (group == undefined)
       throw 'contact is undefined'
@@ -114,10 +113,10 @@ export class GroupController {
 
   private isTheMessageForMe(event: any): boolean {
     const group = String(event.returnValues.group)
-    return this.getContact(group) != undefined;
+    return this.getGroup(group) != undefined;
   }
 
-  getContacts(): GroupContact[] {
+  getGroups(): GroupContact[] {
     return this.groups
   }
 
@@ -134,7 +133,7 @@ export class GroupController {
 
   }
 
-  getContact(address: string): GroupContact | undefined {
+  getGroup(address: string): GroupContact | undefined {
     for (let contact of this.groups) {
       if (contact.getAddress() == address)
         return contact

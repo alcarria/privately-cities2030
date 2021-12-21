@@ -54,26 +54,18 @@ export class GroupsComponent implements OnInit {
 
   get getAddresses(): string[] {
     let addresses: string[] = []
-    for (let contact of this.GroupController.getContacts()) {
+    for (let contact of this.GroupController.getGroups()) {
       addresses.push(contact.getAddress())
     }
     return addresses
   }
 
   async setSelectedAddress(groupAddress: string): Promise<void> {
-    this.selectedGroup = this.getContact(groupAddress);
+    this.selectedGroup = this.GroupController.getGroup(groupAddress);
     if (!this.GroupController.isSubscribed(groupAddress))
       await this.GroupController.subscribeToSendMessage(groupAddress);
     this.userActions = 0
     this.cdr.detectChanges();
-  }
-
-  private getContact(address: string): GroupContact | undefined {
-    for (let contact of this.GroupController.getContacts()) {
-      if (contact.getAddress() == address)
-        return contact
-    }
-    return undefined
   }
 
   getSelectedAddress(): string {
@@ -83,7 +75,7 @@ export class GroupsComponent implements OnInit {
   getMessagesSelected(): any {
     if (this.selectedGroup == undefined)
       throw 'Cannot get messages: contact is undefined'
-
+    console.log('getMessagesSelected: ' + this.selectedGroup.getAddress())
     return this.selectedGroup.getMessages()
   }
 
