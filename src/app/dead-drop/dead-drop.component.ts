@@ -38,17 +38,17 @@ export class DeadDropComponent implements OnInit {
     this.deadDropController.destroy();
   }
 
-  sendMessage(message: any): void {
+  async sendMessage(message: any): Promise<void> {
     if (this.selectedContact == undefined)
       throw 'Cannot send message to undefined. You need to pick a contact first.'
 
-    this.deadDropController.sendMessage(this.selectedContact, message);
+    await this.deadDropController.sendMessage(this.selectedContact, message);
   }
 
   // Create a new chat
   async newChat($event: any, address: any): Promise<void> {
     $event.preventDefault()
-    this.deadDropController.newChat(address)
+    await this.deadDropController.newChat(address)
   }
 
   getAddresses(): string[] {

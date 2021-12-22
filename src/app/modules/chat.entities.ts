@@ -1,4 +1,4 @@
-import {encrypt, decrypt} from './encryption.module';
+import {decrypt} from './encryption.module';
 import {BehaviorSubject, Observable} from "rxjs";
 import {ChangeDetectorRef} from '@angular/core';
 
@@ -79,6 +79,7 @@ export class GroupContact {
   }
 
   public addMessage(message: Message): void {
+    console.log('Añadir mensaje')
     this.messages.next(
       [...this.messages.getValue(), message]
     )

@@ -46,7 +46,6 @@ export class GroupsComponent implements OnInit {
   }
 
   async sendMessage(message: any): Promise<void> {
-    console.log(message)
     if (this.selectedGroup == undefined)
       throw 'Cannot send message to undefined. You need to pick a contact first.'
 
@@ -107,6 +106,8 @@ export class GroupsComponent implements OnInit {
     const dialogRef = this.dialog.open(InvitedialogComponent, dialogConf);
 
     dialogRef.afterClosed().subscribe(async address => {
+      if (address == undefined)
+        return
       if (this.selectedGroup == undefined)
         throw 'Must select group first'
       await this.GroupController.newInvite(address, this.selectedGroup)
@@ -121,6 +122,9 @@ export class GroupsComponent implements OnInit {
     const dialogRef = this.dialog.open(PermdialogComponent, dialogConf);
 
     dialogRef.afterClosed().subscribe(async data => {
+      console.log(data)
+      if (data == undefined)
+        return
       if (this.selectedGroup == undefined)
         throw 'Must select group first'
       await this.GroupController.givePerms(data.address, this.selectedGroup, data.permissions)

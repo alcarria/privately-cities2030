@@ -82,7 +82,6 @@ contract Groups {
 
   function changePermissions(address to, address group, uint permissions) public {
     require(groupsInfo[group].permissions[msg.sender] >= 4);
-    //The sender has permissions
     require(groupsInfo[group].permissions[to] > 0);
     require(groupsInfo[group].permissions[msg.sender] > permissions);
     require(groupsInfo[group].permissions[to] < groupsInfo[group].permissions[msg.sender]);

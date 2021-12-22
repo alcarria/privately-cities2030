@@ -1,6 +1,6 @@
 import * as nacl from 'tweetnacl';
 import * as naclUtil from 'tweetnacl-util';
-import {decodeUTF8, encodeUTF8} from "tweetnacl-util";
+import {encodeUTF8} from "tweetnacl-util";
 
 declare let window: any
 

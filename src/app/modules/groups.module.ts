@@ -60,7 +60,11 @@ export class GroupController {
   async sendMessage(selectedGroup: GroupContact, message: any): Promise<void> {
     const groupKey: string = await selectedGroup.getDecryptedKey()
     let encryptedMessage = encrypt(message, groupKey, 'xsalsa20-poly1305')
-    this.contract.methods.sendMessage(selectedGroup.getAddress(), encryptedMessage).send({from: this.currentAddress})
+    await this.contract.methods.sendMessage(selectedGroup.getAddress(), encryptedMessage).send({from: this.currentAddress})
+  }
+
+  isSubscribed(groupAddress: string): boolean {
+    return this.sendMessageSubscriptions.has(groupAddress)
   }
 
   async subscribeToSendMessage(groupAddress: string): Promise<void> {
@@ -68,17 +72,14 @@ export class GroupController {
       this.sendMessageSubscriptions.get(groupAddress).unsubscribe();
 
     await this.getGroup(groupAddress)?.getDecryptedKey()
-    await this.sendMessageSubscriptions.set(
+
+    this.sendMessageSubscriptions.set(
       groupAddress,
       this.contract.events.onMessage({
         filter: {'group': groupAddress},
         fromBlock: 0
       }, (error: any, event: any) => this.onMessageEvent(error, event))
     )
-  }
-
-  isSubscribed(group_address: string): boolean {
-    return this.sendMessageSubscriptions.has(group_address)
   }
 
   private async onMessageEvent(error: any, event: any): Promise<void> {
@@ -100,6 +101,8 @@ export class GroupController {
 
     if (group == undefined)
       throw 'contact is undefined'
+
+    console.log('Evento de mensaje')
 
     group.addMessage(new Message(from, new Date(Number(event.returnValues.timestamp)), message))
     this.cdr.detectChanges();
@@ -146,7 +149,10 @@ export class GroupController {
     this.contract.methods.invite(destAddress, groupAddress, encryptedGroupKey).send({from: this.currentAddress})
   }
 
-  async givePerms(destAddress: any, selectedGroup: GroupContact, permissions: number){
+  async givePerms(destAddress: any, selectedGroup: GroupContact, permissions: number) {
+    if (permissions <= 2 || permissions > 4) {
+        throw 'Permission must be between 2 and 4'
+    }
     const groupAddress = selectedGroup.getAddress()
     this.contract.methods.changePermissions(destAddress, groupAddress, permissions).send({from: this.currentAddress})
   }

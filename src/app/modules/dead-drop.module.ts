@@ -5,7 +5,7 @@ import DeadDropContract from '../../assets/contracts/DeadDrop.json'
 import {environment} from "src/environments/environment";
 import {Store} from "./store";
 import {ChangeDetectorRef} from "@angular/core";
-import {decrypt, encrypt} from "./encryption.module";
+import {encrypt} from "./encryption.module";
 import getToken from "totp-generator";
 
 declare let window: any;
@@ -41,7 +41,60 @@ export class DeadDropController {
     if (this.shareSeedSubscriber != undefined) {
       this.shareSeedSubscriber.unsubscribe()
     }
-  }  
+  }
+
+  private onShareSeed(error: any, event: any): void {
+    console.log('OnShareSeed')
+    if (error !== null)
+      throw error
+
+    // Check if the message is for me
+    if (event.returnValues.to.toLowerCase() == this.currentAddress.toLowerCase()) {
+      const from = String(event.returnValues.from)
+      const encrypted_seed = event.returnValues.to_seed
+      this.contacts.push(new DeadDropContact(from, encrypted_seed))
+    } else if (event.returnValues.from.toLowerCase() == this.currentAddress.toLowerCase()) {
+      const to = String(event.returnValues.to)
+      const encrypted_seed = event.returnValues.from_seed
+      this.contacts.push(new DeadDropContact(to, encrypted_seed))
+    }
+
+    this.cdr.detectChanges();
+  }
+
+  async sendMessage(selectedContact: DeadDropContact, message: any): Promise<void> {
+    let contactPublicKey = await this.contract.methods.getPublicKey(selectedContact.getAddress()).call()
+    let encryptedMessage = encrypt(message, contactPublicKey, 'x25519-xsalsa20-poly1305')
+    const timestamp = Date.now()
+
+    const decrypted_seed: string = await selectedContact.getDecryptedSeed()
+    const token = getToken(decrypted_seed, {
+      digits: 128,
+      algorithm: 'SHA-512',
+      period: 60,
+      // @ts-ignore
+      timestamp: Number(timestamp)
+    })
+    // Enviarlo a la red
+    await this.contract.methods.sendMessage(token, timestamp, encryptedMessage).send({from: this.currentAddress})
+  }
+
+  isSubscribed(address: string): boolean {
+    return this.sendMessageSubscriptions.has(address)
+  }
+
+  subscribeToSendMessage(address: string): void {
+    if (this.sendMessageSubscriptions.has(address))
+      this.sendMessageSubscriptions.get(address).unsubscribe();
+
+    this.sendMessageSubscriptions.set(
+      address,
+      this.contract.events.SendMessage({
+        filter: {'from': address},
+        fromBlock: 0
+      }, (error: any, event: any) => this.onMessageEvent(error, event))
+    )
+  }
 
   private async onMessageEvent(error: any, event: any): Promise<void> {
     // Check errors
@@ -64,71 +117,20 @@ export class DeadDropController {
   }
 
   private async isTheMessageForMe(event: any): Promise<boolean> {
-      const from = String(event.returnValues.from)
-  
-      if (this.getContact(from) == undefined) return false;
-      
-      // @ts-ignore
-      const token = getToken(await this.getContact(from)?.getDecryptedSeed(), {
-        digits: 64,
-        algorithm: 'SHA-512',
-        period: 60,
-        // @ts-ignore
-        timestamp: Number(event.returnValues.timestamp)
-      })
-  
-      return event.returnValues.totp == token
-  }
+    const from = String(event.returnValues.from)
 
-  // Cuando llega una semilla la añadimos a la lista de semillas
-  private async onShareSeed(error: any, event: any): Promise<void> {
-    if (error !== null)
-      throw error
+    if (this.getContact(from) == undefined) return false;
 
-    // Check if the message is for me
-    if (event.returnValues.to.toLowerCase() == this.currentAddress.toLowerCase()) {
-      const from = String(event.returnValues.from)
-      const encrypted_seed = event.returnValues.to_seed
-      this.contacts.push(new DeadDropContact(from, encrypted_seed))
-    } else if (event.returnValues.from.toLowerCase() == this.currentAddress.toLowerCase()) {
-      const to = String(event.returnValues.to)
-      const encrypted_seed = event.returnValues.from_seed
-      this.contacts.push(new DeadDropContact(to, encrypted_seed))
-    }
-    this.cdr.detectChanges();
-  }
-
-  async sendMessage(selectedContact: DeadDropContact, message: any): Promise<void> {
-    let contactPublicKey = await this.contract.methods.getPublicKey(selectedContact.getAddress()).call()
-    let encryptedMessage = encrypt(message, contactPublicKey, 'x25519-xsalsa20-poly1305')
-    const timestamp = Date.now()
-
-    const decrypted_seed: string = await selectedContact.getDecryptedSeed()
-    const token = getToken(decrypted_seed, {
-      digits: 128,
+    // @ts-ignore
+    const token = getToken(await this.getContact(from)?.getDecryptedSeed(), {
+      digits: 64,
       algorithm: 'SHA-512',
       period: 60,
       // @ts-ignore
-      timestamp: Number(timestamp)
+      timestamp: Number(event.returnValues.timestamp)
     })
-    // Enviarlo a la red
-    this.contract.methods.sendMessage(token, timestamp, encryptedMessage).send({from: this.currentAddress})
-      .then((receipt: any) => {
 
-      })
-  }
-
-  subscribeToSendMessage(address: string): void {
-    if (this.sendMessageSubscriptions.has(address))
-      this.sendMessageSubscriptions.get(address).unsubscribe();
-
-    this.sendMessageSubscriptions.set(
-      address,
-      this.contract.events.SendMessage({
-        filter: {'from': address},
-        fromBlock: 0
-      }, (error: any, event: any) => this.onMessageEvent(error, event))
-    )
+    return event.returnValues.totp == token
   }
 
   getContacts(): DeadDropContact[] {
@@ -146,21 +148,15 @@ export class DeadDropController {
     const from_seed = encrypt(token_seed, myPublicKey, 'x25519-xsalsa20-poly1305')
     const to_seed = encrypt(token_seed, contactPublicKey, 'x25519-xsalsa20-poly1305')
 
-    this.contract.methods.shareSeed(destinationAddress, from_seed, to_seed).send({from: this.currentAddress})
-      .then(((receipt: any) => {
-
-      }))
+    await this.contract.methods.shareSeed(destinationAddress, from_seed, to_seed).send({from: this.currentAddress})
   }
 
-  getContact(address: string): DeadDropContact|undefined {
+  getContact(address: string): DeadDropContact | undefined {
     for (let contact of this.contacts) {
       if (contact.getAddress() == address)
         return contact
     }
     return undefined
   }
-  
-  isSubscribed(address: string): boolean {
-    return this.sendMessageSubscriptions.has(address)
-  }
+
 }

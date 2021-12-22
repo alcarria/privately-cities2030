@@ -26,9 +26,9 @@ export class PermdialogComponent implements OnInit {
     })
   }
 
-  onsubmit() {
+  onSubmit() {
     this.ngZone.run(() => {
-      const data = {'address': this.address,'permissions': this.permissions }
+      const data = {'address': this.address, 'permissions': this.permissions}
       this.dialogRef.close(data)
     })
   }
