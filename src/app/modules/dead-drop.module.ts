@@ -140,7 +140,9 @@ export class DeadDropController {
   // Create a new chat
   async newChat(address: any): Promise<void> {
     const destinationAddress = address.value
-    const token_seed: string = 'ALFABETO' // todo hacer semilla aleatoria
+    const token_seed: string = this.genSeed()
+
+    console.log(token_seed)
 
     let myPublicKey = await this.contract.methods.getPublicKey(this.currentAddress).call()
     let contactPublicKey = await this.contract.methods.getPublicKey(destinationAddress).call()
@@ -149,6 +151,17 @@ export class DeadDropController {
     const to_seed = encrypt(token_seed, contactPublicKey, 'x25519-xsalsa20-poly1305')
 
     await this.contract.methods.shareSeed(destinationAddress, from_seed, to_seed).send({from: this.currentAddress})
+  }
+
+  genSeed(length?: number): string {
+    let result = ''
+    const seedLength = 20
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'
+    const charactersLength = characters.length
+    for (let i = 0; i < (length || seedLength); i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result
   }
 
   getContact(address: string): DeadDropContact | undefined {
