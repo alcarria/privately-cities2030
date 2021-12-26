@@ -28,7 +28,7 @@ contract Groups {
   // K: groupAddress
   mapping(address => GroupInfo) public groupsInfo;
 
-  event onInvite(address indexed to, address group, string groupKey);
+  event onInvite(address indexed to, address group, string groupKey, string groupName);
   event onMessage(address indexed group, address from, string message);
 
   function createGroup(address group, string memory groupName, string memory groupKey) public {
@@ -49,9 +49,9 @@ contract Groups {
 
     GroupInfo storage gInfo = groupsInfo[group];
     gInfo.name = groupName;
-    gInfo.permissions[msg.sender] = 99;
+    gInfo.permissions[msg.sender] = 5;
 
-    emit onInvite(msg.sender, group, groupKey);
+    emit onInvite(msg.sender, group, groupKey, gInfo.name);
   }
 
   function invite(address to, address group, string memory groupKey) public {
@@ -70,7 +70,7 @@ contract Groups {
     GroupInfo storage gInfo = groupsInfo[group];
     gInfo.permissions[to] = 1;
 
-    emit onInvite(to, group, groupKey);
+    emit onInvite(to, group, groupKey, gInfo.name);
   }
 
   function sendMessage(address group, string memory message) public {

@@ -52,7 +52,8 @@ export class GroupController {
     if (event.returnValues.to.toLowerCase() == this.currentAddress.toLowerCase()) {
       const group = String(event.returnValues.group)
       const groupKey = event.returnValues.groupKey
-      this.groups.push(new GroupContact(group, groupKey))
+      const groupName = event.returnValues.groupName
+      this.groups.push(new GroupContact(group, groupKey, groupName))
     }
     this.cdr.detectChanges();
   }

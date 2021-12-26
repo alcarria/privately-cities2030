@@ -74,7 +74,7 @@ export class GroupsComponent implements OnInit {
   }
 
   getSelectedAddress(): string {
-    return this.selectedGroup?.getAddress() ?? ''
+    return this.selectedGroup?.getGroupName() ?? ''
   }
 
   getMessagesSelected(): any {

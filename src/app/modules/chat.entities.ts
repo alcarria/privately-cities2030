@@ -60,11 +60,15 @@ export class GroupContact {
   private subscription: any | undefined;
   private messages: BehaviorSubject<Message[]> = new BehaviorSubject<Message[]>([]);
 
-  constructor(private group_address: string, private encrypted_pass: string) {
+  constructor(private groupAddress: string, private encrypted_pass: string, private groupName: string) {
   }
 
   public getAddress(): string {
-    return this.group_address
+    return this.groupAddress
+  }
+
+  public getGroupName(): string {
+    return this.groupName
   }
 
   public async getDecryptedKey(): Promise<string> {
