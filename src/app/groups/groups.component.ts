@@ -122,7 +122,6 @@ export class GroupsComponent implements OnInit {
     const dialogRef = this.dialog.open(PermdialogComponent, dialogConf);
 
     dialogRef.afterClosed().subscribe(async data => {
-      console.log(data)
       if (data == undefined)
         return
       if (this.selectedGroup == undefined)

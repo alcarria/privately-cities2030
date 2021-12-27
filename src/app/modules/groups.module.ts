@@ -151,7 +151,7 @@ export class GroupController {
   }
 
   async givePerms(destAddress: any, selectedGroup: GroupContact, permissions: number) {
-    if (permissions <= 2 || permissions > 4) {
+    if (permissions < 2 || permissions > 4) {
         throw 'Permission must be between 2 and 4'
     }
     const groupAddress = selectedGroup.getAddress()
