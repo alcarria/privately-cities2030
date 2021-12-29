@@ -48,11 +48,11 @@ export class PrivateController {
     if (error !== null)
       throw error
 
-    // Check if the message is for me
     if (event.returnValues.to.toLowerCase() == this.currentAddress.toLowerCase()) {
       const from = String(event.returnValues.from)
       const contactKey = event.returnValues.toContactKey
       this.contacts.push(new PrivateContact(from, contactKey, ''))
+
     } else if (event.returnValues.from.toLowerCase() == this.currentAddress.toLowerCase()) {
       const to = String(event.returnValues.to)
       const contactKey = event.returnValues.fromContactKey
@@ -81,7 +81,7 @@ export class PrivateController {
     this.sendMessageSubscriptions.set(
       contactAddress,
       this.contract.events.onMessage({
-        filter: {'to': contactAddress, 'from': this.currentAddress},
+        // filter: {'from': contactAddress.toLowerCase(), 'to': this.currentAddress.toLowerCase()},
         fromBlock: 0
       }, (error: any, event: any) => this.onMessageEvent(error, event)),
     )
@@ -94,21 +94,28 @@ export class PrivateController {
     if (!this.isTheMessageForMe(event))
       return
 
-    const contactKey = await this.getContact(event.returnValues.to)?.getDecryptedKey()
+    let from = event.returnValues.from
+    let contactKey;
+    let contact;
+
+    if (from.toLowerCase() == this.currentAddress.toLowerCase()) {
+      contactKey = await this.getContact(String(event.returnValues.to))?.getDecryptedKey()
+    } else {
+      contactKey = await this.getContact(event.returnValues.from)?.getDecryptedKey()
+    }
 
     if (contactKey == undefined)
       throw "Public key is undefined. Cant decrypt the message"
 
     let message = await decrypt(event.returnValues.message, contactKey, 'xsalsa20-poly1305')
-    let from = event.returnValues.from
 
-    const contact = this.getContact(event.returnValues.to)
+    if (from.toLowerCase() == this.currentAddress.toLowerCase())
+      contact = this.getContact(event.returnValues.to)
+    else
+      contact = this.getContact(event.returnValues.from)
 
     if (contact == undefined)
       throw 'contact is undefined'
-
-    console.log('Evento de mensaje')
-    console.log(message)
 
     contact.addMessage(new Message(from, new Date(Number(event.returnValues.timestamp)), message))
     this.cdr.detectChanges();
@@ -116,10 +123,18 @@ export class PrivateController {
 
   private isTheMessageForMe(event: any): boolean {
     const contact = String(event.returnValues.to)
-    return this.getContact(contact) != undefined;
+    if (this.getContact(contact) != undefined) {
+      return event.returnValues.from.toLowerCase() == this.currentAddress.toLowerCase()
+
+    } else if (event.returnValues.to.toLowerCase() == this.currentAddress) {
+      return this.getContact(String(event.returnValues.from)) != undefined
+
+    } else {
+      return false
+    }
   }
 
-  getGroups(): PrivateContact[] {
+  getContacts(): PrivateContact[] {
     return this.contacts
   }
 
@@ -134,12 +149,11 @@ export class PrivateController {
     const destCypherKey = encrypt(decrytedKey, destPublicKey, 'x25519-xsalsa20-poly1305')
 
     await this.contract.methods.shareKey(contactAddress, myCypherKey, destCypherKey).send({from: this.currentAddress})
-
   }
 
   getContact(address: string): PrivateContact | undefined {
     for (let contact of this.contacts) {
-      if (contact.getAddress() == address)
+      if (contact.getAddress().toLowerCase() == address.toLowerCase())
         return contact
     }
     return undefined

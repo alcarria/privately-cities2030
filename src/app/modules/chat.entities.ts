@@ -135,7 +135,6 @@ export class PrivateContact {
   }
 
   public addMessage(message: Message): void {
-    console.log('Añadir mensaje')
     this.messages.next(
       [...this.messages.getValue(), message]
     )

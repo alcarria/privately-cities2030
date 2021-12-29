@@ -48,7 +48,7 @@ export class PrivatesComponent implements OnInit {
 
   get getAddresses(): string[] {
     let addresses: string[] = []
-    for (let contact of this.PrivateController.getGroups()) {
+    for (let contact of this.PrivateController.getContacts()) {
       addresses.push(contact.getAddress())
     }
     return addresses
