@@ -1,16 +1,19 @@
 <mat-toolbar>
-    <mat-toolbar-row>
-        <a mat-button [routerLink]="''"><h1> Privately </h1></a>
-        <span class="menu-spacer"></span>
-        <div>
-        <a mat-button [routerLink]="'/dead-drop'"> Dead Drop </a>
-        </div>
-      <div>
-        <a mat-button [routerLink]="'/groups'"> Grupos </a>
-      </div>
-        <span class="spacer"></span>
-        <div>
-            <p>{{ address }}</p>
-        </div>
-    </mat-toolbar-row>
+  <mat-toolbar-row>
+    <a mat-button [routerLink]="''"><h1> Privately </h1></a>
+    <span class="menu-spacer"></span>
+    <div>
+      <a mat-button [routerLink]="'/privates'"> Chats </a>
+    </div>
+    <div>
+      <a mat-button [routerLink]="'/dead-drop'"> Dead Drop </a>
+    </div>
+    <div>
+      <a mat-button [routerLink]="'/groups'"> Grupos </a>
+    </div>
+    <span class="spacer"></span>
+    <div>
+      <p>{{ address }}</p>
+    </div>
+  </mat-toolbar-row>
 </mat-toolbar>

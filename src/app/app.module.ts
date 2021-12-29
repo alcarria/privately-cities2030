@@ -1,31 +1,33 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
 
-import { RouterModule, Routes } from '@angular/router';
-import { AppComponent } from './app.component';
+import {RouterModule, Routes} from '@angular/router';
+import {AppComponent} from './app.component';
 
-import { HttpClientModule } from "@angular/common/http";
-import { MaterialModule } from './material-module'
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { LoginComponent } from './login/login.component';
-import { AccountComponent } from './account/account.component';
-import { NavbarComponent } from './navbar/navbar.component';
-import { DeadDropComponent } from './dead-drop/dead-drop.component';
-import { ChatSidenavComponent } from './chat-sidenav/chat-sidenav.component';
-import { ChatComponent } from './chat/chat.component';
-import { GroupsComponent } from './groups/groups.component';
+import {HttpClientModule} from "@angular/common/http";
+import {MaterialModule} from './material-module'
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {LoginComponent} from './login/login.component';
+import {AccountComponent} from './account/account.component';
+import {NavbarComponent} from './navbar/navbar.component';
+import {DeadDropComponent} from './dead-drop/dead-drop.component';
+import {ChatSidenavComponent} from './chat-sidenav/chat-sidenav.component';
+import {ChatComponent} from './chat/chat.component';
+import {GroupsComponent} from './groups/groups.component';
 import {InvitedialogComponent} from './invitedialog/invitedialog.component'
 
-import { Store } from './modules/store';
+import {Store} from './modules/store';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatDialog} from "@angular/material/dialog";
-import { PermdialogComponent } from './permdialog/permdialog.component';
+import {PermdialogComponent} from './permdialog/permdialog.component';
+import {PrivatesComponent} from './privates/privates.component';
 
 const routes: Routes = [
-  { path: '', component: LoginComponent },
-  { path: 'account', component: AccountComponent },
-  { path: 'dead-drop', component: DeadDropComponent },
-  { path: 'groups', component: GroupsComponent }
+  {path: '', component: LoginComponent},
+  {path: 'account', component: AccountComponent},
+  {path: 'dead-drop', component: DeadDropComponent},
+  {path: 'groups', component: GroupsComponent},
+  {path: 'privates', component: PrivatesComponent}
 ]
 
 @NgModule({
@@ -39,7 +41,8 @@ const routes: Routes = [
     ChatComponent,
     GroupsComponent,
     InvitedialogComponent,
-    PermdialogComponent
+    PermdialogComponent,
+    PrivatesComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
@@ -54,4 +57,5 @@ const routes: Routes = [
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule {
+}

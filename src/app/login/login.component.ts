@@ -5,6 +5,8 @@ import {environment} from "../../environments/environment";
 import DeadDrop from "../../assets/contracts/DeadDrop.json";
 // @ts-ignore
 import Groups from "../../assets/contracts/Groups.json";
+// @ts-ignore
+import Privates from "../../assets/contracts/Privates.json";
 
 declare let window: any
 
@@ -24,6 +26,11 @@ export class LoginComponent implements OnInit {
     Groups.abi,
     environment.group_address
   )
+
+  private privatesContract = new window.web3.eth.Contract(
+    Privates.abi,
+    environment.privates_address
+  )
   metamask_accounts = ""
   loading = false
   error = ""
@@ -42,7 +49,6 @@ export class LoginComponent implements OnInit {
   }
 
   onLogin(): void {
-    //TODO: añadir demas contratos
     this.loading = true
 
     //Solicitamos que inicie sesion con Metamask
@@ -79,6 +85,20 @@ export class LoginComponent implements OnInit {
               if (result !== publicKey) {
                 //Si no esta, la añadimos
                 this.groupContract.methods.setPublicKey(this.metamask_accounts[0], publicKey).send({from: this.metamask_accounts[0]})
+                  .then(() => {
+                    //Cuando se ha añadido su clave publica al contrato se sigue adelante en el proceso de login
+                    this.router.navigate(['dead-drop'])
+                  })
+              } else {
+                //Si esta, no la añadimos
+                this.router.navigate(['dead-drop'])
+              }
+            })
+
+            this.privatesContract.methods.getPublicKey(this.metamask_accounts[0]).call().then((result: any) => {
+              if (result !== publicKey) {
+                //Si no esta, la añadimos
+                this.privatesContract.methods.setPublicKey(this.metamask_accounts[0], publicKey).send({from: this.metamask_accounts[0]})
                   .then(() => {
                     //Cuando se ha añadido su clave publica al contrato se sigue adelante en el proceso de login
                     this.router.navigate(['dead-drop'])

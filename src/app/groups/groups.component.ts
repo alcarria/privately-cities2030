@@ -1,6 +1,6 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 // @ts-ignore
 import Groups from '../../assets/contracts/Groups.json'
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {GroupContact, Message} from "../modules/chat.entities";
 import {GroupController} from "../modules/groups.module";
 import {Store} from "../modules/store";
@@ -25,7 +25,6 @@ export class GroupsComponent implements OnInit {
   /*
   0: uso normal
   1: creando chat
-  2: invitando al chat
    */
   private userActions = 1
 

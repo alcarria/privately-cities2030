@@ -58,7 +58,6 @@ export class DeadDropController {
       const encrypted_seed = event.returnValues.from_seed
       this.contacts.push(new DeadDropContact(to, encrypted_seed))
     }
-
     this.cdr.detectChanges();
   }
 

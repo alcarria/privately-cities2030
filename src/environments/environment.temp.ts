@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   deaddrop_address: '',
-  group_address: ''
+  group_address: '',
+  privates_address: ''
 };
 
 /*

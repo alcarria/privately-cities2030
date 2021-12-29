@@ -1,0 +1,148 @@
+import {PrivateContact, Message} from "./chat.entities";
+
+// @ts-ignore
+import PrivateContract from '../../assets/contracts/Privates.json'
+import {environment} from "src/environments/environment";
+import {ChangeDetectorRef} from "@angular/core";
+import {decrypt, encrypt} from "./encryption.module";
+import * as nacl from 'tweetnacl';
+import * as naclUtil from 'tweetnacl-util';
+
+declare let window: any;
+
+export class PrivateController {
+
+  private contract: any;
+
+  private contacts: PrivateContact[] = [];
+  private onInviteSubscriber: any;
+
+  private sendMessageSubscriptions: Map<string, any> = new Map<string, any>()
+
+  constructor(private currentAddress: string, private cdr: ChangeDetectorRef) {
+    this.contract = new window.web3.eth.Contract(
+      PrivateContract.abi,
+      environment.privates_address
+    )
+
+    // Get list of my groups
+    this.onInviteSubscriber = this.contract.events.onShareKey({
+      fromBlock: 0
+    }, (error: any, event: any) => this.onShareKey(error, event))
+  }
+
+  destroy() {
+    // Unsubscribe contact messages
+    for (const contact of this.contacts) {
+      contact.unsubscribe();
+    }
+
+    // Unsubscribe ShareSeed event
+    if (this.onInviteSubscriber != undefined) {
+      this.onInviteSubscriber.unsubscribe()
+    }
+  }
+
+  // Cuando llega una invitacion hay que aceptarla
+  private async onShareKey(error: any, event: any): Promise<void> {
+    if (error !== null)
+      throw error
+
+    // Check if the message is for me
+    if (event.returnValues.to.toLowerCase() == this.currentAddress.toLowerCase()) {
+      const from = String(event.returnValues.from)
+      const contactKey = event.returnValues.toContactKey
+      this.contacts.push(new PrivateContact(from, contactKey, ''))
+    } else if (event.returnValues.from.toLowerCase() == this.currentAddress.toLowerCase()) {
+      const to = String(event.returnValues.to)
+      const contactKey = event.returnValues.fromContactKey
+      this.contacts.push(new PrivateContact(to, contactKey, ''))
+    }
+    this.cdr.detectChanges();
+  }
+
+  async sendMessage(selectedContact: PrivateContact, message: any): Promise<void> {
+    const contactKey: string = await selectedContact.getDecryptedKey()
+    let encryptedMessage = encrypt(message, contactKey, 'xsalsa20-poly1305')
+    await this.contract.methods.sendMessage(selectedContact.getAddress(), encryptedMessage).send({from: this.currentAddress})
+  }
+
+  isSubscribed(contactAddress: string): boolean {
+    return this.sendMessageSubscriptions.has(contactAddress)
+  }
+
+  async subscribeToSendMessage(contactAddress: string): Promise<void> {
+    console.log('contactAddress: ' + contactAddress)
+    if (this.isSubscribed(contactAddress))
+      this.sendMessageSubscriptions.get(contactAddress).unsubscribe();
+
+    await this.getContact(contactAddress)?.getDecryptedKey()
+
+    this.sendMessageSubscriptions.set(
+      contactAddress,
+      this.contract.events.onMessage({
+        filter: {'to': contactAddress, 'from': this.currentAddress},
+        fromBlock: 0
+      }, (error: any, event: any) => this.onMessageEvent(error, event)),
+    )
+  }
+
+  private async onMessageEvent(error: any, event: any): Promise<void> {
+    if (error !== null)
+      throw error
+
+    if (!this.isTheMessageForMe(event))
+      return
+
+    const contactKey = await this.getContact(event.returnValues.to)?.getDecryptedKey()
+
+    if (contactKey == undefined)
+      throw "Public key is undefined. Cant decrypt the message"
+
+    let message = await decrypt(event.returnValues.message, contactKey, 'xsalsa20-poly1305')
+    let from = event.returnValues.from
+
+    const contact = this.getContact(event.returnValues.to)
+
+    if (contact == undefined)
+      throw 'contact is undefined'
+
+    console.log('Evento de mensaje')
+    console.log(message)
+
+    contact.addMessage(new Message(from, new Date(Number(event.returnValues.timestamp)), message))
+    this.cdr.detectChanges();
+  }
+
+  private isTheMessageForMe(event: any): boolean {
+    const contact = String(event.returnValues.to)
+    return this.getContact(contact) != undefined;
+  }
+
+  getGroups(): PrivateContact[] {
+    return this.contacts
+  }
+
+  // Create a new chat
+  async newChat(address: any): Promise<void> {
+    const contactAddress = address.value
+    const myPublicKey = await this.contract.methods.getPublicKey(this.currentAddress).call()
+    const destPublicKey = await this.contract.methods.getPublicKey(contactAddress).call()
+
+    const decrytedKey = naclUtil.encodeBase64(nacl.randomBytes(32));
+    const myCypherKey = encrypt(decrytedKey, myPublicKey, 'x25519-xsalsa20-poly1305')
+    const destCypherKey = encrypt(decrytedKey, destPublicKey, 'x25519-xsalsa20-poly1305')
+
+    await this.contract.methods.shareKey(contactAddress, myCypherKey, destCypherKey).send({from: this.currentAddress})
+
+  }
+
+  getContact(address: string): PrivateContact | undefined {
+    for (let contact of this.contacts) {
+      if (contact.getAddress() == address)
+        return contact
+    }
+    return undefined
+  }
+
+}

@@ -127,7 +127,7 @@ export class GroupController {
     const groupKey = naclUtil.encodeBase64(nacl.randomBytes(32));
     const cypherKey = encrypt(groupKey, myPublicKey, 'x25519-xsalsa20-poly1305')
 
-    this.contract.methods.createGroup(groupAddress, groupName, cypherKey).send({from: this.currentAddress})
+    await this.contract.methods.createGroup(groupAddress, groupName, cypherKey).send({from: this.currentAddress})
 
   }
 
