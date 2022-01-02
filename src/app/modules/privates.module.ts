@@ -52,7 +52,6 @@ export class PrivateController {
       const from = String(event.returnValues.from)
       const contactKey = event.returnValues.toContactKey
       this.contacts.push(new PrivateContact(from, contactKey, ''))
-
     } else if (event.returnValues.from.toLowerCase() == this.currentAddress.toLowerCase()) {
       const to = String(event.returnValues.to)
       const contactKey = event.returnValues.fromContactKey

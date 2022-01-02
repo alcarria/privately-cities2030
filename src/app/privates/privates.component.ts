@@ -46,7 +46,7 @@ export class PrivatesComponent implements OnInit {
     await this.PrivateController.sendMessage(this.selectedChat, message);
   }
 
-  get getAddresses(): string[] {
+  getAddresses(): string[] {
     let addresses: string[] = []
     for (let contact of this.PrivateController.getContacts()) {
       addresses.push(contact.getAddress())
