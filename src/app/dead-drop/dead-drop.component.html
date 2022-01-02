@@ -1,6 +1,11 @@
 <div class="body">
   <div class="sidebar">
-    <app-chat-sidenav [selected]="selectedContact?.getAddress()" [addresses]="getAddresses()" (changeAddress)="setSelectedContact($event)" (newChat)="onNewChat()"></app-chat-sidenav>
+    <app-chat-sidenav [selected]="selectedContact?.getAddress()" [addresses]="getAddresses()" (changeAddress)="setSelectedContact($event)" (newChat)="onNewChat()">
+      <mat-list-item mat-button class="list-item" (click)="onNewChat()">
+        <mat-icon aria-hidden="false" aria-label="Example home icon">add_circle</mat-icon>
+        Nuevo chat
+      </mat-list-item>
+    </app-chat-sidenav>
   </div>
   <div class="chat">
     <app-chat *ngIf="!isCreatingChat(); else createChat" [messagesObservable]="getMessagesSelected()" (onMessage)="sendMessage($event)"></app-chat>
