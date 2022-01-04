@@ -29,14 +29,14 @@ export class GroupsComponent implements OnInit {
   private userActions = 1
 
   constructor(private store: Store, private cdr: ChangeDetectorRef, private router: Router, public dialog: MatDialog) {
-    this.GroupController = new GroupController(this.store.getCurrentAccountAddressValue(), cdr)
+    this.GroupController = new GroupController(this.store.getCurrentAccountValue().address, this.store.getCurrentAccountValue().publicKey, cdr)
   }
 
   async ngOnInit(): Promise<void> {
     this.store.getCurrentAccount().subscribe(_ => {
       this.selectedGroup = undefined
       this.GroupController.destroy()
-      this.GroupController = new GroupController(this.store.getCurrentAccountAddressValue(), this.cdr)
+      this.GroupController = new GroupController(this.store.getCurrentAccountValue().address, this.store.getCurrentAccountValue().publicKey, this.cdr)
     })
   }
 

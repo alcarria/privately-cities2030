@@ -1,4 +1,4 @@
-import {GroupContact, Message} from "./chat.entities";
+import {Contact, GroupContact, Message} from "./chat.entities";
 
 // @ts-ignore
 import GroupContract from '../../assets/contracts/Groups.json'
@@ -19,7 +19,7 @@ export class GroupController {
 
   private sendMessageSubscriptions: Map<string, any> = new Map<string, any>()
 
-  constructor(private currentAddress: string, private cdr: ChangeDetectorRef) {
+  constructor(private currentAddress: string, private currentPublicKey: string, private cdr: ChangeDetectorRef) {
     this.contract = new window.web3.eth.Contract(
       GroupContract.abi,
       environment.group_address
@@ -122,10 +122,9 @@ export class GroupController {
   async newChat(address: any): Promise<void> {
     const groupName = address.value
     const groupAddress = window.web3.eth.accounts.create(window.web3.utils.randomHex(32)).address;
-    let myPublicKey = await this.contract.methods.getPublicKey(this.currentAddress).call()
 
     const groupKey = naclUtil.encodeBase64(nacl.randomBytes(32));
-    const cypherKey = encrypt(groupKey, myPublicKey, 'x25519-xsalsa20-poly1305')
+    const cypherKey = encrypt(groupKey, this.currentPublicKey, 'x25519-xsalsa20-poly1305')
 
     await this.contract.methods.createGroup(groupAddress, groupName, cypherKey).send({from: this.currentAddress})
 
@@ -143,9 +142,9 @@ export class GroupController {
     const groupAddress = selectedGroup.getAddress()
     const groupKey = await selectedGroup.getDecryptedKey()
 
-    const publicKey = await this.contract.methods.getPublicKey(destAddress).call()
+    const destPublicKey = await Contact.getContactPublicKey(destAddress)
 
-    const encryptedGroupKey = encrypt(groupKey, publicKey, 'x25519-xsalsa20-poly1305')
+    const encryptedGroupKey = encrypt(groupKey, destPublicKey, 'x25519-xsalsa20-poly1305')
 
     this.contract.methods.invite(destAddress, groupAddress, encryptedGroupKey).send({from: this.currentAddress})
   }
