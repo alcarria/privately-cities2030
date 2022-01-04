@@ -1,4 +1,4 @@
-import {DeadDropContact, MessageDeadDrop} from "./chat.entities";
+import {Contact, DeadDropContact, MessageDeadDrop} from "./chat.entities";
 
 // @ts-ignore
 import DeadDropContract from '../../assets/contracts/DeadDrop.json'
@@ -19,7 +19,7 @@ export class DeadDropController {
 
   private sendMessageSubscriptions: Map<string, any> = new Map<string, any>()
 
-  constructor(private currentAddress: string, private cdr: ChangeDetectorRef) {
+  constructor(private currentAddress: string, private currentPublicKey: string, private cdr: ChangeDetectorRef) {
     this.contract = new window.web3.eth.Contract(
       DeadDropContract.abi,
       environment.deaddrop_address
@@ -141,13 +141,10 @@ export class DeadDropController {
     const destinationAddress = address.value
     const token_seed: string = this.genSeed()
 
-    console.log(token_seed)
+    const destPublicKey = await Contact.getContactPublicKey(destinationAddress)
 
-    let myPublicKey = await this.contract.methods.getPublicKey(this.currentAddress).call()
-    let contactPublicKey = await this.contract.methods.getPublicKey(destinationAddress).call()
-
-    const from_seed = encrypt(token_seed, myPublicKey, 'x25519-xsalsa20-poly1305')
-    const to_seed = encrypt(token_seed, contactPublicKey, 'x25519-xsalsa20-poly1305')
+    const from_seed = encrypt(token_seed, this.currentPublicKey, 'x25519-xsalsa20-poly1305')
+    const to_seed = encrypt(token_seed, destPublicKey, 'x25519-xsalsa20-poly1305')
 
     await this.contract.methods.shareSeed(destinationAddress, from_seed, to_seed).send({from: this.currentAddress})
   }

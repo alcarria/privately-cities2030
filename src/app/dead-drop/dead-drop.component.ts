@@ -22,7 +22,7 @@ export class DeadDropComponent implements OnInit {
   private deadDropController: DeadDropController;
 
   constructor(private store: Store, private cdr: ChangeDetectorRef, private router: Router) {
-    this.deadDropController = new DeadDropController(this.store.getCurrentAccountAddressValue(), cdr)
+    this.deadDropController = new DeadDropController(this.store.getCurrentAccountValue().address, this.store.getCurrentAccountValue().publicKey, cdr)
   }
 
   async ngOnInit(): Promise<void> {
@@ -30,7 +30,7 @@ export class DeadDropComponent implements OnInit {
     this.store.getCurrentAccount().subscribe(_ => {
       this.selectedContact = undefined
       this.deadDropController.destroy()
-      this.deadDropController = new DeadDropController(this.store.getCurrentAccountAddressValue(), this.cdr)
+      this.deadDropController = new DeadDropController(this.store.getCurrentAccountValue().address, this.store.getCurrentAccountValue().publicKey, this.cdr)
     })
   }
 

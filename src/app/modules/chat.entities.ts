@@ -1,15 +1,37 @@
 import {decrypt} from './encryption.module';
 import {BehaviorSubject, Observable} from "rxjs";
 import {ChangeDetectorRef} from '@angular/core';
+import {environment} from "src/environments/environment";
 
-export class DeadDropContact {
+// @ts-ignore
+import ContactJSON from "../../assets/contracts/Contact.json";
+
+declare let window: any
+
+export class Contact {
+  constructor(protected address: string) {
+  }
+
+  static async getContactPublicKey(address: string): Promise<string> {
+    let contract = new window.web3.eth.Contract(
+      ContactJSON.abi,
+      environment.contact_address
+    )
+
+    let contactInfo = await contract.methods.getContact(address).call()
+    return contactInfo.publicKey
+  }
+}
+
+export class DeadDropContact extends Contact {
 
   private decrypted_seed: string | undefined
 
   private subscription: any | undefined;
   private messages: BehaviorSubject<MessageDeadDrop[]> = new BehaviorSubject<MessageDeadDrop[]>([]);
 
-  constructor(private address: string, private encrypted_seed: string) {
+  constructor(address: string, private encrypted_seed: string) {
+    super(address);
   }
 
   public getAddress(): string {
@@ -53,18 +75,19 @@ export class DeadDropContact {
   }
 }
 
-export class GroupContact {
+export class GroupContact extends Contact {
 
   private decrypted_pass: string | undefined
 
   private subscription: any | undefined;
   private messages: BehaviorSubject<Message[]> = new BehaviorSubject<Message[]>([]);
 
-  constructor(private groupAddress: string, private encrypted_pass: string, private groupName: string) {
+  constructor(groupAddress: string, private encrypted_pass: string, private groupName: string) {
+    super(groupAddress);
   }
 
   public getAddress(): string {
-    return this.groupAddress
+    return this.address
   }
 
   public getGroupName(): string {
@@ -109,18 +132,19 @@ export class GroupContact {
   }
 }
 
-export class PrivateContact {
+export class PrivateContact extends Contact  {
 
   private decrypted_pass: string | undefined
 
   private subscription: any | undefined;
   private messages: BehaviorSubject<Message[]> = new BehaviorSubject<Message[]>([]);
 
-  constructor(private contactAddress: string, private encrypted_pass: string, private contactName: string) {
+  constructor(contactAddress: string, private encrypted_pass: string, private contactName: string) {
+    super(contactAddress);
   }
 
   public getAddress(): string {
-    return this.contactAddress
+    return this.address
   }
 
   public async getDecryptedKey(): Promise<string> {

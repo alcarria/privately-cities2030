@@ -1,4 +1,4 @@
-import {PrivateContact, Message} from "./chat.entities";
+import {PrivateContact, Message, Contact} from "./chat.entities";
 
 import {environment} from "src/environments/environment";
 import {ChangeDetectorRef} from "@angular/core";
@@ -7,15 +7,13 @@ import * as nacl from 'tweetnacl';
 import * as naclUtil from 'tweetnacl-util';
 // @ts-ignore
 import PrivateContract from '../../assets/contracts/Privates.json'
-// @ts-ignore
-import Contact from "../../assets/contracts/Contact.json";
+
 
 declare let window: any;
 
 export class PrivateController {
 
   private contract: any;
-  private contactContract: any
 
   private contacts: PrivateContact[] = [];
   private onInviteSubscriber: any;
@@ -27,11 +25,6 @@ export class PrivateController {
       PrivateContract.abi,
       environment.privates_address
     )
-
-    this.contactContract = new window.web3.eth.Contract(
-      Contact.abi,
-      environment.contact_address
-  )
 
     // Get list of my groups
     this.onInviteSubscriber = this.contract.events.onShareKey({
@@ -148,7 +141,8 @@ export class PrivateController {
   // Create a new chat
   async newChat(address: any): Promise<void> {
     const contactAddress = address.value
-    const destPublicKey = await this.getContactPublicKey(contactAddress)
+
+    const destPublicKey = await Contact.getContactPublicKey(contactAddress)
 
     const decrytedKey = naclUtil.encodeBase64(nacl.randomBytes(32));
     const myCypherKey = encrypt(decrytedKey, this.currentPublicKey, 'x25519-xsalsa20-poly1305')
@@ -164,10 +158,4 @@ export class PrivateController {
     }
     return undefined
   }
-
-  async getContactPublicKey(address: string): Promise<string> {
-    let contactInfo = await this.contactContract.methods.getContact(address).call()
-    return contactInfo.publicKey
-  }
-
 }
