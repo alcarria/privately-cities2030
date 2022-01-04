@@ -1,29 +1,37 @@
 import {PrivateContact, Message} from "./chat.entities";
 
-// @ts-ignore
-import PrivateContract from '../../assets/contracts/Privates.json'
 import {environment} from "src/environments/environment";
 import {ChangeDetectorRef} from "@angular/core";
 import {decrypt, encrypt} from "./encryption.module";
 import * as nacl from 'tweetnacl';
 import * as naclUtil from 'tweetnacl-util';
+// @ts-ignore
+import PrivateContract from '../../assets/contracts/Privates.json'
+// @ts-ignore
+import Contact from "../../assets/contracts/Contact.json";
 
 declare let window: any;
 
 export class PrivateController {
 
   private contract: any;
+  private contactContract: any
 
   private contacts: PrivateContact[] = [];
   private onInviteSubscriber: any;
 
   private sendMessageSubscriptions: Map<string, any> = new Map<string, any>()
 
-  constructor(private currentAddress: string, private cdr: ChangeDetectorRef) {
+  constructor(private currentAddress: string, private currentPublicKey: string, private cdr: ChangeDetectorRef) {
     this.contract = new window.web3.eth.Contract(
       PrivateContract.abi,
       environment.privates_address
     )
+
+    this.contactContract = new window.web3.eth.Contract(
+      Contact.abi,
+      environment.contact_address
+  )
 
     // Get list of my groups
     this.onInviteSubscriber = this.contract.events.onShareKey({
@@ -140,11 +148,10 @@ export class PrivateController {
   // Create a new chat
   async newChat(address: any): Promise<void> {
     const contactAddress = address.value
-    const myPublicKey = await this.contract.methods.getPublicKey(this.currentAddress).call()
-    const destPublicKey = await this.contract.methods.getPublicKey(contactAddress).call()
+    const destPublicKey = await this.getContactPublicKey(contactAddress)
 
     const decrytedKey = naclUtil.encodeBase64(nacl.randomBytes(32));
-    const myCypherKey = encrypt(decrytedKey, myPublicKey, 'x25519-xsalsa20-poly1305')
+    const myCypherKey = encrypt(decrytedKey, this.currentPublicKey, 'x25519-xsalsa20-poly1305')
     const destCypherKey = encrypt(decrytedKey, destPublicKey, 'x25519-xsalsa20-poly1305')
 
     await this.contract.methods.shareKey(contactAddress, myCypherKey, destCypherKey).send({from: this.currentAddress})
@@ -156,6 +163,11 @@ export class PrivateController {
         return contact
     }
     return undefined
+  }
+
+  async getContactPublicKey(address: string): Promise<string> {
+    let contactInfo = await this.contactContract.methods.getContact(address).call()
+    return contactInfo.publicKey
   }
 
 }

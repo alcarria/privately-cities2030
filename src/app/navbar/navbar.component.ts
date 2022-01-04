@@ -1,4 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { RegisterdialogComponent } from '../registerdialog/registerdialog.component';
 import { Store } from '../modules/store';
 declare const window: any
 
@@ -9,17 +11,27 @@ declare const window: any
 })
 export class NavbarComponent implements OnInit {
 
-  public address: string|undefined = ''
+  public address: string = ''
+  public nickname: string = ''
 
-  constructor(private store: Store, private cdr: ChangeDetectorRef) { }
+  constructor(public store: Store, private cdr: ChangeDetectorRef, public dialog: MatDialog) { }
 
   async ngOnInit(): Promise<void> {
-    this.store.getCurrentAccountAddress().subscribe(address => {
-      console.log('Address changed to ' + address)
-      this.address = address
+    this.store.getCurrentAccount().subscribe(account => {
+      console.log('Address changed to ' + account?.address)
+      this.address = account.address
+      this.nickname = account.nickname
       this.cdr.detectChanges()
     })
-    // let accounts = await window.ethereum.request({ method: 'eth_accounts' })
-    // this.account = accounts[0]
+  }
+
+  async crearCuenta(): Promise<void> {
+    await window.ethereum.request({method: 'eth_requestAccounts'})
+
+    const dialogConf = new MatDialogConfig()
+
+    dialogConf.disableClose = false;
+
+    const dialogRef = this.dialog.open(RegisterdialogComponent, dialogConf);
   }
 }

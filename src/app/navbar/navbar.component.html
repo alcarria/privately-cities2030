@@ -12,8 +12,27 @@
       <a mat-button [routerLink]="'/groups'"> Grupos </a>
     </div>
     <span class="spacer"></span>
-    <div>
-      <p>{{ address }}</p>
-    </div>
+    <ng-container
+          [ngTemplateOutlet]="store.hasValidAccount() ? AccountInfo : Register">
+        </ng-container>
   </mat-toolbar-row>
 </mat-toolbar>
+
+<ng-template #Register>
+  <div>
+    <button class="mat-raised-button" (click)="crearCuenta()">
+      Iniciar sesión
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #AccountInfo>
+    <button class="mat-raised-button" [matMenuTriggerFor]="menu">{{ nickname }}</button>
+  <mat-menu #menu="matMenu">
+    <p mat-menu-item disabled>{{address}}</p>
+    <button mat-menu-item (click)="crearCuenta()">
+      <mat-icon>edit</mat-icon>
+      <span>Editar cuenta</span>
+    </button>
+  </mat-menu>
+</ng-template>

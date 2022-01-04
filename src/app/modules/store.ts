@@ -6,48 +6,69 @@ import Contact from "../../assets/contracts/Contact.json";
 
 declare let window: any
 
+interface Account {
+    address: string,
+    nickname: string,
+    publicKey: string
+}
+
+// Store de address of the current user
 @Injectable({
     providedIn: 'root'
 })
-
-// Store de address of the current user
 export class Store {
-    private currentAccountAddress: BehaviorSubject<string|undefined> = new BehaviorSubject<string|undefined>(undefined);
 
-    getCurrentAccountAddress(): Observable<string|undefined> {
-        return this.currentAccountAddress.asObservable()
+    private currentAccount: BehaviorSubject<Account> = new BehaviorSubject<Account>({
+        address: '',
+        nickname: '',
+        publicKey: ''
+    });
+
+    getCurrentAccount(): Observable<Account> {
+        return this.currentAccount
+    }
+
+    getCurrentAccountValue(): Account {
+        return this.currentAccount.getValue()
     }
 
     getCurrentAccountAddressValue(): string {
-        return this.currentAccountAddress.getValue() ?? ''
+        return this.currentAccount.getValue()?.address ?? ''
     }
 
-    setCurrentAccountAddress(address: string|undefined): void {
-        this.currentAccountAddress.next(address)
-    }
-
-    private async getCurrentAccountContactInfo(): Promise<any> {
-        let contactContract = new window.web3.eth.Contract(
-            Contact.abi,
-            environment.contact_address
-        )
-
-        return await contactContract.methods.getContact(this.getCurrentAccountAddressValue()).call()
+    async setCurrentAccount(address: string) {
+        if (address == '') {
+            this.currentAccount.next({
+                address: '',
+                nickname: '',
+                publicKey: ''
+            })
+        } else {
+            console.log(address)
+            let contactContract = new window.web3.eth.Contract(
+                Contact.abi,
+                environment.contact_address
+            )
+    
+            let contactInfo = await contactContract.methods.getContact(address).call()
+            this.currentAccount.next({
+                address: address,
+                nickname: contactInfo.nickname,
+                publicKey: contactInfo.publicKey
+            })
+        }
     }
 
     async hasValidAccount(): Promise<boolean> {
-        let contactInfo = await this.getCurrentAccountContactInfo()
-        return contactInfo.nickname != "" && contactInfo.publicKey != ""
-    }
+        if (this.currentAccount.getValue().address == "")
+            return false
+        
+        if ( this.currentAccount.getValue().nickname == "")
+            return false
+        
+        if (this.currentAccount.getValue().nickname == "")
+            return false
 
-    async getCurrentAccountNickname(): Promise<string> {
-        let contactInfo = await this.getCurrentAccountContactInfo()
-        return contactInfo.nickname
-    }
-
-    async getCurrentAccountPublicKey(): Promise<string> {
-        let contactInfo = await this.getCurrentAccountContactInfo()
-        console.log(contactInfo)
-        return contactInfo.publicKey
+        return true
     }
 }

@@ -33,7 +33,7 @@ export class GroupsComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.store.getCurrentAccountAddress().subscribe(_ => {
+    this.store.getCurrentAccount().subscribe(_ => {
       this.selectedGroup = undefined
       this.GroupController.destroy()
       this.GroupController = new GroupController(this.store.getCurrentAccountAddressValue(), this.cdr)

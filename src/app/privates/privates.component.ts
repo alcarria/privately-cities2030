@@ -24,14 +24,14 @@ export class PrivatesComponent implements OnInit {
   private userActions = 1
 
   constructor(private store: Store, private cdr: ChangeDetectorRef, private router: Router, public dialog: MatDialog) {
-    this.PrivateController = new PrivateController(this.store.getCurrentAccountAddressValue(), cdr)
+    this.PrivateController = new PrivateController(this.store.getCurrentAccountValue().address, this.store.getCurrentAccountValue().publicKey, cdr)
   }
 
   ngOnInit(): void {
-    this.store.getCurrentAccountAddress().subscribe(_ => {
+    this.store.getCurrentAccount().subscribe(_ => {
       this.selectedChat = undefined
       this.PrivateController.destroy()
-      this.PrivateController = new PrivateController(this.store.getCurrentAccountAddressValue(), this.cdr)
+      this.PrivateController = new PrivateController(this.store.getCurrentAccountValue().address, this.store.getCurrentAccountValue().publicKey, this.cdr)
     })
   }
 

@@ -27,7 +27,7 @@ export class DeadDropComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     // this.loadContacts()
-    this.store.getCurrentAccountAddress().subscribe(_ => {
+    this.store.getCurrentAccount().subscribe(_ => {
       this.selectedContact = undefined
       this.deadDropController.destroy()
       this.deadDropController = new DeadDropController(this.store.getCurrentAccountAddressValue(), this.cdr)

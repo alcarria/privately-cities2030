@@ -28,7 +28,6 @@ export class HomeComponent implements OnInit {
     const dialogRef = this.dialog.open(RegisterdialogComponent, dialogConf);
 
     dialogRef.afterClosed().subscribe(async data => {
-      console.log(await this.store.getCurrentAccountPublicKey())
       if (data == true)
         this.router.navigate(['dead-drop'])
     });
