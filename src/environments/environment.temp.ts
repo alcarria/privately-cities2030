@@ -6,7 +6,8 @@ export const environment = {
   production: false,
   deaddrop_address: '',
   group_address: '',
-  privates_address: ''
+  privates_address: '',
+  contact_address: '0x1bEA4fc2fCcf69b8545b06C93593B5080B697c89'
 };
 
 /*

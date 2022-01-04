@@ -21,9 +21,11 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatDialog} from "@angular/material/dialog";
 import {PermdialogComponent} from './permdialog/permdialog.component';
 import {PrivatesComponent} from './privates/privates.component';
+import { HomeComponent } from './home/home.component';
+import { RegisterdialogComponent } from './registerdialog/registerdialog.component';
 
 const routes: Routes = [
-  {path: '', component: LoginComponent},
+  {path: '', component: HomeComponent},
   {path: 'account', component: AccountComponent},
   {path: 'dead-drop', component: DeadDropComponent},
   {path: 'groups', component: GroupsComponent},
@@ -42,7 +44,9 @@ const routes: Routes = [
     GroupsComponent,
     InvitedialogComponent,
     PermdialogComponent,
-    PrivatesComponent
+    PrivatesComponent,
+    HomeComponent,
+    RegisterdialogComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
