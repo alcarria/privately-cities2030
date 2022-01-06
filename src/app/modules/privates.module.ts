@@ -52,11 +52,11 @@ export class PrivateController {
     if (event.returnValues.to.toLowerCase() == this.currentAddress.toLowerCase()) {
       const from = String(event.returnValues.from)
       const contactKey = event.returnValues.toContactKey
-      this.contacts.push(new PrivateContact(from, contactKey, ''))
+      this.contacts.push(await PrivateContact.create(from, contactKey))
     } else if (event.returnValues.from.toLowerCase() == this.currentAddress.toLowerCase()) {
       const to = String(event.returnValues.to)
       const contactKey = event.returnValues.fromContactKey
-      this.contacts.push(new PrivateContact(to, contactKey, ''))
+      this.contacts.push(await PrivateContact.create(to, contactKey))
     }
     this.cdr.detectChanges();
   }
@@ -141,8 +141,9 @@ export class PrivateController {
   // Create a new chat
   async newChat(address: any): Promise<void> {
     const contactAddress = address.value
+    const contact = this.getContact(contactAddress)
 
-    const destPublicKey = await Contact.getContactPublicKey(contactAddress)
+    const destPublicKey = contact?.getPublicKey()
 
     const decrytedKey = naclUtil.encodeBase64(nacl.randomBytes(32));
     const myCypherKey = encrypt(decrytedKey, this.currentPublicKey, 'x25519-xsalsa20-poly1305')
@@ -151,11 +152,11 @@ export class PrivateController {
     await this.contract.methods.shareKey(contactAddress, myCypherKey, destCypherKey).send({from: this.currentAddress})
   }
 
-  getContact(address: string): PrivateContact | undefined {
+  getContact(address: string): PrivateContact {
     for (let contact of this.contacts) {
       if (contact.getAddress().toLowerCase() == address.toLowerCase())
         return contact
     }
-    return undefined
+    throw 'Contact does not exist'
   }
 }

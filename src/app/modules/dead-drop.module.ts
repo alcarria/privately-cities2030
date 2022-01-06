@@ -43,7 +43,7 @@ export class DeadDropController {
     }
   }
 
-  private onShareSeed(error: any, event: any): void {
+  private async onShareSeed(error: any, event: any): Promise<void> {
     console.log('OnShareSeed')
     if (error !== null)
       throw error
@@ -52,17 +52,17 @@ export class DeadDropController {
     if (event.returnValues.to.toLowerCase() == this.currentAddress.toLowerCase()) {
       const from = String(event.returnValues.from)
       const encrypted_seed = event.returnValues.to_seed
-      this.contacts.push(new DeadDropContact(from, encrypted_seed))
+      this.contacts.push(await DeadDropContact.create(from, encrypted_seed))
     } else if (event.returnValues.from.toLowerCase() == this.currentAddress.toLowerCase()) {
       const to = String(event.returnValues.to)
       const encrypted_seed = event.returnValues.from_seed
-      this.contacts.push(new DeadDropContact(to, encrypted_seed))
+      this.contacts.push(await DeadDropContact.create(to, encrypted_seed))
     }
     this.cdr.detectChanges();
   }
 
   async sendMessage(selectedContact: DeadDropContact, message: any): Promise<void> {
-    let contactPublicKey = await Contact.getContactPublicKey(selectedContact.getAddress())
+    let contactPublicKey = (await Contact.getContactInfo(selectedContact.getAddress())).publicKey
     let encryptedMessage = encrypt(message, contactPublicKey, 'x25519-xsalsa20-poly1305')
     const timestamp = Date.now()
 
@@ -141,7 +141,7 @@ export class DeadDropController {
     const destinationAddress = address.value
     const token_seed: string = this.genSeed()
 
-    const destPublicKey = await Contact.getContactPublicKey(destinationAddress)
+    const destPublicKey = (await Contact.getContactInfo(destinationAddress)).publicKey
 
     const from_seed = encrypt(token_seed, this.currentPublicKey, 'x25519-xsalsa20-poly1305')
     const to_seed = encrypt(token_seed, destPublicKey, 'x25519-xsalsa20-poly1305')

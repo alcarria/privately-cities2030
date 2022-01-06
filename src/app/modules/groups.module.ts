@@ -53,7 +53,7 @@ export class GroupController {
       const group = String(event.returnValues.group)
       const groupKey = event.returnValues.groupKey
       const groupName = event.returnValues.groupName
-      this.groups.push(new GroupContact(group, groupKey, groupName))
+      this.groups.push(await GroupContact.create(group, groupKey, groupName))
     }
     this.cdr.detectChanges();
   }
@@ -141,8 +141,9 @@ export class GroupController {
   async newInvite(destAddress: any, selectedGroup: GroupContact) {
     const groupAddress = selectedGroup.getAddress()
     const groupKey = await selectedGroup.getDecryptedKey()
+    const contact = this
 
-    const destPublicKey = await Contact.getContactPublicKey(destAddress)
+    const destPublicKey = (await Contact.getContactInfo(destAddress)).publicKey
 
     const encryptedGroupKey = encrypt(groupKey, destPublicKey, 'x25519-xsalsa20-poly1305')
 

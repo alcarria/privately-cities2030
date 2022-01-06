@@ -9,17 +9,25 @@ import ContactJSON from "../../assets/contracts/Contact.json";
 declare let window: any
 
 export class Contact {
-  constructor(protected address: string) {
+  constructor(protected address: string, protected nickname: string, protected publicKey: string) {
   }
 
-  static async getContactPublicKey(address: string): Promise<string> {
+  static async getContactInfo(address: string): Promise<any> {
     let contract = new window.web3.eth.Contract(
       ContactJSON.abi,
       environment.contact_address
     )
 
     let contactInfo = await contract.methods.getContact(address).call()
-    return contactInfo.publicKey
+    return contactInfo
+  }
+
+  getNickname(): string {
+    return this.nickname
+  }
+
+  getPublicKey(): string {
+    return this.publicKey
   }
 }
 
@@ -30,8 +38,15 @@ export class DeadDropContact extends Contact {
   private subscription: any | undefined;
   private messages: BehaviorSubject<MessageDeadDrop[]> = new BehaviorSubject<MessageDeadDrop[]>([]);
 
-  constructor(address: string, private encrypted_seed: string) {
-    super(address);
+  static async create(address: string, encrypted_seed: string): Promise<DeadDropContact> {
+    let contactInfo = await Contact.getContactInfo(address)
+    let contact = new DeadDropContact(address, encrypted_seed, contactInfo.nickname, contactInfo.publicKey)
+    
+    return contact
+  }
+
+  private constructor(address: string, private encrypted_seed: string, nickname: string, publicKey: string) {
+    super(address, nickname, publicKey);
   }
 
   public getAddress(): string {
@@ -82,8 +97,15 @@ export class GroupContact extends Contact {
   private subscription: any | undefined;
   private messages: BehaviorSubject<Message[]> = new BehaviorSubject<Message[]>([]);
 
-  constructor(groupAddress: string, private encrypted_pass: string, private groupName: string) {
-    super(groupAddress);
+  static async create(groupAddress: string, encrypted_pass: string, groupName: string): Promise<GroupContact> {
+    let contactInfo = await Contact.getContactInfo(groupAddress)
+    let contact = new GroupContact(groupAddress, encrypted_pass, groupName, contactInfo.nickname, contactInfo.publicKey)
+    
+    return contact
+  }
+
+  private constructor(groupAddress: string, private encrypted_pass: string, private groupName: string, nickname: string, publicKey: string) {
+    super(groupAddress, nickname, publicKey);
   }
 
   public getAddress(): string {
@@ -139,8 +161,15 @@ export class PrivateContact extends Contact  {
   private subscription: any | undefined;
   private messages: BehaviorSubject<Message[]> = new BehaviorSubject<Message[]>([]);
 
-  constructor(contactAddress: string, private encrypted_pass: string, private contactName: string) {
-    super(contactAddress);
+  static async create(contactAddress: string, encrypted_pass: string): Promise<PrivateContact> {
+    let contactInfo = await Contact.getContactInfo(contactAddress)
+    let contact = new PrivateContact(contactAddress, encrypted_pass, contactInfo.nickname, contactInfo.publicKey)
+    
+    return contact
+  }
+
+  private constructor(contactAddress: string, private encrypted_pass: string, nickname: string, publicKey: string) {
+    super(contactAddress, nickname, publicKey);
   }
 
   public getAddress(): string {
