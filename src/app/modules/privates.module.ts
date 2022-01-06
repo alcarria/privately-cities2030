@@ -81,7 +81,6 @@ export class PrivateController {
     this.sendMessageSubscriptions.set(
       contactAddress,
       this.contract.events.onMessage({
-        // filter: {'from': contactAddress.toLowerCase(), 'to': this.currentAddress.toLowerCase()},
         fromBlock: 0
       }, (error: any, event: any) => this.onMessageEvent(error, event)),
     )
@@ -95,27 +94,23 @@ export class PrivateController {
       return
 
     let from = event.returnValues.from
-    let contactKey;
     let contact;
 
     if (from.toLowerCase() == this.currentAddress.toLowerCase()) {
-      contactKey = await this.getContact(String(event.returnValues.to))?.getDecryptedKey()
+      contact = this.getContact(event.returnValues.to)
     } else {
-      contactKey = await this.getContact(event.returnValues.from)?.getDecryptedKey()
+      contact = this.getContact(event.returnValues.from)
     }
+
+    if (contact == undefined)
+      throw "Contact doesnt exists"
+    
+    let contactKey = await contact.getDecryptedKey();
 
     if (contactKey == undefined)
       throw "Public key is undefined. Cant decrypt the message"
 
     let message = await decrypt(event.returnValues.message, contactKey, 'xsalsa20-poly1305')
-
-    if (from.toLowerCase() == this.currentAddress.toLowerCase())
-      contact = this.getContact(event.returnValues.to)
-    else
-      contact = this.getContact(event.returnValues.from)
-
-    if (contact == undefined)
-      throw 'contact is undefined'
 
     contact.addMessage(new Message(from, new Date(Number(event.returnValues.timestamp)), message))
     this.cdr.detectChanges();
@@ -151,11 +146,13 @@ export class PrivateController {
     await this.contract.methods.shareKey(contactAddress, myCypherKey, destCypherKey).send({from: this.currentAddress})
   }
 
-  getContact(address: string): PrivateContact {
+  getContact(address: string): PrivateContact|undefined {
+    console.log("Entro al for")
     for (let contact of this.contacts) {
+      console.log(contact.getAddress() + ' == ' + address)
       if (contact.getAddress().toLowerCase() == address.toLowerCase())
         return contact
     }
-    throw 'Contact does not exist'
+    return undefined
   }
 }
