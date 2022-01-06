@@ -1,6 +1,6 @@
 <h2 mat-dialog-title>Crear cuenta</h2>
 <mat-dialog-content>
-  <p>{{ store.getCurrentAccountAddressValue() }}</p>
+  <p>{{ store.getCurrentAccountValue().address }}</p>
   <mat-form-field appearance="fill">
     <mat-label>Nickname</mat-label>
     <input matInput [(ngModel)]="nickname">

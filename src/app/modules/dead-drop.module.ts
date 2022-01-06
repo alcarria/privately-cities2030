@@ -62,7 +62,7 @@ export class DeadDropController {
   }
 
   async sendMessage(selectedContact: DeadDropContact, message: any): Promise<void> {
-    let contactPublicKey = await this.contract.methods.getPublicKey(selectedContact.getAddress()).call()
+    let contactPublicKey = await Contact.getContactPublicKey(selectedContact.getAddress())
     let encryptedMessage = encrypt(message, contactPublicKey, 'x25519-xsalsa20-poly1305')
     const timestamp = Date.now()
 

@@ -32,10 +32,6 @@ export class Store {
         return this.currentAccount.getValue()
     }
 
-    getCurrentAccountAddressValue(): string {
-        return this.currentAccount.getValue()?.address ?? ''
-    }
-
     async setCurrentAccount(address: string) {
         if (address == '') {
             this.currentAccount.next({

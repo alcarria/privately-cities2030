@@ -62,7 +62,7 @@
 
 <ng-template #DecryptedMessage let-message='message'>
   <ng-container
-    [ngTemplateOutlet]="message.getSender().toLowerCase() == store.getCurrentAccountAddressValue() ? MyMessage : OtherMessage"
+    [ngTemplateOutlet]="message.getSender().toLowerCase() == store.getCurrentAccountValue().address ? MyMessage : OtherMessage"
     [ngTemplateOutletContext]="{message:message}">
   </ng-container>
 </ng-template>

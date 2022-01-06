@@ -43,14 +43,15 @@ export class RegisterdialogComponent implements OnInit {
     // Create account in contract Contact
     let publicKey = await window.ethereum.request({
       method: 'eth_getEncryptionPublicKey',
-      params: [this.store.getCurrentAccountAddressValue()]
+      params: [this.store.getCurrentAccountValue().address]
     })
 
     console.log('My public key is: ' + publicKey)
 
-    this.contactContract.methods.setContactInfo(this.nickname, publicKey).send({from: this.store.getCurrentAccountAddressValue()})
+    this.contactContract.methods.setContactInfo(this.nickname, publicKey).send({from: this.store.getCurrentAccountValue().address})
     .then(() => {
       //Cuando se ha añadido su clave publica al contrato se sigue adelante en el proceso de login
+      this.store.setCurrentAccount(this.store.getCurrentAccountValue().address)
       this.ngZone.run(() => {
         this.dialogRef.close(true)
       })
