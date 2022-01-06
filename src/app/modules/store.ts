@@ -60,20 +60,14 @@ export class Store {
     }
 
     hasValidAccount(): boolean {
-        console.log("pepe1: " + this.currentAccount.getValue().address)
-
         if (this.currentAccount.getValue().address == "")
             return false
         
         if ( this.currentAccount.getValue().nickname == "")
             return false
-
-        console.log("pepe2: " + this.currentAccount.getValue().nickname)
         
         if (this.currentAccount.getValue().publicKey == "")
             return false
-
-        console.log("pepe3: " + this.currentAccount.getValue().publicKey)
 
         return true
     }
