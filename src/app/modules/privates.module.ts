@@ -141,9 +141,8 @@ export class PrivateController {
   // Create a new chat
   async newChat(address: any): Promise<void> {
     const contactAddress = address.value
-    const contact = this.getContact(contactAddress)
 
-    const destPublicKey = contact?.getPublicKey()
+    const destPublicKey = (await Contact.getContactInfo(contactAddress)).publicKey
 
     const decrytedKey = naclUtil.encodeBase64(nacl.randomBytes(32));
     const myCypherKey = encrypt(decrytedKey, this.currentPublicKey, 'x25519-xsalsa20-poly1305')
