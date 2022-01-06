@@ -18,8 +18,7 @@ export class Contact {
       environment.contact_address
     )
 
-    let contactInfo = await contract.methods.getContact(address).call()
-    return contactInfo
+    return await contract.methods.getContact(address).call()
   }
 
   getNickname(): string {
@@ -40,9 +39,7 @@ export class DeadDropContact extends Contact {
 
   static async create(address: string, encrypted_seed: string): Promise<DeadDropContact> {
     let contactInfo = await Contact.getContactInfo(address)
-    let contact = new DeadDropContact(address, encrypted_seed, contactInfo.nickname, contactInfo.publicKey)
-    
-    return contact
+    return new DeadDropContact(address, encrypted_seed, contactInfo.nickname, contactInfo.publicKey)
   }
 
   private constructor(address: string, private encrypted_seed: string, nickname: string, publicKey: string) {
@@ -99,9 +96,7 @@ export class GroupContact extends Contact {
 
   static async create(groupAddress: string, encrypted_pass: string, groupName: string): Promise<GroupContact> {
     let contactInfo = await Contact.getContactInfo(groupAddress)
-    let contact = new GroupContact(groupAddress, encrypted_pass, groupName, contactInfo.nickname, contactInfo.publicKey)
-    
-    return contact
+    return new GroupContact(groupAddress, encrypted_pass, groupName, contactInfo.nickname, contactInfo.publicKey)
   }
 
   private constructor(groupAddress: string, private encrypted_pass: string, private groupName: string, nickname: string, publicKey: string) {
@@ -163,9 +158,7 @@ export class PrivateContact extends Contact  {
 
   static async create(contactAddress: string, encrypted_pass: string): Promise<PrivateContact> {
     let contactInfo = await Contact.getContactInfo(contactAddress)
-    let contact = new PrivateContact(contactAddress, encrypted_pass, contactInfo.nickname, contactInfo.publicKey)
-    
-    return contact
+    return new PrivateContact(contactAddress, encrypted_pass, contactInfo.nickname, contactInfo.publicKey)
   }
 
   private constructor(contactAddress: string, private encrypted_pass: string, nickname: string, publicKey: string) {
