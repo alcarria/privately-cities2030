@@ -30,6 +30,7 @@ export class PrivatesComponent implements OnInit {
   ngOnInit(): void {
     this.store.getCurrentAccount().subscribe(_ => {
       this.selectedChat = undefined
+      this.userActions = 1
       this.PrivateController.destroy()
       this.PrivateController = new PrivateController(this.store.getCurrentAccountValue().address, this.store.getCurrentAccountValue().publicKey, this.cdr)
     })
