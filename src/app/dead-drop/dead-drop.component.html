@@ -14,7 +14,7 @@
       <mat-toolbar>
         <mat-toolbar-row>
           <div class="titulo">
-            <h3>{{getSelectedAddress()}}</h3>
+            <h3>{{searchContact(getSelectedAddress()).getNickname()}} - {{getSelectedAddress()}}</h3>
           </div>
         </mat-toolbar-row>
       </mat-toolbar>

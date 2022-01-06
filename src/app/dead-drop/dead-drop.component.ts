@@ -86,11 +86,11 @@ export class DeadDropComponent implements OnInit {
     return this.selectedContact == undefined
   }
 
-  private searchContact(address: string): DeadDropContact | undefined {
+  searchContact(address: string): DeadDropContact {
     for (let contact of this.deadDropController.getContacts()) {
       if (contact.getAddress() == address)
         return contact
     }
-    return undefined
+    throw "Contact does not exist"
   }
 }
