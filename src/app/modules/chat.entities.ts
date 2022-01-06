@@ -234,6 +234,6 @@ export class MessageDeadDrop extends Message {
   }
 
   public getTitle():string{
-    return this.timestamp.toDateString();
+    return this.timestamp.toLocaleString();
   }
 }
