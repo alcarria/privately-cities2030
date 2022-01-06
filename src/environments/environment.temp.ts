@@ -7,7 +7,7 @@ export const environment = {
   deaddrop_address: '',
   group_address: '',
   privates_address: '',
-  contact_address: '0x1bEA4fc2fCcf69b8545b06C93593B5080B697c89'
+  contact_address: ''
 };
 
 /*
