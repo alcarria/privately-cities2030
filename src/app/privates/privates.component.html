@@ -1,5 +1,5 @@
 <div class="body">
-  <div class="sidebar">
+  <div class="mat-elevation-z4 sidebar">
     <app-chat-sidenav [selected]="selectedChat?.getAddress()" [addresses]="getAddresses()"
                       (changeAddress)="setSelectedAddress($event)" (newChat)="onNewChat()">
       <mat-list-item mat-button class="list-item" (click)="onNewChat()">
@@ -18,7 +18,7 @@
 </div>
 
 <ng-template #createChat>
-  <mat-card>
+  <mat-card class="create-chat-card">
     <mat-card-title>
       Nuevo chat
     </mat-card-title>
@@ -34,19 +34,19 @@
 <ng-template #chat>
   <app-chat [messagesObservable]="getMessagesSelected()" [address]="getSelectedAddress()"
             (onMessage)="sendMessage($event)">
-    <mat-toolbar>
-      <mat-toolbar-row>
-        <div class="titulo">
-          <h3>{{getSelectedAddress()}}</h3>
-        </div>
-        <!--        <span class="spacer"></span>-->
-        <!--        <button mat-icon-button (click)="openInviteDialog()">-->
-        <!--          <mat-icon aria-hidden="false" aria-label="Invitar participantes">group_add</mat-icon>-->
-        <!--        </button>-->
-        <!--        <button mat-icon-button (click)="openPermDialog()">-->
-        <!--          <mat-icon aria-hidden="false" aria-label="Añadir permisos">view_headline</mat-icon>-->
-        <!--        </button>-->
-      </mat-toolbar-row>
-    </mat-toolbar>
+      <mat-toolbar color="primary" class="toolbar">
+        <mat-toolbar-row>
+          <div class="titulo">
+            <h3>{{getSelectedAddress()}}</h3>
+          </div>
+          <!--        <span class="spacer"></span>-->
+          <!--        <button mat-icon-button (click)="openInviteDialog()">-->
+          <!--          <mat-icon aria-hidden="false" aria-label="Invitar participantes">group_add</mat-icon>-->
+          <!--        </button>-->
+          <!--        <button mat-icon-button (click)="openPermDialog()">-->
+          <!--          <mat-icon aria-hidden="false" aria-label="Añadir permisos">view_headline</mat-icon>-->
+          <!--        </button>-->
+        </mat-toolbar-row>
+      </mat-toolbar>
   </app-chat>
 </ng-template>

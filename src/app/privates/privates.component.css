@@ -5,14 +5,15 @@
 }
 
 .sidebar {
-  background: white;
+  border-radius: 25px;
+  background: #F2F2F2;
   flex: 1;
   height: 100%;
   width: 30%;
 }
 
 .chat {
-  background: grey;
+  background: #F5F3EF;
   flex: 3;
   height: 100%;
   width: 70%;
@@ -24,4 +25,12 @@
 
 .spacer {
   flex: 1 1 auto;
+}
+
+.toolbar {
+  background-color: var(--primary-variant-accent);
+}
+
+.create-chat-card {
+  margin: 100px
 }

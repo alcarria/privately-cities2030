@@ -13,5 +13,5 @@ mat-list{
 }
 
 .selected-address {
-  background-color: #696969;
+  background-color: var(--primary-variant-accent-2);
 }

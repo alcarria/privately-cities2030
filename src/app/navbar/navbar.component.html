@@ -1,4 +1,4 @@
-<mat-toolbar>
+<mat-toolbar color="primary">
   <mat-toolbar-row>
     <a mat-button [routerLink]="''"><h1> Privately </h1></a>
     <span class="menu-spacer"></span>
@@ -20,14 +20,14 @@
 
 <ng-template #Register>
   <div>
-    <button class="mat-raised-button" (click)="crearCuenta()">
+    <button color="accent" mat-raised-button (click)="crearCuenta()">
       Iniciar sesión
     </button>
   </div>
 </ng-template>
 
 <ng-template #AccountInfo>
-    <button class="mat-raised-button" [matMenuTriggerFor]="menu">{{ nickname }}</button>
+  <button color="accent" mat-raised-button [matMenuTriggerFor]="menu">{{ nickname }}</button>
   <mat-menu #menu="matMenu">
     <p mat-menu-item disabled>{{address}}</p>
     <button mat-menu-item (click)="crearCuenta()">
