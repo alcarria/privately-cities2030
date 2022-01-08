@@ -7,6 +7,8 @@ import {Observable} from 'rxjs';
 import {Store} from '../modules/store';
 import {Router} from '@angular/router';
 import {DeadDropController} from '../modules/dead-drop.module';
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
+import {NewchatdialogComponent} from "../newchatdialog/newchatdialog.component";
 
 declare const window: any;
 
@@ -21,7 +23,7 @@ export class DeadDropComponent implements OnInit {
   public selectedContact: DeadDropContact | undefined = undefined
   private deadDropController: DeadDropController;
 
-  constructor(private store: Store, private cdr: ChangeDetectorRef, private router: Router) {
+  constructor(private store: Store, private cdr: ChangeDetectorRef, private router: Router, public dialog: MatDialog) {
     this.deadDropController = new DeadDropController(this.store.getCurrentAccountValue().address, this.store.getCurrentAccountValue().publicKey, cdr)
   }
 
@@ -43,12 +45,6 @@ export class DeadDropComponent implements OnInit {
       throw 'Cannot send message to undefined. You need to pick a contact first.'
 
     await this.deadDropController.sendMessage(this.selectedContact, message);
-  }
-
-  // Create a new chat
-  async newChat($event: any, address: any): Promise<void> {
-    $event.preventDefault()
-    await this.deadDropController.newChat(address)
   }
 
   getAddresses(): string[] {
@@ -80,6 +76,15 @@ export class DeadDropComponent implements OnInit {
 
   onNewChat(): void {
     this.selectedContact = undefined
+
+    const dialogConf = new MatDialogConfig()
+    dialogConf.disableClose = false;
+    const dialogRef = this.dialog.open(NewchatdialogComponent, dialogConf);
+    dialogRef.afterClosed().subscribe(async address => {
+      if (address == undefined)
+        return
+      await this.deadDropController.newChat(address)
+    });
   }
 
   isCreatingChat(): boolean {

@@ -3,8 +3,9 @@ import {Message, PrivateContact} from "../modules/chat.entities";
 import {Observable} from "rxjs";
 import {Store} from "../modules/store";
 import {Router} from "@angular/router";
-import {MatDialog} from "@angular/material/dialog";
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {PrivateController} from "../modules/privates.module";
+import {NewchatdialogComponent} from "../newchatdialog/newchatdialog.component";
 
 @Component({
   selector: 'app-privates',
@@ -80,16 +81,18 @@ export class PrivatesComponent implements OnInit {
 
   onNewChat(): void {
     this.userActions = 1
-    this.selectedChat = undefined
+
+    const dialogConf = new MatDialogConfig()
+    dialogConf.disableClose = false;
+    const dialogRef = this.dialog.open(NewchatdialogComponent, dialogConf);
+    dialogRef.afterClosed().subscribe(async address => {
+      if (address == undefined)
+        return
+      await this.PrivateController.newChat(address)
+    });
   }
 
-  async newChat($event: any, name: any): Promise<void> {
-    $event.preventDefault()
-    await this.PrivateController.newChat(name)
-    this.userActions = 1
-  }
-
-  get userActionStatus(): number {
+  userActionStatus(): number {
     return this.userActions;
   }
 }
