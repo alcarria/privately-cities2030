@@ -9,6 +9,7 @@ import {Observable} from "rxjs";
 import {InvitedialogComponent} from "../invitedialog/invitedialog.component";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {PermdialogComponent} from "../permdialog/permdialog.component";
+import {NewgroupdialogComponent} from "../newgroupdialog/newgroupdialog.component";
 
 @Component({
   selector: 'app-groups',
@@ -86,11 +87,20 @@ export class GroupsComponent implements OnInit {
   onNewChat(): void {
     this.userActions = 1
     this.selectedGroup = undefined
+
+    const dialogConf = new MatDialogConfig()
+    dialogConf.disableClose = false;
+    const dialogRef = this.dialog.open(NewgroupdialogComponent, dialogConf);
+    dialogRef.afterClosed().subscribe(async address => {
+      if (address == undefined)
+        return
+      await this.GroupController.newChat(address)
+    });
   }
 
   async newChat($event: any, name: any): Promise<void> {
     $event.preventDefault()
-    await this.GroupController.newChat(name)
+    await this.GroupController.newChat(name.value)
     this.userActions = 1
   }
 
