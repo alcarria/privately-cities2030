@@ -44,7 +44,6 @@ export class DeadDropController {
   }
 
   private async onShareSeed(error: any, event: any): Promise<void> {
-    console.log('OnShareSeed')
     if (error !== null)
       throw error
 

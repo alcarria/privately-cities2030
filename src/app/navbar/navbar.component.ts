@@ -19,7 +19,6 @@ export class NavbarComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.store.getCurrentAccount().subscribe(account => {
-      console.log('Address changed to ' + account?.address)
       this.address = account.address
       this.nickname = account.nickname
       this.cdr.detectChanges()
@@ -34,9 +33,5 @@ export class NavbarComponent implements OnInit {
     dialogConf.disableClose = false;
 
     const dialogRef = this.dialog.open(RegisterdialogComponent, dialogConf);
-  }
-
-  debug(text: string) {
-    console.log(text)
   }
 }

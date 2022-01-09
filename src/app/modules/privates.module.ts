@@ -72,7 +72,6 @@ export class PrivateController {
   }
 
   async subscribeToSendMessage(contactAddress: string): Promise<void> {
-    console.log('contactAddress: ' + contactAddress)
     if (this.isSubscribed(contactAddress))
       this.sendMessageSubscriptions.get(contactAddress).unsubscribe();
 
