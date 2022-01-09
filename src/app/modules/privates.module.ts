@@ -104,7 +104,7 @@ export class PrivateController {
 
     if (contact == undefined)
       throw "Contact doesnt exists"
-    
+
     let contactKey = await contact.getDecryptedKey();
 
     if (contactKey == undefined)
@@ -135,7 +135,7 @@ export class PrivateController {
 
   // Create a new chat
   async newChat(address: any): Promise<void> {
-    const contactAddress = address.value
+    const contactAddress = address
 
     const destPublicKey = (await Contact.getContactInfo(contactAddress)).publicKey
 
@@ -147,9 +147,7 @@ export class PrivateController {
   }
 
   getContact(address: string): PrivateContact|undefined {
-    console.log("Entro al for")
     for (let contact of this.contacts) {
-      console.log(contact.getAddress() + ' == ' + address)
       if (contact.getAddress().toLowerCase() == address.toLowerCase())
         return contact
     }

@@ -23,6 +23,8 @@ import {PermdialogComponent} from './permdialog/permdialog.component';
 import {PrivatesComponent} from './privates/privates.component';
 import { HomeComponent } from './home/home.component';
 import { RegisterdialogComponent } from './registerdialog/registerdialog.component';
+import { NewchatdialogComponent } from './newchatdialog/newchatdialog.component';
+import { NewgroupdialogComponent } from './newgroupdialog/newgroupdialog.component';
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -46,7 +48,9 @@ const routes: Routes = [
     PermdialogComponent,
     PrivatesComponent,
     HomeComponent,
-    RegisterdialogComponent
+    RegisterdialogComponent,
+    NewchatdialogComponent,
+    NewgroupdialogComponent
   ],
   imports: [
     RouterModule.forRoot(routes),

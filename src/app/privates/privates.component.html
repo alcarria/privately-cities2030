@@ -8,37 +8,30 @@
       
       <mat-list-item mat-button class="list-item" (click)="onNewChat()">
         <mat-icon aria-hidden="false" aria-label="Example home icon">add_circle</mat-icon>
-        Nuevo chat
+        Nuevo chat privado
       </mat-list-item>
     </app-chat-sidenav>
   </mat-drawer>
   <mat-drawer-content class="chat">
-    <ng-container [ngSwitch]="userActionStatus">
-      <ng-container *ngSwitchCase="1" [ngTemplateOutlet]="createChat"></ng-container>
-      <ng-container *ngSwitchDefault [ngTemplateOutlet]="chat"></ng-container>
-    </ng-container>
+    <app-chat
+    [title]="searchContact(getSelectedAddress())?.getNickname() + ' - ' + getSelectedAddress()"
+    [address]="getSelectedAddress()"
+    [messagesObservable]="getMessagesSelected()"
+    (onMessage)="sendMessage($event)">
+    <!-- Chat content when there is no chat selected -->
+    <mat-card>
+      <mat-card-title>
+        Crea un nuevo chat para continuar
+      </mat-card-title>
+    </mat-card>
+  </app-chat>
   </mat-drawer-content>
 </mat-drawer-container>
 
 <ng-template #createChat>
-  <mat-card class="create-chat-card">
+  <mat-card>
     <mat-card-title>
-      Nuevo chat
+      Crea un nuevo chat para continuar
     </mat-card-title>
-    <mat-card-content>
-      <form>
-        <input type="text" #address>
-        <button (click)="newChat($event, address)">Nuevo chat</button>
-      </form>
-    </mat-card-content>
   </mat-card>
-</ng-template>
-
-<ng-template #chat>
-  <app-chat
-    [title]="searchContact(getSelectedAddress()).getNickname() + ' - ' + getSelectedAddress()"
-    [address]="getSelectedAddress()"
-    [messagesObservable]="getMessagesSelected()"
-    (onMessage)="sendMessage($event)">
-  </app-chat>
 </ng-template>

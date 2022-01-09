@@ -3,8 +3,9 @@ import {Message, PrivateContact} from "../modules/chat.entities";
 import {Observable} from "rxjs";
 import {Store} from "../modules/store";
 import {Router} from "@angular/router";
-import {MatDialog} from "@angular/material/dialog";
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {PrivateController} from "../modules/privates.module";
+import {NewchatdialogComponent} from "../newchatdialog/newchatdialog.component";
 
 @Component({
   selector: 'app-privates',
@@ -21,7 +22,6 @@ export class PrivatesComponent implements OnInit {
   0: uso normal
   1: creando chat
  */
-  private userActions = 1
 
   constructor(private store: Store, private cdr: ChangeDetectorRef, private router: Router, public dialog: MatDialog) {
     this.PrivateController = new PrivateController(this.store.getCurrentAccountValue().address, this.store.getCurrentAccountValue().publicKey, cdr)
@@ -30,7 +30,6 @@ export class PrivatesComponent implements OnInit {
   ngOnInit(): void {
     this.store.getCurrentAccount().subscribe(_ => {
       this.selectedChat = undefined
-      this.userActions = 1
       this.PrivateController.destroy()
       this.PrivateController = new PrivateController(this.store.getCurrentAccountValue().address, this.store.getCurrentAccountValue().publicKey, this.cdr)
     })
@@ -67,7 +66,6 @@ export class PrivatesComponent implements OnInit {
 
     if (!this.PrivateController.isSubscribed(contactAddress))
       await this.PrivateController.subscribeToSendMessage(contactAddress);
-    this.userActions = 0
     this.cdr.detectChanges();
   }
 
@@ -75,32 +73,28 @@ export class PrivatesComponent implements OnInit {
     return this.selectedChat?.getAddress() ?? ''
   }
 
-  getMessagesSelected(): any {
+  getMessagesSelected(): Observable<Message[]> {
     if (this.selectedChat == undefined)
-      throw 'Cannot get messages: contact is undefined'
+      return new Observable()
     return this.selectedChat.getMessages()
   }
 
   onNewChat(): void {
-    this.userActions = 1
-    this.selectedChat = undefined
+    const dialogConf = new MatDialogConfig()
+    dialogConf.disableClose = false;
+    const dialogRef = this.dialog.open(NewchatdialogComponent, dialogConf);
+    dialogRef.afterClosed().subscribe(async address => {
+      if (address == undefined)
+        return
+      await this.PrivateController.newChat(address)
+    });
   }
 
-  async newChat($event: any, name: any): Promise<void> {
-    $event.preventDefault()
-    await this.PrivateController.newChat(name)
-    this.userActions = 1
-  }
-
-  get userActionStatus(): number {
-    return this.userActions;
-  }
-
-  searchContact(address: string): PrivateContact {
+  searchContact(address: string): PrivateContact | undefined {
     for (let contact of this.PrivateController.getContacts()) {
       if (contact.getAddress() == address)
         return contact
     }
-    throw "Contact does not exist"
+    return undefined
   }
 }

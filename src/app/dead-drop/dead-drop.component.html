@@ -2,7 +2,7 @@
   <div class="mat-elevation-z8 sidebar">
     <app-chat-sidenav [selected]="selectedContact?.getAddress()" [cards]="getCardsInfo()"
                       (changeAddress)="setSelectedContact($event)" (newChat)="onNewChat()">
-      <mat-list-item mat-button class="list-item" (click)="onNewChat()">
+      <mat-list-item class="list-item" (click)="onNewChat()">
         <mat-icon aria-hidden="false" aria-label="Example home icon">add_circle</mat-icon>
         Nuevo chat
       </mat-list-item>
@@ -26,14 +26,8 @@
 <ng-template #createChat>
   <mat-card>
     <mat-card-title>
-      Nuevo chat
+      Crea un nuevo chat para continuar
     </mat-card-title>
-    <mat-card-content>
-      <form>
-        <input type="text" #address>
-        <button (click)="newChat($event, address)">New chat</button>
-      </form>
-    </mat-card-content>
   </mat-card>
 </ng-template>
 
