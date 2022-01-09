@@ -13,6 +13,7 @@ export class ChatComponent implements OnInit {
 
   @Input() public messagesObservable: Observable<Message[]> = new Observable<Message[]>()
   @Input() public address = 'Destination'
+  @Input() public title: string = '';
 
   @Output() public onMessage = new EventEmitter<string>()
 
