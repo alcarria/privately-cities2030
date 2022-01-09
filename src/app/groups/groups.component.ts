@@ -23,12 +23,6 @@ export class GroupsComponent implements OnInit {
   private GroupController: GroupController;
   public messagesObservable: Observable<Message[]> = new Observable<Message[]>()
 
-  /*
-  0: uso normal
-  1: creando chat
-   */
-  private userActions = 1
-
   constructor(private store: Store, private cdr: ChangeDetectorRef, private router: Router, public dialog: MatDialog) {
     this.GroupController = new GroupController(this.store.getCurrentAccountValue().address, this.store.getCurrentAccountValue().publicKey, cdr)
   }
@@ -36,7 +30,6 @@ export class GroupsComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.store.getCurrentAccount().subscribe(_ => {
       this.selectedGroup = undefined
-      this.userActions = 1
       this.GroupController.destroy()
       this.GroupController = new GroupController(this.store.getCurrentAccountValue().address, this.store.getCurrentAccountValue().publicKey, this.cdr)
     })
@@ -73,24 +66,20 @@ export class GroupsComponent implements OnInit {
 
     if (!this.GroupController.isSubscribed(groupAddress))
       await this.GroupController.subscribeToSendMessage(groupAddress);
-    this.userActions = 0
     this.cdr.detectChanges();
   }
 
-  getSelectedAddress(): string {
+  getSelectedGroupName(): string {
     return this.selectedGroup?.getGroupName() ?? ''
   }
 
-  getMessagesSelected(): any {
+  getMessagesSelected(): Observable<Message[]> {
     if (this.selectedGroup == undefined)
-      throw 'Cannot get messages: contact is undefined'
+      return new Observable()
     return this.selectedGroup.getMessages()
   }
 
   onNewChat(): void {
-    this.userActions = 1
-    this.selectedGroup = undefined
-
     const dialogConf = new MatDialogConfig()
     dialogConf.disableClose = false;
     const dialogRef = this.dialog.open(NewgroupdialogComponent, dialogConf);
@@ -104,11 +93,6 @@ export class GroupsComponent implements OnInit {
   async newChat($event: any, name: any): Promise<void> {
     $event.preventDefault()
     await this.GroupController.newChat(name.value)
-    this.userActions = 1
-  }
-
-  get userActionStatus(): number {
-    return this.userActions;
   }
 
   openInviteDialog() {

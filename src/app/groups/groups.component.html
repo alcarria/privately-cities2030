@@ -1,31 +1,56 @@
-<div class="body">
-  <div class="mat-elevation-z8 sidebar">
-    <app-chat-sidenav [selected]="selectedGroup?.getAddress()" [cards]="getCardsInfo()"
-                      (changeAddress)="setSelectedAddress($event)" (newChat)="onNewChat()">
+<mat-drawer-container class="body">
+  <mat-drawer class="mat-elevation-z8 sidebar" mode="side" opened>
+    <app-chat-sidenav
+      [selected]="selectedGroup?.getAddress()"
+      [cards]="getCardsInfo()"
+      (changeAddress)="setSelectedAddress($event)"
+      (newChat)="onNewChat()">
+
       <mat-list-item class="list-item" (click)="onNewChat()">
         <mat-icon aria-hidden="false" aria-label="Example home icon">add_circle</mat-icon>
         Nuevo grupo
       </mat-list-item>
     </app-chat-sidenav>
-  </div>
+  </mat-drawer>
+  <mat-drawer-content class="chat">
+    <ng-container [ngTemplateOutlet]="getSelectedGroupName() == '' ? welcome : chat">
 
-  <div class="chat">
-    <ng-container [ngSwitch]="userActionStatus">
-      <ng-container *ngSwitchCase="1" [ngTemplateOutlet]="createChat"></ng-container>
-      <ng-container *ngSwitchDefault [ngTemplateOutlet]="chat"></ng-container>
     </ng-container>
-  </div>
-</div>
+  </mat-drawer-content>
+</mat-drawer-container>
 
-<ng-template #createChat>
+<ng-template #welcome>
   <mat-card>
     <mat-card-title>
-      Crea un nuevo grupo para continuar
+      Crea un nuevo chat para continuar
     </mat-card-title>
   </mat-card>
 </ng-template>
 
 <ng-template #chat>
+  <app-chat
+      [title]="getSelectedGroupName()"
+      [address]="getSelectedGroupName()"
+      [messagesObservable]="getMessagesSelected()"
+      (onMessage)="sendMessage($event)">
+    <!-- Chat content when there is no chat selected -->
+    <mat-card>
+      <mat-card-title>
+        Crea un nuevo chat para continuar
+      </mat-card-title>
+    </mat-card>
+  </app-chat>
+</ng-template>
+
+<!-- <ng-template #createChat>
+  <mat-card>
+    <mat-card-title>
+      Crea un nuevo grupo para continuar
+    </mat-card-title>
+  </mat-card>
+</ng-template> -->
+
+<!-- <ng-template #chat>
   <app-chat [messagesObservable]="getMessagesSelected()" [address]="getSelectedAddress()"
             (onMessage)="sendMessage($event)">
     <mat-toolbar color="primary" class="toolbar">
@@ -43,4 +68,4 @@
       </mat-toolbar-row>
     </mat-toolbar>
   </app-chat>
-</ng-template>
+</ng-template> -->
