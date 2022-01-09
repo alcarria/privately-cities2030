@@ -5,14 +5,16 @@
 }
 
 .sidebar{
-  background: white;
+  border-radius: 25px;
+  background: #F2F2F2;
   flex: 1;
   height: 100%;
   width: 30%;
+  z-index: 2;
 }
 
 .chat{
-  background: grey;
+  background: #F5F3EF;
   flex: 3;
   height: 100%;
   width: 70%;
@@ -20,4 +22,8 @@
 
 .list-item{
   cursor: pointer;
+}
+
+.toolbar {
+  background-color: var(--primary-variant-accent);
 }

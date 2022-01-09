@@ -1,5 +1,5 @@
 <div class="body">
-  <div class="sidebar">
+  <div class="mat-elevation-z8 sidebar">
     <app-chat-sidenav [selected]="selectedContact?.getAddress()" [cards]="getCardsInfo()"
                       (changeAddress)="setSelectedContact($event)" (newChat)="onNewChat()">
       <mat-list-item mat-button class="list-item" (click)="onNewChat()">
@@ -9,7 +9,8 @@
     </app-chat-sidenav>
   </div>
   <div class="chat">
-    <app-chat *ngIf="!isCreatingChat(); else createChat" [messagesObservable]="getMessagesSelected()"
+    <ng-container [ngTemplateOutlet]="isCreatingChat() ? createChat : chat"></ng-container>
+    <!-- <app-chat *ngIf="!isCreatingChat(); else createChat" [messagesObservable]="getMessagesSelected()"
               (onMessage)="sendMessage($event)">
       <mat-toolbar>
         <mat-toolbar-row>
@@ -18,7 +19,7 @@
           </div>
         </mat-toolbar-row>
       </mat-toolbar>
-    </app-chat>
+    </app-chat> -->
   </div>
 </div>
 
@@ -34,4 +35,17 @@
       </form>
     </mat-card-content>
   </mat-card>
+</ng-template>
+
+<ng-template #chat>
+  <app-chat [messagesObservable]="getMessagesSelected()" [messagesObservable]="getMessagesSelected()"
+    (onMessage)="sendMessage($event)">
+      <mat-toolbar color="primary" class="toolbar">
+        <mat-toolbar-row>
+          <div class="titulo">
+            <h3>{{searchContact(getSelectedAddress()).getNickname()}} - {{getSelectedAddress()}}</h3>
+          </div>
+        </mat-toolbar-row>
+      </mat-toolbar>
+  </app-chat>
 </ng-template>

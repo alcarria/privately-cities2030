@@ -1,5 +1,5 @@
 <div class="body">
-  <div class="sidebar">
+  <div class="mat-elevation-z8 sidebar">
     <app-chat-sidenav [selected]="selectedGroup?.getAddress()" [cards]="getCardsInfo()"
                       (changeAddress)="setSelectedAddress($event)" (newChat)="onNewChat()">
       <mat-list-item mat-button class="list-item" (click)="onNewChat()">
@@ -34,7 +34,7 @@
 <ng-template #chat>
   <app-chat [messagesObservable]="getMessagesSelected()" [address]="getSelectedAddress()"
             (onMessage)="sendMessage($event)">
-    <mat-toolbar>
+    <mat-toolbar color="primary" class="toolbar">
       <mat-toolbar-row>
         <div class="titulo">
           <h3>{{getSelectedAddress()}}</h3>
