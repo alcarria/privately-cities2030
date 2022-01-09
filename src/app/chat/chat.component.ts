@@ -12,7 +12,6 @@ import {Store} from '../modules/store';
 export class ChatComponent implements OnInit {
 
   @Input() public messagesObservable: Observable<Message[]> = new Observable<Message[]>()
-  @Input() public address: string = ''
   @Input() public title: string = '';
 
   @Output() public onMessage = new EventEmitter<string>()

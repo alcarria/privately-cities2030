@@ -1,4 +1,24 @@
-<div class="body">
+<mat-drawer-container class="body">
+  <mat-drawer class="mat-elevation-z8 sidebar" mode="side" opened>
+    <app-chat-sidenav
+      [selected]="selectedContact?.getAddress()"
+      [cards]="getCardsInfo()"
+      (changeAddress)="setSelectedContact($event)"
+      (newChat)="onNewChat()">
+
+      <mat-list-item class="list-item" (click)="onNewChat()">
+        <mat-icon aria-hidden="false" aria-label="Example home icon">add_circle</mat-icon>
+        Nuevo chat
+      </mat-list-item>
+    </app-chat-sidenav>
+  </mat-drawer>
+  <mat-drawer-content class="chat">
+    <ng-container [ngTemplateOutlet]="getSelectedAddress() == '' ? welcome : chat">
+    </ng-container>
+  </mat-drawer-content>
+</mat-drawer-container>
+
+<!-- <div class="body">
   <div class="mat-elevation-z8 sidebar">
     <app-chat-sidenav [selected]="selectedContact?.getAddress()" [cards]="getCardsInfo()"
                       (changeAddress)="setSelectedContact($event)" (newChat)="onNewChat()">
@@ -9,21 +29,13 @@
     </app-chat-sidenav>
   </div>
   <div class="chat">
-    <ng-container [ngTemplateOutlet]="isCreatingChat() ? createChat : chat"></ng-container>
-    <!-- <app-chat *ngIf="!isCreatingChat(); else createChat" [messagesObservable]="getMessagesSelected()"
-              (onMessage)="sendMessage($event)">
-      <mat-toolbar>
-        <mat-toolbar-row>
-          <div class="titulo">
-            <h3>{{searchContact(getSelectedAddress()).getNickname()}} - {{getSelectedAddress()}}</h3>
-          </div>
-        </mat-toolbar-row>
-      </mat-toolbar>
-    </app-chat> -->
-  </div>
-</div>
+    <ng-container [ngTemplateOutlet]="isCreatingChat() ? createChat : chat">
 
-<ng-template #createChat>
+    </ng-container>
+  </div>
+</div> -->
+
+<ng-template #welcome>
   <mat-card>
     <mat-card-title>
       Crea un nuevo chat para continuar
@@ -32,7 +44,9 @@
 </ng-template>
 
 <ng-template #chat>
-  <app-chat [messagesObservable]="getMessagesSelected()" [messagesObservable]="getMessagesSelected()"
+  <app-chat
+    [title]="searchContact(getSelectedAddress())?.getNickname() + ' - ' + getSelectedAddress()"
+    [messagesObservable]="getMessagesSelected()"
     (onMessage)="sendMessage($event)">
       <mat-toolbar color="primary" class="toolbar">
         <mat-toolbar-row>

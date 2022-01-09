@@ -84,8 +84,6 @@ export class DeadDropComponent implements OnInit {
   }
 
   onNewChat(): void {
-    this.selectedContact = undefined
-
     const dialogConf = new MatDialogConfig()
     dialogConf.disableClose = false;
     const dialogRef = this.dialog.open(NewchatdialogComponent, dialogConf);

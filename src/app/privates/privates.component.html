@@ -29,7 +29,6 @@
 <ng-template #chat>
   <app-chat
     [title]="searchContact(getSelectedAddress())?.getNickname() + ' - ' + getSelectedAddress()"
-    [address]="getSelectedAddress()"
     [messagesObservable]="getMessagesSelected()"
     (onMessage)="sendMessage($event)">
     </app-chat>
