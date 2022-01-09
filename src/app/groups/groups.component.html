@@ -29,6 +29,7 @@
 <ng-template #chat>
   <app-chat
       [title]="getSelectedGroupName()"
+      [toolbarOptions]="toolbarOptions"
       [messagesObservable]="getMessagesSelected()"
       (onMessage)="sendMessage($event)">
     <!-- Chat content when there is no chat selected -->
@@ -67,3 +68,13 @@
     </mat-toolbar>
   </app-chat>
 </ng-template> -->
+
+<ng-template #toolbarOptions>
+  <span class="spacer"></span>
+  <button mat-icon-button (click)="openInviteDialog()">
+    <mat-icon aria-hidden="false" aria-label="Invitar participantes">group_add</mat-icon>
+  </button>
+  <button mat-icon-button (click)="openPermDialog()">
+    <mat-icon aria-hidden="false" aria-label="Añadir permisos">view_headline</mat-icon>
+  </button>
+</ng-template>
