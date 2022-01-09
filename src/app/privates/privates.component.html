@@ -13,25 +13,24 @@
     </app-chat-sidenav>
   </mat-drawer>
   <mat-drawer-content class="chat">
-    <app-chat
-    [title]="searchContact(getSelectedAddress())?.getNickname() + ' - ' + getSelectedAddress()"
-    [address]="getSelectedAddress()"
-    [messagesObservable]="getMessagesSelected()"
-    (onMessage)="sendMessage($event)">
-    <!-- Chat content when there is no chat selected -->
-    <mat-card>
-      <mat-card-title>
-        Crea un nuevo chat para continuar
-      </mat-card-title>
-    </mat-card>
-  </app-chat>
+    <ng-container [ngTemplateOutlet]="getSelectedAddress() == '' ? welcome : chat">
+    </ng-container>
   </mat-drawer-content>
 </mat-drawer-container>
 
-<ng-template #createChat>
+<ng-template #welcome>
   <mat-card>
     <mat-card-title>
       Crea un nuevo chat para continuar
     </mat-card-title>
   </mat-card>
+</ng-template>
+
+<ng-template #chat>
+  <app-chat
+    [title]="searchContact(getSelectedAddress())?.getNickname() + ' - ' + getSelectedAddress()"
+    [address]="getSelectedAddress()"
+    [messagesObservable]="getMessagesSelected()"
+    (onMessage)="sendMessage($event)">
+    </app-chat>
 </ng-template>
