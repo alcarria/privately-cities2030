@@ -52,12 +52,15 @@ export class GroupsComponent implements OnInit {
     await this.GroupController.sendMessage(this.selectedGroup, message);
   }
 
-  get getAddresses(): string[] {
-    let addresses: string[] = []
-    for (let contact of this.GroupController.getGroups()) {
-      addresses.push(contact.getAddress())
+  getCardsInfo(): any[] {
+    let groups: any[] = []
+    for (let group of this.GroupController.getGroups()) {
+      groups.push({
+        title: group.getGroupName(),
+        data: group.getAddress()
+      })
     }
-    return addresses
+    return groups
   }
 
   async setSelectedAddress(groupAddress: string): Promise<void> {

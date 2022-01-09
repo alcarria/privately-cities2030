@@ -1,22 +1,22 @@
 <mat-list class="mat-typography app-frame mat-app-background">
   <ng-content></ng-content>
   <mat-divider></mat-divider>
-  <div *ngFor="let address of addresses"
-    [ngTemplateOutlet]="this.selected == address ? Selected : NoSelected" 
-    [ngTemplateOutletContext]="{address:address}">
+  <div *ngFor="let card of cards"
+    [ngTemplateOutlet]="this.selected == card.data ? Selected : NoSelected" 
+    [ngTemplateOutletContext]="{card:card}">
   </div>
 </mat-list>
 
-<ng-template #Selected let-address='address'>
-  <mat-list-item mat-button class="list-item  selected-address" (click)="onClick(address)">
-    {{address}}
+<ng-template #Selected let-card='card'>
+  <mat-list-item mat-button class="list-item selected-card" (click)="onClick(card.data)">
+    {{card.title}}
   </mat-list-item>
   <mat-divider></mat-divider>
 </ng-template>
 
-<ng-template #NoSelected let-address='address'>
-  <mat-list-item mat-button class="list-item" (click)="onClick(address)">
-    {{address}}
+<ng-template #NoSelected let-card='card'>
+  <mat-list-item mat-button class="list-item" (click)="onClick(card.data)">
+    {{card.title}}
   </mat-list-item>
   <mat-divider></mat-divider>
 </ng-template>

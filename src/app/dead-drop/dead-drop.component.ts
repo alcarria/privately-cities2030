@@ -51,10 +51,13 @@ export class DeadDropComponent implements OnInit {
     await this.deadDropController.newChat(address)
   }
 
-  getAddresses(): string[] {
-    let addresses: string[] = []
+  getCardsInfo(): any[] {
+    let addresses: any[] = []
     for (let contact of this.deadDropController.getContacts()) {
-      addresses.push(contact.getAddress())
+      addresses.push({
+        title: contact.getNickname(),
+        data: contact.getAddress()
+      })
     }
     return addresses
   }

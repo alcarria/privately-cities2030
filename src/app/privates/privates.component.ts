@@ -47,10 +47,13 @@ export class PrivatesComponent implements OnInit {
     await this.PrivateController.sendMessage(this.selectedChat, message);
   }
 
-  getAddresses(): string[] {
-    let addresses: string[] = []
+  getCardsInfo(): any[] {
+    let addresses: any[] = []
     for (let contact of this.PrivateController.getContacts()) {
-      addresses.push(contact.getAddress())
+      addresses.push({
+        title: contact.getNickname(),
+        data: contact.getAddress()
+      })
     }
     return addresses
   }

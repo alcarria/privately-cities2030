@@ -1,6 +1,6 @@
 <div class="body">
   <div class="mat-elevation-z8 sidebar">
-    <app-chat-sidenav [selected]="selectedChat?.getAddress()" [addresses]="getAddresses()"
+    <app-chat-sidenav [selected]="selectedChat?.getAddress()" [cards]="getCardsInfo()"
                       (changeAddress)="setSelectedAddress($event)" (newChat)="onNewChat()">
       <mat-list-item mat-button class="list-item" (click)="onNewChat()">
         <mat-icon aria-hidden="false" aria-label="Example home icon">add_circle</mat-icon>
