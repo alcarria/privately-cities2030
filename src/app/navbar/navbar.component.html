@@ -2,15 +2,18 @@
   <mat-toolbar-row>
     <a mat-button [routerLink]="''"><h1> Privately </h1></a>
     <span class="menu-spacer"></span>
-    <div>
-      <a mat-button [routerLink]="'/privates'"> Chats </a>
-    </div>
-    <div>
-      <a mat-button [routerLink]="'/dead-drop'"> Dead Drop </a>
-    </div>
-    <div>
-      <a mat-button [routerLink]="'/groups'"> Grupos </a>
-    </div>
+    <ng-container
+      [ngTemplateOutlet]="toolbarButton"
+      [ngTemplateOutletContext]="{route:'/privates', text:'Chat'}">
+    </ng-container>
+    <ng-container
+      [ngTemplateOutlet]="toolbarButton"
+      [ngTemplateOutletContext]="{route:'/dead-drop', text:'Dead Drop'}">
+    </ng-container>
+    <ng-container
+      [ngTemplateOutlet]="toolbarButton"
+      [ngTemplateOutletContext]="{route:'/groups', text:'Grupos'}">
+    </ng-container>
     <span class="spacer"></span>
     <ng-container
           [ngTemplateOutlet]="store.hasValidAccount() ? AccountInfo : Register">
@@ -35,4 +38,23 @@
       <span>Editar cuenta</span>
     </button>
   </mat-menu>
+</ng-template>
+
+<ng-template #toolbarButton let-text='text' let-route='route'>
+  <ng-container
+    [ngTemplateOutlet]="this.router.url === route ? selected : notSelected"
+    [ngTemplateOutletContext]="{route:route, text:text}">
+  </ng-container>
+</ng-template>
+
+<ng-template #selected let-text='text' let-route='route'>
+  <div>
+    <a mat-flat-button color="accent" [routerLink]="route">{{ text }}</a>
+  </div>
+</ng-template>
+
+<ng-template #notSelected let-text='text' let-route='route'>
+  <div>
+    <a mat-flat-button color="primary" [routerLink]="route" (click)="debug(route)">{{ text }}</a>
+  </div>
 </ng-template>
