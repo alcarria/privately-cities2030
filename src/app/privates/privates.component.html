@@ -37,7 +37,7 @@
       <mat-toolbar color="primary" class="toolbar">
         <mat-toolbar-row>
           <div class="titulo">
-            <h3>{{getSelectedAddress()}}</h3>
+            <h3>{{searchContact(getSelectedAddress()).getNickname()}} - {{getSelectedAddress()}}</h3>
           </div>
           <!--        <span class="spacer"></span>-->
           <!--        <button mat-icon-button (click)="openInviteDialog()">-->

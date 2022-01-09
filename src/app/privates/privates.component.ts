@@ -95,4 +95,12 @@ export class PrivatesComponent implements OnInit {
   get userActionStatus(): number {
     return this.userActions;
   }
+
+  searchContact(address: string): PrivateContact {
+    for (let contact of this.PrivateController.getContacts()) {
+      if (contact.getAddress() == address)
+        return contact
+    }
+    throw "Contact does not exist"
+  }
 }
