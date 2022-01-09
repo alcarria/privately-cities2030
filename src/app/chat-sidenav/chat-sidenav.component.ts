@@ -25,7 +25,6 @@ export class ChatSidenavComponent implements OnInit {
   ngOnInit(): void { }
 
   public onClick(address: string) {
-    console.log('click')
     this.changeAddress.emit(address)
   }
 

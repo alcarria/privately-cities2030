@@ -38,15 +38,11 @@ export class RegisterdialogComponent implements OnInit {
   }
 
   async onSubmit() {
-    console.log('Holita')
-
     // Create account in contract Contact
     let publicKey = await window.ethereum.request({
       method: 'eth_getEncryptionPublicKey',
       params: [this.store.getCurrentAccountValue().address]
     })
-
-    console.log('My public key is: ' + publicKey)
 
     this.contactContract.methods.setContactInfo(this.nickname, publicKey).send({from: this.store.getCurrentAccountValue().address})
     .then(() => {

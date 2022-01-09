@@ -40,7 +40,6 @@ export class Store {
                 publicKey: ''
             })
         } else {
-            console.log(address)
             let contactContract = new window.web3.eth.Contract(
                 Contact.abi,
                 environment.contact_address

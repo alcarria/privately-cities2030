@@ -103,8 +103,6 @@ export class GroupController {
     if (group == undefined)
       throw 'contact is undefined'
 
-    console.log('Evento de mensaje')
-
     group.addMessage(new Message(from, new Date(Number(event.returnValues.timestamp)), message))
     this.cdr.detectChanges();
   }
