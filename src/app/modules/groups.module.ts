@@ -103,8 +103,6 @@ export class GroupController {
     if (group == undefined)
       throw 'contact is undefined'
 
-    console.log('Evento de mensaje')
-
     group.addMessage(new Message(from, new Date(Number(event.returnValues.timestamp)), message))
     this.cdr.detectChanges();
   }
@@ -119,8 +117,8 @@ export class GroupController {
   }
 
   // Create a new chat
-  async newChat(address: any): Promise<void> {
-    const groupName = address.value
+  async newChat(name: any): Promise<void> {
+    const groupName = name
     const groupAddress = window.web3.eth.accounts.create(window.web3.utils.randomHex(32)).address;
 
     const groupKey = naclUtil.encodeBase64(nacl.randomBytes(32));

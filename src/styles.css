@@ -1,4 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 
+:root {
+    --primary-variant-700: #303F9F;
+    --primary-variant-800: #283593;
+    --primary-variant-accent: #536DFE;
+    --primary-variant-accent-2: #448AFF;
+}
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

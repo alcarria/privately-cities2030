@@ -1,23 +1,24 @@
-.titulo {
-  background: green;
+.body {
+  height: 100%;
+  min-height: calc(100% - 84px);
+  max-height: calc(100% - 84px);
 }
 
-.body {
-  min-height: 100%;
-  max-height: 100%;
+.chat {
+  background: #F5F3EF;
+  height: auto;
+  min-height: calc(100% - 84px);
+  max-height: calc(100% - 84px);
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
 .form {
-  background-color: #696969;
-  z-index: 1;
-  position: sticky;
-  bottom: 0;
-  width: 100%;
   text-align: center;
-  padding-top: 10px;
+  padding-right: 10px;
+  padding-left: 10px;
+  overflow-y: hidden;
 }
 
 .chat-ts {
@@ -43,4 +44,19 @@
   width: fit-content;
   margin-left: auto;
   margin-right: 1%;
+}
+
+.toolbar {
+  top: 0;
+  position: sticky;
+  position: -webkit-sticky; /* For macOS/iOS Safari */
+  background-color: var(--primary-variant-accent);
+}
+
+.chatbar {
+  position: sticky;
+  position: -webkit-sticky; /* For macOS/iOS Safari */
+  height: 84px;
+  padding: 10px;
+  background-color: #F2F2F2;
 }

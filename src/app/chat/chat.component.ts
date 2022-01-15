@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef} from '@angular/core';
+import {Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef, TemplateRef} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Message} from '../modules/chat.entities';
 import {Store} from '../modules/store';
@@ -11,8 +11,10 @@ import {Store} from '../modules/store';
 
 export class ChatComponent implements OnInit {
 
+  @Input() public title: string = ''
   @Input() public messagesObservable: Observable<Message[]> = new Observable<Message[]>()
-  @Input() public address = 'Destination'
+
+  @Input() public toolbarOptions: TemplateRef<any> | null = null
 
   @Output() public onMessage = new EventEmitter<string>()
 

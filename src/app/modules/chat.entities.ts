@@ -123,7 +123,6 @@ export class GroupContact extends Contact {
   }
 
   public addMessage(message: Message): void {
-    console.log('Añadir mensaje')
     this.messages.next(
       [...this.messages.getValue(), message]
     )

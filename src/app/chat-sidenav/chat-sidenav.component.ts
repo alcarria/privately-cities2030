@@ -1,6 +1,11 @@
 import {Component, Input, OnInit, Output, EventEmitter} from '@angular/core';
 import { Store } from '../modules/store';
 
+interface CardInfo {
+  title: string
+  data: any
+}
+
 @Component({
   selector: 'app-chat-sidenav',
   templateUrl: './chat-sidenav.component.html',
@@ -8,8 +13,8 @@ import { Store } from '../modules/store';
 })
 export class ChatSidenavComponent implements OnInit {
 
-  @Input() addresses: string[] = [];
-  @Input() selected: String|undefined = undefined;
+  @Input() cards: CardInfo[] = [];
+  @Input() selected: any = undefined;
 
   @Output() changeAddress = new EventEmitter<string>();
   @Output() newChat = new EventEmitter<string>();

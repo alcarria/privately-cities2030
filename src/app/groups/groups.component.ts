@@ -9,6 +9,7 @@ import {Observable} from "rxjs";
 import {InvitedialogComponent} from "../invitedialog/invitedialog.component";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {PermdialogComponent} from "../permdialog/permdialog.component";
+import {NewgroupdialogComponent} from "../newgroupdialog/newgroupdialog.component";
 
 @Component({
   selector: 'app-groups',
@@ -22,12 +23,6 @@ export class GroupsComponent implements OnInit {
   private GroupController: GroupController;
   public messagesObservable: Observable<Message[]> = new Observable<Message[]>()
 
-  /*
-  0: uso normal
-  1: creando chat
-   */
-  private userActions = 1
-
   constructor(private store: Store, private cdr: ChangeDetectorRef, private router: Router, public dialog: MatDialog) {
     this.GroupController = new GroupController(this.store.getCurrentAccountValue().address, this.store.getCurrentAccountValue().publicKey, cdr)
   }
@@ -35,7 +30,6 @@ export class GroupsComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.store.getCurrentAccount().subscribe(_ => {
       this.selectedGroup = undefined
-      this.userActions = 1
       this.GroupController.destroy()
       this.GroupController = new GroupController(this.store.getCurrentAccountValue().address, this.store.getCurrentAccountValue().publicKey, this.cdr)
     })
@@ -52,12 +46,15 @@ export class GroupsComponent implements OnInit {
     await this.GroupController.sendMessage(this.selectedGroup, message);
   }
 
-  get getAddresses(): string[] {
-    let addresses: string[] = []
-    for (let contact of this.GroupController.getGroups()) {
-      addresses.push(contact.getAddress())
+  getCardsInfo(): any[] {
+    let groups: any[] = []
+    for (let group of this.GroupController.getGroups()) {
+      groups.push({
+        title: group.getGroupName(),
+        data: group.getAddress()
+      })
     }
-    return addresses
+    return groups
   }
 
   async setSelectedAddress(groupAddress: string): Promise<void> {
@@ -69,33 +66,33 @@ export class GroupsComponent implements OnInit {
 
     if (!this.GroupController.isSubscribed(groupAddress))
       await this.GroupController.subscribeToSendMessage(groupAddress);
-    this.userActions = 0
     this.cdr.detectChanges();
   }
 
-  getSelectedAddress(): string {
+  getSelectedGroupName(): string {
     return this.selectedGroup?.getGroupName() ?? ''
   }
 
-  getMessagesSelected(): any {
+  getMessagesSelected(): Observable<Message[]> {
     if (this.selectedGroup == undefined)
-      throw 'Cannot get messages: contact is undefined'
+      return new Observable()
     return this.selectedGroup.getMessages()
   }
 
   onNewChat(): void {
-    this.userActions = 1
-    this.selectedGroup = undefined
+    const dialogConf = new MatDialogConfig()
+    dialogConf.disableClose = false;
+    const dialogRef = this.dialog.open(NewgroupdialogComponent, dialogConf);
+    dialogRef.afterClosed().subscribe(async address => {
+      if (address == undefined)
+        return
+      await this.GroupController.newChat(address)
+    });
   }
 
   async newChat($event: any, name: any): Promise<void> {
     $event.preventDefault()
-    await this.GroupController.newChat(name)
-    this.userActions = 1
-  }
-
-  get userActionStatus(): number {
-    return this.userActions;
+    await this.GroupController.newChat(name.value)
   }
 
   openInviteDialog() {

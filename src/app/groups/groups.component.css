@@ -1,21 +1,17 @@
 .body {
-  background: red;
-  display: flex;
-  height: 100%;
+  width: 100%;
+  height: calc(100vh - 64px);
 }
 
 .sidebar {
-  background: white;
-  flex: 1;
   height: 100%;
-  width: 30%;
+  width: 20%;
 }
 
 .chat {
-  background: grey;
-  flex: 3;
   height: 100%;
-  width: 70%;
+  /* overflow-y: hidden; */
+  width: auto;
 }
 
 .list-item {

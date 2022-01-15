@@ -12,6 +12,6 @@ mat-list{
   cursor: pointer;
 }
 
-.selected-address {
-  background-color: #696969;
+.selected-card {
+  background-color: var(--primary-variant-accent-2);
 }

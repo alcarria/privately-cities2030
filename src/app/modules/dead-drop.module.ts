@@ -44,7 +44,6 @@ export class DeadDropController {
   }
 
   private async onShareSeed(error: any, event: any): Promise<void> {
-    console.log('OnShareSeed')
     if (error !== null)
       throw error
 
@@ -138,8 +137,8 @@ export class DeadDropController {
 
   // Create a new chat
   async newChat(address: any): Promise<void> {
-    const destinationAddress = address.value
-    const token_seed: string = this.genSeed()
+    const destinationAddress = address
+    const token_seed: string = this.generateSeed()
 
     const destPublicKey = (await Contact.getContactInfo(destinationAddress)).publicKey
 
@@ -149,7 +148,7 @@ export class DeadDropController {
     await this.contract.methods.shareSeed(destinationAddress, from_seed, to_seed).send({from: this.currentAddress})
   }
 
-  genSeed(length?: number): string {
+  generateSeed(length?: number): string {
     let result = ''
     const seedLength = 20
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'

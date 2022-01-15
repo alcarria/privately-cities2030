@@ -1,6 +1,13 @@
-<ng-content *ngIf="address != ''"></ng-content>
 <div class="body">
-  <div *ngIf="address != ''; else noAddress" class="chat-div">
+  <mat-toolbar color="primary" class="toolbar">
+    <mat-toolbar-row>
+      <div class="titulo">
+        <h3>{{title}}</h3>
+      </div>
+      <ng-container [ngTemplateOutlet]="toolbarOptions"></ng-container>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  <div class="chat">
     <mat-list>
       <p *ngFor="let message of messages">
         <ng-container
@@ -10,17 +17,16 @@
       </p>
     </mat-list>
   </div>
-
-  <div class="form">
-    <form>
+  <div class="chatbar form">
+    <div class="form">
       <mat-form-field style="width: 100%;" appearance="fill">
-        <mat-label>Message</mat-label>
-        <input matInput type="text" #message>
+        <input matInput type="text" placeholder="Mensaje" #message>
+        <mat-hint>Longitud del mensaje (0/100)</mat-hint>
         <button matSuffix mat-icon-button aria-label="Clear" (click)="sendMessage($event, message)">
           <mat-icon>send</mat-icon>
         </button>
       </mat-form-field>
-    </form>
+    </div>
   </div>
 </div>
 

@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>Crear nuevo grupo</h2>
+<mat-dialog-content>
+  <mat-form-field appearance="fill">
+    <mat-label>Nombre</mat-label>
+    <input matInput [(ngModel)]="name">
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button class="mat-raised-button" (click)="onCancel()">Cancelar</button>
+  <button type="submit" class="mat-raised-button mat-primary" mat-button (click)="onsubmit()">Aceptar</button>
+</mat-dialog-actions>
