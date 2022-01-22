@@ -1,6 +1,6 @@
-import { Component, EventEmitter, NgZone, OnInit, Output } from '@angular/core';
-import { NgForm } from '@angular/forms';
-import { Store } from '../modules/store';
+import {Component, EventEmitter, NgZone, OnInit, Output} from '@angular/core';
+import {NgForm} from '@angular/forms';
+import {Store} from '../modules/store';
 import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {environment} from "../../environments/environment";
 // @ts-ignore
@@ -17,7 +17,7 @@ export class RegisterdialogComponent implements OnInit {
 
   @Output() onInviteForm = new EventEmitter<NgForm>();
   nickname: string = "";
-  
+
   private contactContract = new window.web3.eth.Contract(
     Contact.abi,
     environment.contact_address
@@ -28,7 +28,7 @@ export class RegisterdialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    
+
   }
 
   onCancel() {
@@ -45,15 +45,15 @@ export class RegisterdialogComponent implements OnInit {
     })
 
     this.contactContract.methods.setContactInfo(this.nickname, publicKey).send({from: this.store.getCurrentAccountValue().address})
-    .then(() => {
-      //Cuando se ha añadido su clave publica al contrato se sigue adelante en el proceso de login
-      this.store.setCurrentAccount(this.store.getCurrentAccountValue().address)
-      this.ngZone.run(() => {
-        this.dialogRef.close(true)
+      .then(() => {
+        //Cuando se ha añadido su clave publica al contrato se sigue adelante en el proceso de login
+        this.store.setCurrentAccount(this.store.getCurrentAccountValue().address)
+        this.ngZone.run(() => {
+          this.dialogRef.close(true)
+        })
       })
-    })
 
-    
+
   }
 
 }
