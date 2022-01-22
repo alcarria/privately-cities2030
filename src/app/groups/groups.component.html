@@ -28,10 +28,10 @@
 
 <ng-template #chat>
   <app-chat
-      [title]="getSelectedGroupName()"
-      [toolbarOptions]="toolbarOptions"
-      [messagesObservable]="getMessagesSelected()"
-      (onMessage)="sendMessage($event)">
+    [title]="getSelectedGroupName()"
+    [toolbarOptions]="toolbarOptions"
+    [messagesObservable]="getMessagesSelected()"
+    (onMessage)="sendMessage($event)">
     <mat-card>
       <mat-card-title>
         Crea un nuevo chat para continuar

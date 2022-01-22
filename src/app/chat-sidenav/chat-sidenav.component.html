@@ -2,8 +2,8 @@
   <ng-content></ng-content>
   <mat-divider></mat-divider>
   <div *ngFor="let card of cards"
-    [ngTemplateOutlet]="this.selected == card.data ? Selected : NoSelected"
-    [ngTemplateOutletContext]="{card:card}">
+       [ngTemplateOutlet]="this.selected == card.data ? Selected : NoSelected"
+       [ngTemplateOutletContext]="{card:card}">
   </div>
 </mat-list>
 

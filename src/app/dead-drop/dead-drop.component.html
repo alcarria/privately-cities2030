@@ -31,12 +31,12 @@
     [title]="searchContact(getSelectedAddress())?.getNickname() + ' - ' + getSelectedAddress()"
     [messagesObservable]="getMessagesSelected()"
     (onMessage)="sendMessage($event)">
-      <mat-toolbar color="primary" class="toolbar">
-        <mat-toolbar-row>
-          <div class="titulo">
-            <h3>{{searchContact(getSelectedAddress()).getNickname()}} - {{getSelectedAddress()}}</h3>
-          </div>
-        </mat-toolbar-row>
-      </mat-toolbar>
+    <mat-toolbar color="primary" class="toolbar">
+      <mat-toolbar-row>
+        <div class="titulo">
+          <h3>{{searchContact(getSelectedAddress()).getNickname()}} - {{getSelectedAddress()}}</h3>
+        </div>
+      </mat-toolbar-row>
+    </mat-toolbar>
   </app-chat>
 </ng-template>
