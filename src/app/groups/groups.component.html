@@ -19,11 +19,10 @@
 </mat-drawer-container>
 
 <ng-template #welcome>
-  <mat-card>
-    <mat-card-title>
-      Crea un nuevo grupo para continuar
-    </mat-card-title>
-  </mat-card>
+  <div class="area">
+    <h2>Mensajería grupal</h2>
+    ¡Para compenzar, crea un nuevo grupo!
+  </div>
 </ng-template>
 
 <ng-template #chat>
@@ -32,12 +31,6 @@
       [toolbarOptions]="toolbarOptions"
       [messagesObservable]="getMessagesSelected()"
       (onMessage)="sendMessage($event)">
-    <!-- Chat content when there is no chat selected -->
-    <mat-card>
-      <mat-card-title>
-        Crea un nuevo chat para continuar
-      </mat-card-title>
-    </mat-card>
   </app-chat>
 </ng-template>
 
