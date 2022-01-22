@@ -1,14 +1,14 @@
-.button{
+.button {
   background: red;
   color: black;
 }
 
-mat-list{
+mat-list {
   padding: 0;
   height: 100%;
 }
 
-.list-item{
+.list-item {
   cursor: pointer;
 }
 

@@ -18,23 +18,6 @@
   </mat-drawer-content>
 </mat-drawer-container>
 
-<!-- <div class="body">
-  <div class="mat-elevation-z8 sidebar">
-    <app-chat-sidenav [selected]="selectedContact?.getAddress()" [cards]="getCardsInfo()"
-                      (changeAddress)="setSelectedContact($event)" (newChat)="onNewChat()">
-      <mat-list-item class="list-item" (click)="onNewChat()">
-        <mat-icon aria-hidden="false" aria-label="Example home icon">add_circle</mat-icon>
-        Nuevo chat
-      </mat-list-item>
-    </app-chat-sidenav>
-  </div>
-  <div class="chat">
-    <ng-container [ngTemplateOutlet]="isCreatingChat() ? createChat : chat">
-
-    </ng-container>
-  </div>
-</div> -->
-
 <ng-template #welcome>
   <div class="area">
     <h2>Mensajería secreta</h2>
@@ -47,12 +30,12 @@
     [title]="searchContact(getSelectedAddress())?.getNickname() + ' - ' + getSelectedAddress()"
     [messagesObservable]="getMessagesSelected()"
     (onMessage)="sendMessage($event)">
-      <mat-toolbar color="primary" class="toolbar">
-        <mat-toolbar-row>
-          <div class="titulo">
-            <h3>{{searchContact(getSelectedAddress()).getNickname()}} - {{getSelectedAddress()}}</h3>
-          </div>
-        </mat-toolbar-row>
-      </mat-toolbar>
+    <mat-toolbar color="primary" class="toolbar">
+      <mat-toolbar-row>
+        <div class="titulo">
+          <h3>{{searchContact(getSelectedAddress()).getNickname()}} - {{getSelectedAddress()}}</h3>
+        </div>
+      </mat-toolbar-row>
+    </mat-toolbar>
   </app-chat>
 </ng-template>

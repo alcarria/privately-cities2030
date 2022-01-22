@@ -148,7 +148,7 @@ export class GroupContact extends Contact {
   }
 }
 
-export class PrivateContact extends Contact  {
+export class PrivateContact extends Contact {
 
   private decrypted_pass: string | undefined
 
@@ -226,7 +226,7 @@ export class Message {
     return false
   }
 
-  public getTitle():string{
+  public getTitle(): string {
     return this.sender;
   }
 }
@@ -254,7 +254,7 @@ export class MessageDeadDrop extends Message {
     return this.decryptedMessage == undefined
   }
 
-  public getTitle():string{
+  public getTitle(): string {
     return this.timestamp.toLocaleString();
   }
 }

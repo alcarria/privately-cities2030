@@ -25,19 +25,16 @@ export class GroupController {
       environment.group_address
     )
 
-    // Get list of my groups
     this.onInviteSubscriber = this.contract.events.onInvite({
       fromBlock: 0
     }, (error: any, event: any) => this.onInviteShared(error, event))
   }
 
   destroy() {
-    // Unsubscribe contact messages
     for (const contact of this.groups) {
       contact.unsubscribe();
     }
 
-    // Unsubscribe ShareSeed event
     if (this.onInviteSubscriber != undefined) {
       this.onInviteSubscriber.unsubscribe()
     }
@@ -48,7 +45,6 @@ export class GroupController {
     if (error !== null)
       throw error
 
-    // Check if the message is for me
     if (event.returnValues.to.toLowerCase() == this.currentAddress.toLowerCase()) {
       const group = String(event.returnValues.group)
       const groupKey = event.returnValues.groupKey
@@ -116,7 +112,6 @@ export class GroupController {
     return this.groups
   }
 
-  // Create a new chat
   async newChat(name: any): Promise<void> {
     const groupName = name
     const groupAddress = window.web3.eth.accounts.create(window.web3.utils.randomHex(32)).address;
@@ -139,7 +134,6 @@ export class GroupController {
   async newInvite(destAddress: any, selectedGroup: GroupContact) {
     const groupAddress = selectedGroup.getAddress()
     const groupKey = await selectedGroup.getDecryptedKey()
-    const contact = this
 
     const destPublicKey = (await Contact.getContactInfo(destAddress)).publicKey
 
@@ -150,7 +144,7 @@ export class GroupController {
 
   async givePerms(destAddress: any, selectedGroup: GroupContact, permissions: number) {
     if (permissions < 2 || permissions > 4) {
-        throw 'Permission must be between 2 and 4'
+      throw 'Permission must be between 2 and 4'
     }
     const groupAddress = selectedGroup.getAddress()
     this.contract.methods.changePermissions(destAddress, groupAddress, permissions).send({from: this.currentAddress})

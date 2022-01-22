@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 
-import {Contact, DeadDropContact, MessageDeadDrop} from '../modules/chat.entities';
+import {DeadDropContact, MessageDeadDrop} from '../modules/chat.entities';
 
 // @ts-ignore
 import {Observable} from 'rxjs';
@@ -28,7 +28,6 @@ export class DeadDropComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    // this.loadContacts()
     this.store.getCurrentAccount().subscribe(_ => {
       this.selectedContact = undefined
       this.deadDropController.destroy()
@@ -91,10 +90,6 @@ export class DeadDropComponent implements OnInit {
         return
       await this.deadDropController.newChat(address)
     });
-  }
-
-  isCreatingChat(): boolean {
-    return this.selectedContact == undefined
   }
 
   searchContact(address: string): DeadDropContact {

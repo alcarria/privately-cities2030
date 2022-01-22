@@ -1,5 +1,5 @@
 import {Component, Input, OnInit, Output, EventEmitter} from '@angular/core';
-import { Store } from '../modules/store';
+import {Store} from '../modules/store';
 
 interface CardInfo {
   title: string
@@ -22,7 +22,8 @@ export class ChatSidenavComponent implements OnInit {
   constructor(public store: Store) {
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+  }
 
   public onClick(address: string) {
     this.changeAddress.emit(address)

@@ -19,9 +19,6 @@ pragma solidity 0.8.9;
   }
 
 contract Groups {
-
-  mapping(address => string) public publicKeys;
-
   // K: userAddress
   mapping(address => GroupKey[]) public groupKeys;
 
@@ -87,13 +84,5 @@ contract Groups {
     require(groupsInfo[group].permissions[to] < groupsInfo[group].permissions[msg.sender]);
 
     groupsInfo[group].permissions[to] = permissions;
-  }
-
-  function setPublicKey(address my_address, string memory publicKey) public {
-    publicKeys[my_address] = publicKey;
-  }
-
-  function getPublicKey(address dest_address) public view returns (string memory publicKey) {
-    publicKey = publicKeys[dest_address];
   }
 }
