@@ -18,11 +18,6 @@ export class PrivatesComponent implements OnInit {
   private PrivateController: PrivateController;
   public messagesObservable: Observable<Message[]> = new Observable<Message[]>()
 
-  /*
-  0: uso normal
-  1: creando chat
- */
-
   constructor(private store: Store, private cdr: ChangeDetectorRef, private router: Router, public dialog: MatDialog) {
     this.PrivateController = new PrivateController(this.store.getCurrentAccountValue().address, this.store.getCurrentAccountValue().publicKey, cdr)
   }

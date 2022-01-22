@@ -5,8 +5,8 @@
       [cards]="getCardsInfo()"
       (changeAddress)="setSelectedAddress($event)"
       (newChat)="onNewChat()">
-      
-      <mat-list-item mat-button class="list-item" (click)="onNewChat()">
+
+      <mat-list-item class="list-item" (click)="onNewChat()">
         <mat-icon aria-hidden="false" aria-label="Example home icon">add_circle</mat-icon>
         Nuevo chat privado
       </mat-list-item>
@@ -31,5 +31,5 @@
     [title]="searchContact(getSelectedAddress())?.getNickname() + ' - ' + getSelectedAddress()"
     [messagesObservable]="getMessagesSelected()"
     (onMessage)="sendMessage($event)">
-    </app-chat>
+  </app-chat>
 </ng-template>
