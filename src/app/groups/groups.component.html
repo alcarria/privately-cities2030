@@ -19,55 +19,20 @@
 </mat-drawer-container>
 
 <ng-template #welcome>
-  <mat-card>
-    <mat-card-title>
-      Crea un nuevo grupo para continuar
-    </mat-card-title>
-  </mat-card>
+  <div class="area">
+    <h2>Mensajería grupal</h2>
+    ¡Para comenzar, crea un nuevo grupo!
+  </div>
 </ng-template>
 
 <ng-template #chat>
   <app-chat
-      [title]="getSelectedGroupName()"
-      [toolbarOptions]="toolbarOptions"
-      [messagesObservable]="getMessagesSelected()"
-      (onMessage)="sendMessage($event)">
-    <!-- Chat content when there is no chat selected -->
-    <mat-card>
-      <mat-card-title>
-        Crea un nuevo chat para continuar
-      </mat-card-title>
-    </mat-card>
+    [title]="getSelectedGroupName()"
+    [toolbarOptions]="toolbarOptions"
+    [messagesObservable]="getMessagesSelected()"
+    (onMessage)="sendMessage($event)">
   </app-chat>
 </ng-template>
-
-<!-- <ng-template #createChat>
-  <mat-card>
-    <mat-card-title>
-      Crea un nuevo grupo para continuar
-    </mat-card-title>
-  </mat-card>
-</ng-template> -->
-
-<!-- <ng-template #chat>
-  <app-chat [messagesObservable]="getMessagesSelected()" [address]="getSelectedAddress()"
-            (onMessage)="sendMessage($event)">
-    <mat-toolbar color="primary" class="toolbar">
-      <mat-toolbar-row>
-        <div class="titulo">
-          <h3>{{getSelectedAddress()}}</h3>
-        </div>
-        <span class="spacer"></span>
-        <button mat-icon-button (click)="openInviteDialog()">
-          <mat-icon aria-hidden="false" aria-label="Invitar participantes">group_add</mat-icon>
-        </button>
-        <button mat-icon-button (click)="openPermDialog()">
-          <mat-icon aria-hidden="false" aria-label="Añadir permisos">view_headline</mat-icon>
-        </button>
-      </mat-toolbar-row>
-    </mat-toolbar>
-  </app-chat>
-</ng-template> -->
 
 <ng-template #toolbarOptions>
   <span class="spacer"></span>

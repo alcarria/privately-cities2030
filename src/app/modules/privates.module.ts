@@ -26,25 +26,21 @@ export class PrivateController {
       environment.privates_address
     )
 
-    // Get list of my groups
     this.onInviteSubscriber = this.contract.events.onShareKey({
       fromBlock: 0
     }, (error: any, event: any) => this.onShareKey(error, event))
   }
 
   destroy() {
-    // Unsubscribe contact messages
     for (const contact of this.contacts) {
       contact.unsubscribe();
     }
 
-    // Unsubscribe ShareSeed event
     if (this.onInviteSubscriber != undefined) {
       this.onInviteSubscriber.unsubscribe()
     }
   }
 
-  // Cuando llega una invitacion hay que aceptarla
   private async onShareKey(error: any, event: any): Promise<void> {
     if (error !== null)
       throw error
@@ -132,7 +128,6 @@ export class PrivateController {
     return this.contacts
   }
 
-  // Create a new chat
   async newChat(address: any): Promise<void> {
     const contactAddress = address
 
@@ -145,7 +140,7 @@ export class PrivateController {
     await this.contract.methods.shareKey(contactAddress, myCypherKey, destCypherKey).send({from: this.currentAddress})
   }
 
-  getContact(address: string): PrivateContact|undefined {
+  getContact(address: string): PrivateContact | undefined {
     for (let contact of this.contacts) {
       if (contact.getAddress().toLowerCase() == address.toLowerCase())
         return contact

@@ -21,7 +21,6 @@ export class AppComponent {
       sanitizer.bypassSecurityTrustResourceUrl("/assets/icons/metamask-fox-wordmark-stacked.svg")
     );
 
-
     // Load account
     window.ethereum.request({method: 'eth_accounts'}).then((accounts: any) => store.setCurrentAccount(accounts[0]))
     window.ethereum.on('accountsChanged', (accounts: Array<string>) => {

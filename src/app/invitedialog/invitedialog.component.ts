@@ -16,13 +16,13 @@ export class InvitedialogComponent {
   }
 
   onCancel() {
-    this.ngZone.run(()=>{
+    this.ngZone.run(() => {
       this.dialogRef.close()
     })
   }
 
   onsubmit() {
-    this.ngZone.run(()=>{
+    this.ngZone.run(() => {
       this.dialogRef.close(this.address)
     })
   }

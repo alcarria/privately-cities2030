@@ -3,7 +3,6 @@ import {Contact, DeadDropContact, MessageDeadDrop} from "./chat.entities";
 // @ts-ignore
 import DeadDropContract from '../../assets/contracts/DeadDrop.json'
 import {environment} from "src/environments/environment";
-import {Store} from "./store";
 import {ChangeDetectorRef} from "@angular/core";
 import {encrypt} from "./encryption.module";
 import getToken from "totp-generator";
@@ -25,19 +24,16 @@ export class DeadDropController {
       environment.deaddrop_address
     )
 
-    // Get list  of all contacts
     this.shareSeedSubscriber = this.contract.events.ShareSeed({
       fromBlock: 0
     }, (error: any, event: any) => this.onShareSeed(error, event))
   }
 
   destroy() {
-    // Unsubscribe contact messages
     for (const contact of this.contacts) {
       contact.unsubscribe();
     }
 
-    // Unsubscribe ShareSeed event
     if (this.shareSeedSubscriber != undefined) {
       this.shareSeedSubscriber.unsubscribe()
     }
@@ -47,7 +43,6 @@ export class DeadDropController {
     if (error !== null)
       throw error
 
-    // Check if the message is for me
     if (event.returnValues.to.toLowerCase() == this.currentAddress.toLowerCase()) {
       const from = String(event.returnValues.from)
       const encrypted_seed = event.returnValues.to_seed
@@ -95,14 +90,11 @@ export class DeadDropController {
   }
 
   private async onMessageEvent(error: any, event: any): Promise<void> {
-    // Check errors
     if (error !== null)
       throw error
 
-    // Check if the message is for me
     if (!await this.isTheMessageForMe(event)) return
 
-    // Add message to the corresponding chat
     let from = event.returnValues.from
 
     const contact = this.getContact(from)
