@@ -17,10 +17,10 @@ import {InvitedialogComponent} from './invitedialog/invitedialog.component'
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {PermdialogComponent} from './permdialog/permdialog.component';
 import {PrivatesComponent} from './privates/privates.component';
-import { HomeComponent } from './home/home.component';
-import { RegisterdialogComponent } from './registerdialog/registerdialog.component';
-import { NewchatdialogComponent } from './newchatdialog/newchatdialog.component';
-import { NewgroupdialogComponent } from './newgroupdialog/newgroupdialog.component';
+import {HomeComponent} from './home/home.component';
+import {RegisterdialogComponent} from './registerdialog/registerdialog.component';
+import {NewchatdialogComponent} from './newchatdialog/newchatdialog.component';
+import {NewgroupdialogComponent} from './newgroupdialog/newgroupdialog.component';
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
