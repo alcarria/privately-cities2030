@@ -207,7 +207,7 @@ export class PrivateContact extends Contact {
 
 export class Message {
 
-  constructor(protected sender: string, protected timestamp: Date, protected message: string) {
+  constructor(protected sender: string, protected senderNickname: string, protected timestamp: Date, protected message: string) {
   }
 
   public getSender(): string {
@@ -227,7 +227,7 @@ export class Message {
   }
 
   public getTitle(): string {
-    return this.sender;
+    return this.senderNickname;
   }
 }
 
@@ -236,7 +236,7 @@ export class MessageDeadDrop extends Message {
   private decryptedMessage: string | undefined = undefined
 
   constructor(sender: string, timestamp: Date, message: string, private cdr: ChangeDetectorRef) {
-    super(sender, timestamp, message);
+    super(sender, '', timestamp, message);
   }
 
   public getMessage(): string {
