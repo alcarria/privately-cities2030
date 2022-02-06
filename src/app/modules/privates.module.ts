@@ -107,7 +107,7 @@ export class PrivateController {
 
     let message = await decrypt(event.returnValues.message, contactKey, 'xsalsa20-poly1305')
 
-    contact.addMessage(new Message(from, new Date(Number(event.returnValues.timestamp)), message))
+    contact.addMessage(new Message(from, contact.getNickname(), new Date(Number(event.returnValues.timestamp)), message))
     this.cdr.detectChanges();
   }
 

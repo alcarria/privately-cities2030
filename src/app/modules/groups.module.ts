@@ -94,12 +94,14 @@ export class GroupController {
     let message = await decrypt(event.returnValues.message, groupKey, 'xsalsa20-poly1305')
     let from = event.returnValues.from
 
+    let fromContact = await Contact.getContactInfo(from)
+
     const group = this.getGroup(event.returnValues.group)
 
     if (group == undefined)
       throw 'contact is undefined'
 
-    group.addMessage(new Message(from, new Date(Number(event.returnValues.timestamp)), message))
+    group.addMessage(new Message(from, fromContact.nickname, new Date(Number(event.returnValues.timestamp)), message))
     this.cdr.detectChanges();
   }
 
