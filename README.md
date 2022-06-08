@@ -2,7 +2,7 @@
 Project that implements a messaging application using blockchain to keep user data safe.
 This project is an adaptation of the initial work of GISAI-UPM collaborators: Arturo Holgado Moreno and Diego Gutierrez Santamarta.
 
-## Requisitos de instalación
+## Installation requirements
 Before running the repository, the following tools must be installed::
 * Node.js: is developed in version 14.18.0 Link: <https://nodejs.org/download/release/v14.18.0/>
 * Ganache: developed in version 2.5.4. Link: Enlace: <https://github.com/trufflesuite/ganache-ui/releases/tag/v2.5.4>
