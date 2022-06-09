@@ -1,24 +1,24 @@
-<h2 mat-dialog-title>Modificar permisos</h2>
+<h2 mat-dialog-title>Modify permissions</h2>
 <mat-dialog-content>
   <div>
-    Los permisos son:
+    Permissions are:
     <ul>
-      <li>2: Escritura</li>
-      <li>3: Invitar</li>
-      <li>4: Administrador</li>
+      <li>2: Write</li>
+      <li>3: Invite</li>
+      <li>4: Manage (Admin)</li>
     </ul>
 
   </div>
   <mat-form-field appearance="fill">
-    <mat-label>Dirección de destino</mat-label>
+    <mat-label>Destination address</mat-label>
     <input matInput [(ngModel)]="address">
   </mat-form-field>
   <mat-form-field appearance="fill">
-    <mat-label>Permisos</mat-label>
+    <mat-label>Permissions</mat-label>
     <input matInput type="number" [(ngModel)]="permissions">
   </mat-form-field>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button class="mat-raised-button" (click)="onCancel()">Cancelar</button>
-  <button class="mat-raised-button mat-primary" type="submit" (click)="onSubmit()">Aceptar</button>
+  <button class="mat-raised-button" (click)="onCancel()">Cancel</button>
+  <button class="mat-raised-button mat-primary" type="submit" (click)="onSubmit()">Accept</button>
 </mat-dialog-actions>
