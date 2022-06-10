@@ -1,6 +1,6 @@
 <mat-toolbar color="primary">
   <mat-toolbar-row>
-    <a mat-button [routerLink]="''"><h1> Privately </h1></a>
+    <a mat-button [routerLink]="''"><h1> Cities2030 - Privately </h1></a>
     <span class="menu-spacer"></span>
     <ng-container
       [ngTemplateOutlet]="toolbarButton"
@@ -24,7 +24,7 @@
 <ng-template #Register>
   <div>
     <button color="accent" mat-raised-button (click)="crearCuenta()">
-      Iniciar sesión
+      Log in
     </button>
   </div>
 </ng-template>
@@ -35,7 +35,7 @@
     <p mat-menu-item disabled>{{address}}</p>
     <button mat-menu-item (click)="crearCuenta()">
       <mat-icon>edit</mat-icon>
-      <span>Editar cuenta</span>
+      <span>Edit account</span>
     </button>
   </mat-menu>
 </ng-template>
